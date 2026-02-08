@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Guide - DealCash</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            color: #FF6B6B;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+
+        h2 {
+            color: #333;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+            border-bottom: 3px solid #FF6B6B;
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            color: #555;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .step {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-right: 1rem;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: #2d3748;
+            color: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            background: none;
+            color: #fff;
+            padding: 0;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            color: #0c5460;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+
+        ul, ol {
+            margin-left: 2rem;
+            margin-top: 0.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        a {
+            color: #FF6B6B;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 DealCash Complete Setup Guide</h1>
+        
+        <div class="alert alert-info">
+            <strong>Time Required:</strong> 2-3 hours for complete setup<br>
+            <strong>Technical Level:</strong> Beginner-friendly<br>
+            <strong>Cost:</strong> £0 (everything is free to start)
+        </div>
+
+        <h2>📋 Pre-Setup Checklist</h2>
+        <div class="step">
+            <ul class="checklist">
+                <li>Computer with internet access</li>
+                <li>Email address for account registrations</li>
+                <li>Website or blog (optional but helpful)</li>
+                <li>Tax identification number (for later)</li>
+                <li>Bank account or PayPal for receiving payments</li>
+            </ul>
+        </div>
+
+        <h2>Step 1: Set Up Supabase Database</h2>
+        <div class="step">
+            <span class="step-number">1</span>
+            <h3>Create Supabase Account</h3>
+            <ol>
+                <li>Go to <a href="https://supabase.com" target="_blank">supabase.com</a></li>
+                <li>Click "Start your project"</li>
+                <li>Sign up with GitHub or email</li>
+                <li>Create a new organization (free tier is fine)</li>
+                <li>Create a new project:
+                    <ul>
+                        <li>Name: <code>dealcash-prod</code></li>
+                        <li>Database Password: Save this securely!</li>
+                        <li>Region: Choose closest to your users</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3>Run Database Schema</h3>
+            <ol>
+                <li>Wait for project to finish provisioning (2-3 minutes)</li>
+                <li>Go to SQL Editor in the left sidebar</li>
+                <li>Click "New query"</li>
+                <li>Open your <code>supabase-schema.sql</code> file</li>
+                <li>Copy all contents and paste into SQL Editor</li>
+                <li>Click "Run" (bottom right)</li>
+                <li>Verify: You should see "Success. No rows returned"</li>
+            </ol>
+
+            <h3>Add Sample Data</h3>
+            <ol>
+                <li>Create another new query</li>
+                <li>Open <code>store-data-with-affiliate-links.sql</code></li>
+                <li>Copy and paste contents</li>
+                <li>Click "Run"</li>
+                <li>Verify: Check Table Editor to see stores added</li>
+            </ol>
+
+            <h3>Get Your Credentials</h3>
+            <ol>
+                <li>Go to Project Settings → API</li>
+                <li>Copy these values:
+                    <pre><code>Project URL: https://xxxxx.supabase.co
+Anon public key: eyJhbGc...</code></pre>
+                </li>
+                <li>Save these in a secure note</li>
+            </ol>
+        </div>
+
+        <h2>Step 2: Configure Your Website Files</h2>
+        <div class="step">
+            <span class="step-number">2</span>
+            
+            <h3>Update Configuration</h3>
+            <ol>
+                <li>Open <code>config-template.js</code></li>
+                <li>Replace placeholders with your Supabase credentials:</li>
+            </ol>
+            <pre><code>const SUPABASE_CONFIG = {
+    url: 'https://your-project.supabase.co',  // Your URL here
+    anonKey: 'eyJhbGc...'  // Your anon key here
+};</code></pre>
+            <ol start="3">
+                <li>Save as <code>config.js</code></li>
+                <li>Make sure ALL HTML files reference this file</li>
+            </ol>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ Security Note:</strong> Never commit your Service Role key to public repositories!
+            </div>
+        </div>
+
+        <h2>Step 3: Join Affiliate Networks</h2>
+        <div class="step">
+            <span class="step-number">3</span>
+            
+            <p>You need to join affiliate networks to get paid when users shop. Here are the main ones:</p>
+
+            <table>
+                <tr>
+                    <th>Network</th>
+                    <th>Best For</th>
+                    <th>Approval Time</th>
+                    <th>Sign Up</th>
+                </tr>
+                <tr>
+                    <td><strong>AWIN</strong></td>
+                    <td>UK/EU stores (Amazon, ASOS, Argos)</td>
+                    <td>2-3 days</td>
+                    <td><a href="https://www.awin.com/gb/publishers" target="_blank">Join AWIN</a></td>
+                </tr>
+                <tr>
+                    <td><strong>CJ Affiliate</strong></td>
+                    <td>Hotels, Travel, US stores</td>
+                    <td>1-7 days</td>
+                    <td><a href="https://www.cj.com" target="_blank">Join CJ</a></td>
+                </tr>
+                <tr>
+                    <td><strong>ShareASale</strong></td>
+                    <td>Wayfair, Etsy, Reebok</td>
+                    <td>Instant</td>
+                    <td><a href="https://www.shareasale.com" target="_blank">Join ShareASale</a></td>
+                </tr>
+                <tr>
+                    <td><strong>Rakuten</strong></td>
+                    <td>Walmart, Nike, Best Buy</td>
+                    <td>3-7 days</td>
+                    <td><a href="https://rakutenadvertising.com" target="_blank">Join Rakuten</a></td>
+                </tr>
+            </table>
+
+            <h3>Application Tips:</h3>
+            <ul>
+                <li><strong>Website:</strong> If you don't have a website yet, you can list your DealCash site (once deployed)</li>
+                <li><strong>Traffic:</strong> Say you're launching soon and expect 1,000+ visitors/month</li>
+                <li><strong>Promotion Methods:</strong> Select "Cashback/Loyalty Site"</li>
+                <li><strong>Description:</strong> "A cashback platform helping users earn money on their online purchases"</li>
+            </ul>
+        </div>
+
+        <h2>Step 4: Apply to Retailer Programs</h2>
+        <div class="step">
+            <span class="step-number">4</span>
+            
+            <p>Once approved by the networks, you need to apply to individual retailers:</p>
+
+            <h3>In AWIN:</h3>
+            <ol>
+                <li>Login to your AWIN account</li>
+                <li>Go to "Advertisers" tab</li>
+                <li>Search for stores (e.g., "Amazon", "ASOS")</li>
+                <li>Click "Join Programme"</li>
+                <li>Wait for approval (usually instant to 2 days)</li>
+            </ol>
+
+            <h3>Priority Retailers to Apply For:</h3>
+            <ul class="checklist">
+                <li>Amazon UK (AWIN)</li>
+                <li>eBay UK (AWIN)</li>
+                <li>ASOS (AWIN)</li>
+                <li>Booking.com (AWIN)</li>
+                <li>Hotels.com (CJ)</li>
+                <li>Argos (AWIN)</li>
+                <li>Currys (AWIN)</li>
+                <li>John Lewis (AWIN)</li>
+            </ul>
+
+            <p>Aim for <strong>10-15 approved stores</strong> before launching.</p>
+        </div>
+
+        <h2>Step 5: Get Your Affiliate Links</h2>
+        <div class="step">
+            <span class="step-number">5</span>
+            
+            <h3>AWIN Links:</h3>
+            <ol>
+                <li>Go to "Links & Tools" for each approved advertiser</li>
+                <li>Copy your Publisher ID (e.g., 123456)</li>
+                <li>Note the Advertiser ID (e.g., 2987 for ASOS)</li>
+                <li>Build your tracking link:
+                    <pre><code>https://www.awin1.com/cread.php?
+  awinmid=ADVERTISER_ID
+  &awinaffid=YOUR_PUBLISHER_ID
+  &clickref={{CLICK_ID}}
+  &p=DESTINATION_URL</code></pre>
+                </li>
+            </ol>
+
+            <h3>Update Your Database:</h3>
+            <pre><code>UPDATE stores 
+SET tracking_url = 'YOUR_ACTUAL_AFFILIATE_LINK'
+WHERE slug = 'amazon-uk';</code></pre>
+
+            <div class="alert alert-warning">
+                <strong>Important:</strong> Keep <code>{{CLICK_ID}}</code> in your links - this gets replaced dynamically!
+            </div>
+        </div>
+
+        <h2>Step 6: Deploy Your Website</h2>
+        <div class="step">
+            <span class="step-number">6</span>
+            
+            <h3>Option A: Netlify (Recommended)</h3>
+            <ol>
+                <li>Create account at <a href="https://netlify.com" target="_blank">netlify.com</a></li>
+                <li>Drag & drop your project folder</li>
+                <li>Your site is live! (e.g., yoursite.netlify.app)</li>
+                <li>Optional: Add custom domain in site settings</li>
+            </ol>
+
+            <h3>Option B: Vercel</h3>
+            <ol>
+                <li>Create account at <a href="https://vercel.com" target="_blank">vercel.com</a></li>
+                <li>Import your Git repository</li>
+                <li>Deploy with one click</li>
+            </ol>
+
+            <h3>Option C: GitHub Pages</h3>
+            <ol>
+                <li>Push code to GitHub repository</li>
+                <li>Go to Settings → Pages</li>
+                <li>Enable Pages from main branch</li>
+            </ol>
+        </div>
+
+        <h2>Step 7: Create Admin Account</h2>
+        <div class="step">
+            <span class="step-number">7</span>
+            
+            <ol>
+                <li>Sign up on your website with your email</li>
+                <li>Go to Supabase SQL Editor</li>
+                <li>Run this query with YOUR email:
+                    <pre><code>UPDATE auth.users 
+SET raw_app_meta_data = raw_app_meta_data || '{"role": "admin"}'::jsonb
+WHERE email = 'youremail@example.com';</code></pre>
+                </li>
+                <li>Log out and log back in</li>
+                <li>Access admin panel at <code>/admin.html</code></li>
+            </ol>
+        </div>
+
+        <h2>Step 8: Testing</h2>
+        <div class="step">
+            <span class="step-number">8</span>
+            
+            <h3>Test Checklist:</h3>
+            <ul class="checklist">
+                <li>Sign up works and sends confirmation email</li>
+                <li>Login works</li>
+                <li>Stores display on homepage</li>
+                <li>Clicking "Shop Now" tracks click in database</li>
+                <li>User is redirected to retailer</li>
+                <li>Admin can view clicks in admin panel</li>
+                <li>Make a small test purchase (if possible)</li>
+                <li>Verify transaction appears in database</li>
+            </ul>
+
+            <h3>How to Test Without Spending Money:</h3>
+            <ol>
+                <li>Add a test transaction manually in database:
+                    <pre><code>INSERT INTO transactions (
+    user_id, store_id, click_id,
+    order_amount, cashback_amount, status
+) VALUES (
+    'user-uuid', 'store-uuid', 'test-click-123',
+    100.00, 5.00, 'confirmed'
+);</code></pre>
+                </li>
+                <li>Check if it appears in user dashboard</li>
+                <li>Test withdrawal request</li>
+            </ol>
+        </div>
+
+        <h2>Step 9: Set Up Webhooks (Advanced)</h2>
+        <div class="step">
+            <span class="step-number">9</span>
+            
+            <p>Webhooks automatically update transactions when retailers confirm purchases.</p>
+
+            <ol>
+                <li>Deploy <code>webhook-handler.js</code> to Vercel or Supabase Edge Functions</li>
+                <li>Get your webhook URL (e.g., <code>https://yoursite.com/api/webhook</code>)</li>
+                <li>Configure in affiliate networks:
+                    <ul>
+                        <li><strong>AWIN:</strong> Settings → Postback URL</li>
+                        <li><strong>CJ:</strong> Account → Tracking Integration</li>
+                        <li><strong>ShareASale:</strong> Tools → Postback</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="alert alert-info">
+                <strong>📝 Note:</strong> You can skip webhooks initially and manually approve transactions in admin panel.
+            </div>
+        </div>
+
+        <h2>🎉 You're Ready to Launch!</h2>
+        <div class="alert alert-success">
+            <strong>Congratulations!</strong> Your cashback platform is ready. Here's what to do next:
+            <ul>
+                <li>Test everything thoroughly</li>
+                <li>Add more stores (aim for 50+)</li>
+                <li>Create social media accounts</li>
+                <li>Start marketing (SEO, content, social media)</li>
+                <li>Track your metrics (clicks, signups, purchases)</li>
+            </ul>
+        </div>
+
+        <h2>📈 Growing Your Platform</h2>
+        <div class="step">
+            <h3>Month 1: Foundation</h3>
+            <ul>
+                <li>Add 50+ stores across all categories</li>
+                <li>Create content: "Best Deals" blog posts</li>
+                <li>Set up Google Analytics</li>
+                <li>Join Facebook groups about deals/coupons</li>
+            </ul>
+
+            <h3>Month 2-3: Traffic Generation</h3>
+            <ul>
+                <li>SEO optimization for deal-related keywords</li>
+                <li>Share daily deals on social media</li>
+                <li>Partner with influencers/bloggers</li>
+                <li>Create comparison content (vs competitors)</li>
+            </ul>
+
+            <h3>Month 4+: Scaling</h3>
+            <ul>
+                <li>Paid advertising (Facebook, Google Ads)</li>
+                <li>Browser extension development</li>
+                <li>Mobile app launch</li>
+                <li>Email marketing campaigns</li>
+                <li>Referral program expansion</li>
+            </ul>
+        </div>
+
+        <h2>💡 Pro Tips</h2>
+        <div class="step">
+            <ul>
+                <li><strong>Start Small:</strong> 10 good stores better than 100 bad ones</li>
+                <li><strong>High Commission Focus:</strong> Prioritize 5%+ cashback stores</li>
+                <li><strong>Popular Stores:</strong> Amazon + ASOS = 60% of most cashback sites' revenue</li>
+                <li><strong>Seasonal Promotions:</strong> Black Friday, Christmas = huge traffic spikes</li>
+                <li><strong>Email Marketing:</strong> Build email list from day 1</li>
+                <li><strong>Mobile First:</strong> 70% of shopping is mobile - test thoroughly</li>
+                <li><strong>Fast Payouts:</strong> Pay users quickly to build trust</li>
+                <li><strong>Support:</strong> Respond to queries within 24 hours</li>
+            </ul>
+        </div>
+
+        <h2>❓ Troubleshooting</h2>
+        <div class="step">
+            <h3>Tracking Not Working?</h3>
+            <ul>
+                <li>Check browser console for JavaScript errors</li>
+                <li>Verify Supabase credentials are correct</li>
+                <li>Ensure click_id is being generated</li>
+                <li>Test affiliate links manually</li>
+            </ul>
+
+            <h3>Users Can't Sign Up?</h3>
+            <ul>
+                <li>Check Supabase Auth settings</li>
+                <li>Verify email confirmation is enabled</li>
+                <li>Check spam folder for confirmation emails</li>
+            </ul>
+
+            <h3>Cashback Not Showing?</h3>
+            <ul>
+                <li>Check transaction status in database</li>
+                <li>Verify triggers are enabled</li>
+                <li>Manually update status to test</li>
+            </ul>
+        </div>
+
+        <a href="index.html" class="btn">Back to Home</a>
+    </div>
+</body>
+</html>
