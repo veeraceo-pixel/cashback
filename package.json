@@ -1,0 +1,32 @@
+{
+  "name": "dealcash-affiliate-platform",
+  "version": "1.0.0",
+  "description": "Affiliate cashback platform with Supabase backend",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve .",
+    "deploy": "supabase functions deploy affiliate-webhook",
+    "db:reset": "supabase db reset",
+    "db:push": "supabase db push",
+    "sync:transactions": "node scripts/sync-transactions.js",
+    "setup": "node scripts/setup-wizard.js"
+  },
+  "keywords": [
+    "affiliate",
+    "cashback",
+    "supabase",
+    "e-commerce"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "supabase": "^1.142.0",
+    "serve": "^14.2.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

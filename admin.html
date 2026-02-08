@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - DealCash</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #2d3748;
+            color: white;
+            padding: 2rem 0;
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            padding: 0 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .menu-item {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: #4a5568;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .header {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 2px solid #eee;
+            font-weight: 600;
+        }
+
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .search-box {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 300px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const SUPABASE_URL = 'https://ucuieklgngorsrgodlwp.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_tLTcLVea0EtopvgTB4Ag8w_jZiIpoY3';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        function AdminPanel() {
+            const [activeView, setActiveView] = React.useState('dashboard');
+            const [stats, setStats] = React.useState({});
+            const [transactions, setTransactions] = React.useState([]);
+            const [stores, setStores] = React.useState([]);
+            const [withdrawals, setWithdrawals] = React.useState([]);
+            const [users, setUsers] = React.useState([]);
+            const [loading, setLoading] = React.useState(true);
+            const [showModal, setShowModal] = React.useState(false);
+            const [modalType, setModalType] = React.useState('');
+
+            React.useEffect(() => {
+                loadData();
+            }, [activeView]);
+
+            async function loadData() {
+                setLoading(true);
+
+                if (activeView === 'dashboard') {
+                    await loadDashboardStats();
+                } else if (activeView === 'transactions') {
+                    await loadTransactions();
+                } else if (activeView === 'stores') {
+                    await loadStores();
+                } else if (activeView === 'withdrawals') {
+                    await loadWithdrawals();
+                } else if (activeView === 'users') {
+                    await loadUsers();
+                }
+
+                setLoading(false);
+            }
+
+            async function loadDashboardStats() {
+                // Total users
+                const { count: totalUsers } = await supabase
+                    .from('users')
+                    .select('*', { count: 'exact', head: true });
+
+                // Total transactions
+                const { data: transData } = await supabase
+                    .from('transactions')
+                    .select('commission_amount, cashback_amount');
+
+                const totalCommission = transData?.reduce((sum, t) => sum + parseFloat(t.commission_amount), 0) || 0;
+                const totalCashback = transData?.reduce((sum, t) => sum + parseFloat(t.cashback_amount), 0) || 0;
+                const totalProfit = totalCommission - totalCashback;
+
+                // Pending transactions
+                const { count: pendingCount } = await supabase
+                    .from('transactions')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'pending');
+
+                setStats({
+                    totalUsers: totalUsers || 0,
+                    totalCommission: totalCommission,
+                    totalCashback: totalCashback,
+                    totalProfit: totalProfit,
+                    pendingTransactions: pendingCount || 0
+                });
+            }
+
+            async function loadTransactions() {
+                const { data } = await supabase
+                    .from('transactions')
+                    .select(`
+                        *,
+                        user:users(email, full_name),
+                        store:stores(name, logo_url)
+                    `)
+                    .order('transaction_date', { ascending: false })
+                    .limit(50);
+
+                setTransactions(data || []);
+            }
+
+            async function loadStores() {
+                const { data } = await supabase
+                    .from('stores')
+                    .select('*')
+                    .order('priority', { ascending: false });
+
+                setStores(data || []);
+            }
+
+            async function loadWithdrawals() {
+                const { data } = await supabase
+                    .from('withdrawals')
+                    .select(`
+                        *,
+                        user:users(email, full_name)
+                    `)
+                    .order('requested_at', { ascending: false });
+
+                setWithdrawals(data || []);
+            }
+
+            async function loadUsers() {
+                const { data } = await supabase
+                    .from('users')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+
+                setUsers(data || []);
+            }
+
+            async function updateTransactionStatus(transactionId, newStatus) {
+                const { error } = await supabase
+                    .from('transactions')
+                    .update({ status: newStatus })
+                    .eq('id', transactionId);
+
+                if (error) {
+                    alert('Error: ' + error.message);
+                } else {
+                    alert('Transaction updated!');
+                    loadTransactions();
+                }
+            }
+
+            async function updateWithdrawalStatus(withdrawalId, newStatus) {
+                const { error } = await supabase
+                    .from('withdrawals')
+                    .update({ 
+                        status: newStatus,
+                        processed_at: newStatus === 'completed' ? new Date().toISOString() : null
+                    })
+                    .eq('id', withdrawalId);
+
+                if (error) {
+                    alert('Error: ' + error.message);
+                } else {
+                    alert('Withdrawal updated!');
+                    loadWithdrawals();
+                }
+            }
+
+            async function toggleStoreStatus(storeId, currentStatus) {
+                const { error } = await supabase
+                    .from('stores')
+                    .update({ is_active: !currentStatus })
+                    .eq('id', storeId);
+
+                if (error) {
+                    alert('Error: ' + error.message);
+                } else {
+                    loadStores();
+                }
+            }
+
+            function renderDashboard() {
+                return (
+                    <>
+                        <div className="stats-grid">
+                            <div className="stat-card">
+                                <div className="stat-label">Total Users</div>
+                                <div className="stat-value" style={{ color: '#17a2b8' }}>
+                                    {stats.totalUsers}
+                                </div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-label">Total Commission Earned</div>
+                                <div className="stat-value" style={{ color: '#28a745' }}>
+                                    £{(stats.totalCommission || 0).toFixed(2)}
+                                </div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-label">Total Cashback Paid</div>
+                                <div className="stat-value" style={{ color: '#dc3545' }}>
+                                    £{(stats.totalCashback || 0).toFixed(2)}
+                                </div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-label">Net Profit</div>
+                                <div className="stat-value" style={{ color: '#ffc107' }}>
+                                    £{(stats.totalProfit || 0).toFixed(2)}
+                                </div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-label">Pending Transactions</div>
+                                <div className="stat-value" style={{ color: '#6c757d' }}>
+                                    {stats.pendingTransactions}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="card">
+                            <h2 className="card-title">Quick Actions</h2>
+                            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                                <button 
+                                    className="btn btn-primary"
+                                    onClick={() => setActiveView('transactions')}
+                                >
+                                    Review Pending Transactions
+                                </button>
+                                <button 
+                                    className="btn btn-primary"
+                                    onClick={() => setActiveView('withdrawals')}
+                                >
+                                    Process Withdrawals
+                                </button>
+                                <button 
+                                    className="btn btn-secondary"
+                                    onClick={() => {
+                                        setModalType('store');
+                                        setShowModal(true);
+                                    }}
+                                >
+                                    Add New Store
+                                </button>
+                            </div>
+                        </div>
+                    </>
+                );
+            }
+
+            function renderTransactions() {
+                return (
+                    <div className="card">
+                        <h2 className="card-title">All Transactions</h2>
+                        <input 
+                            type="text" 
+                            placeholder="Search transactions..." 
+                            className="search-box"
+                        />
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>User</th>
+                                    <th>Store</th>
+                                    <th>Order Amount</th>
+                                    <th>Commission</th>
+                                    <th>Cashback</th>
+                                    <th>Profit</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {transactions.map(t => (
+                                    <tr key={t.id}>
+                                        <td>{new Date(t.transaction_date).toLocaleDateString()}</td>
+                                        <td>{t.user?.email}</td>
+                                        <td>{t.store?.name}</td>
+                                        <td>£{t.order_amount.toFixed(2)}</td>
+                                        <td>£{t.commission_amount.toFixed(2)}</td>
+                                        <td>£{t.cashback_amount.toFixed(2)}</td>
+                                        <td>£{t.profit_amount.toFixed(2)}</td>
+                                        <td>
+                                            <span className={`badge badge-${
+                                                t.status === 'confirmed' ? 'success' :
+                                                t.status === 'pending' ? 'warning' : 'danger'
+                                            }`}>
+                                                {t.status}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {t.status === 'pending' && (
+                                                <>
+                                                    <button 
+                                                        className="btn btn-primary"
+                                                        style={{ marginRight: '0.5rem' }}
+                                                        onClick={() => updateTransactionStatus(t.id, 'confirmed')}
+                                                    >
+                                                        Confirm
+                                                    </button>
+                                                    <button 
+                                                        className="btn btn-danger"
+                                                        onClick={() => updateTransactionStatus(t.id, 'cancelled')}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                );
+            }
+
+            function renderStores() {
+                return (
+                    <div className="card">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <h2 className="card-title" style={{ marginBottom: 0 }}>All Stores</h2>
+                            <button 
+                                className="btn btn-primary"
+                                onClick={() => {
+                                    setModalType('store');
+                                    setShowModal(true);
+                                }}
+                            >
+                                Add Store
+                            </button>
+                        </div>
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Commission</th>
+                                    <th>Cashback</th>
+                                    <th>Profit</th>
+                                    <th>Clicks</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {stores.map(s => (
+                                    <tr key={s.id}>
+                                        <td>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <img src={s.logo_url} style={{ width: '30px', height: '30px', objectFit: 'contain' }} />
+                                                {s.name}
+                                            </div>
+                                        </td>
+                                        <td>{s.category}</td>
+                                        <td>{s.base_commission_rate}%</td>
+                                        <td>{s.cashback_rate}%</td>
+                                        <td>{s.profit_rate}%</td>
+                                        <td>{s.total_clicks}</td>
+                                        <td>
+                                            <span className={`badge badge-${s.is_active ? 'success' : 'danger'}`}>
+                                                {s.is_active ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button 
+                                                className={`btn ${s.is_active ? 'btn-danger' : 'btn-primary'}`}
+                                                onClick={() => toggleStoreStatus(s.id, s.is_active)}
+                                            >
+                                                {s.is_active ? 'Deactivate' : 'Activate'}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                );
+            }
+
+            function renderWithdrawals() {
+                return (
+                    <div className="card">
+                        <h2 className="card-title">Withdrawal Requests</h2>
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>User</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {withdrawals.map(w => (
+                                    <tr key={w.id}>
+                                        <td>{new Date(w.requested_at).toLocaleDateString()}</td>
+                                        <td>{w.user?.email}</td>
+                                        <td>£{w.amount.toFixed(2)}</td>
+                                        <td>{w.method}</td>
+                                        <td>
+                                            <span className={`badge badge-${
+                                                w.status === 'completed' ? 'success' :
+                                                w.status === 'pending' ? 'warning' : 'danger'
+                                            }`}>
+                                                {w.status}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {w.status === 'pending' && (
+                                                <>
+                                                    <button 
+                                                        className="btn btn-primary"
+                                                        style={{ marginRight: '0.5rem' }}
+                                                        onClick={() => updateWithdrawalStatus(w.id, 'processing')}
+                                                    >
+                                                        Process
+                                                    </button>
+                                                    <button 
+                                                        className="btn btn-primary"
+                                                        onClick={() => updateWithdrawalStatus(w.id, 'completed')}
+                                                    >
+                                                        Complete
+                                                    </button>
+                                                </>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                );
+            }
+
+            function renderUsers() {
+                return (
+                    <div className="card">
+                        <h2 className="card-title">All Users</h2>
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Total Cashback</th>
+                                    <th>Pending</th>
+                                    <th>Withdrawn</th>
+                                    <th>Joined</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {users.map(u => (
+                                    <tr key={u.id}>
+                                        <td>{u.full_name}</td>
+                                        <td>{u.email}</td>
+                                        <td>£{(u.total_cashback || 0).toFixed(2)}</td>
+                                        <td>£{(u.pending_cashback || 0).toFixed(2)}</td>
+                                        <td>£{(u.withdrawn_cashback || 0).toFixed(2)}</td>
+                                        <td>{new Date(u.created_at).toLocaleDateString()}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="admin-container">
+                    <aside className="sidebar">
+                        <div className="sidebar-logo">💰 DealCash Admin</div>
+                        <ul className="sidebar-menu">
+                            <li 
+                                className={`menu-item ${activeView === 'dashboard' ? 'active' : ''}`}
+                                onClick={() => setActiveView('dashboard')}
+                            >
+                                📊 Dashboard
+                            </li>
+                            <li 
+                                className={`menu-item ${activeView === 'transactions' ? 'active' : ''}`}
+                                onClick={() => setActiveView('transactions')}
+                            >
+                                💳 Transactions
+                            </li>
+                            <li 
+                                className={`menu-item ${activeView === 'stores' ? 'active' : ''}`}
+                                onClick={() => setActiveView('stores')}
+                            >
+                                🏪 Stores
+                            </li>
+                            <li 
+                                className={`menu-item ${activeView === 'withdrawals' ? 'active' : ''}`}
+                                onClick={() => setActiveView('withdrawals')}
+                            >
+                                💸 Withdrawals
+                            </li>
+                            <li 
+                                className={`menu-item ${activeView === 'users' ? 'active' : ''}`}
+                                onClick={() => setActiveView('users')}
+                            >
+                                👥 Users
+                            </li>
+                        </ul>
+                    </aside>
+                    <main className="main-content">
+                        <div className="header">
+                            <h1>
+                                {activeView === 'dashboard' && 'Dashboard Overview'}
+                                {activeView === 'transactions' && 'Transaction Management'}
+                                {activeView === 'stores' && 'Store Management'}
+                                {activeView === 'withdrawals' && 'Withdrawal Management'}
+                                {activeView === 'users' && 'User Management'}
+                            </h1>
+                            <p style={{ color: '#666' }}>Manage your affiliate cashback platform</p>
+                        </div>
+                        
+                        {loading ? (
+                            <div className="loading">Loading...</div>
+                        ) : (
+                            <>
+                                {activeView === 'dashboard' && renderDashboard()}
+                                {activeView === 'transactions' && renderTransactions()}
+                                {activeView === 'stores' && renderStores()}
+                                {activeView === 'withdrawals' && renderWithdrawals()}
+                                {activeView === 'users' && renderUsers()}
+                            </>
+                        )}
+                    </main>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<AdminPanel />, document.getElementById('root'));
+    </script>
+</body>
+</html>

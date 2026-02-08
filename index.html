@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DealCash - Shop Smart, Get Cashback on Every Purchase</title>
+    
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- React -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #FF6B6B;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-login, .btn-signup {
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-login {
+            border: 2px solid #FF6B6B;
+            background: white;
+            color: #FF6B6B;
+        }
+
+        .btn-login:hover {
+            background: #FF6B6B;
+            color: white;
+        }
+
+        .btn-signup {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+            color: white;
+        }
+
+        .btn-signup:hover {
+            transform: scale(1.05);
+        }
+
+        .user-balance {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.6rem 1.2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 25px;
+            font-weight: 600;
+        }
+
+        .banner-slider {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .banner-slide img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        .categories-scroll {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+
+        .category-item {
+            min-width: 120px;
+            text-align: center;
+            padding: 1.5rem 1rem;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .category-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .brands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .brand-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .brand-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .sale-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #FF6B6B;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .brand-header {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .brand-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .brand-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .brand-offer {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .cashback-highlight {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #28a745;
+            margin: 1rem 0;
+        }
+
+        .shop-now-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .shop-now-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .success {
+            color: #28a745;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .footer {
+            background: #2d3748;
+            color: white;
+            padding: 3rem 2rem 1rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+        }
+
+        .footer-section a {
+            display: block;
+            color: #cbd5e0;
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #4a5568;
+            color: #cbd5e0;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // =====================================================
+        // SUPABASE CONFIGURATION
+        // =====================================================
+        // Replace these with your actual Supabase credentials
+        const SUPABASE_URL = 'https://ucuieklgngorsrgodlwp.supabase.co'; // e.g., https://xxxxx.supabase.co
+        const SUPABASE_ANON_KEY = 'sb_publishable_tLTcLVea0EtopvgTB4Ag8w_jZiIpoY3';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // =====================================================
+        // MAIN APP COMPONENT
+        // =====================================================
+        function App() {
+            const [user, setUser] = React.useState(null);
+            const [userProfile, setUserProfile] = React.useState(null);
+            const [stores, setStores] = React.useState([]);
+            const [categories, setCategories] = React.useState([]);
+            const [banners, setBanners] = React.useState([]);
+            const [loading, setLoading] = React.useState(true);
+            const [showAuthModal, setShowAuthModal] = React.useState(false);
+            const [authMode, setAuthMode] = React.useState('login');
+            const [currentSlide, setCurrentSlide] = React.useState(0);
+
+            // Check authentication on mount
+            React.useEffect(() => {
+                checkUser();
+                loadData();
+
+                // Listen to auth changes
+                const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+                    setUser(session?.user || null);
+                    if (session?.user) {
+                        loadUserProfile(session.user.id);
+                    }
+                });
+
+                return () => {
+                    authListener?.subscription?.unsubscribe();
+                };
+            }, []);
+
+            // Auto-slide banner
+            React.useEffect(() => {
+                if (banners.length > 0) {
+                    const timer = setInterval(() => {
+                        setCurrentSlide((prev) => (prev + 1) % banners.length);
+                    }, 5000);
+                    return () => clearInterval(timer);
+                }
+            }, [banners]);
+
+            async function checkUser() {
+                const { data: { session } } = await supabase.auth.getSession();
+                setUser(session?.user || null);
+                if (session?.user) {
+                    await loadUserProfile(session.user.id);
+                }
+            }
+
+            async function loadUserProfile(userId) {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+                
+                if (data) {
+                    setUserProfile(data);
+                }
+            }
+
+            async function loadData() {
+                setLoading(true);
+                
+                // Load stores
+                const { data: storesData } = await supabase
+                    .from('stores')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('priority', { ascending: false })
+                    .limit(12);
+                
+                setStores(storesData || []);
+
+                // Load categories
+                const { data: categoriesData } = await supabase
+                    .from('categories')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('display_order');
+                
+                setCategories(categoriesData || []);
+
+                // Load banners
+                const { data: bannersData } = await supabase
+                    .from('banners')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('display_order')
+                    .limit(5);
+                
+                setBanners(bannersData || []);
+
+                setLoading(false);
+            }
+
+            async function handleShopNow(store) {
+                if (!user) {
+                    alert('Please login to earn cashback!');
+                    setShowAuthModal(true);
+                    return;
+                }
+
+                // Generate unique click ID
+                const clickId = `${user.id}_${store.id}_${Date.now()}`;
+                
+                // Record click
+                const { error } = await supabase
+                    .from('clicks')
+                    .insert({
+                        user_id: user.id,
+                        store_id: store.id,
+                        click_id: clickId
+                    });
+
+                // Update store click count
+                await supabase.rpc('increment_store_clicks', { store_id: store.id });
+
+                // Build tracking URL with click ID
+                const trackingUrl = store.tracking_url.replace('CLICK_ID', clickId);
+                
+                // Open in new tab
+                window.open(trackingUrl, '_blank');
+                
+                alert(`🎉 Cashback activated! Shop on ${store.name} and you'll earn ${store.cashback_rate}% cashback on your purchase.`);
+            }
+
+            if (loading) {
+                return <div className="loading">Loading amazing deals...</div>;
+            }
+
+            return (
+                <>
+                    {/* Header */}
+                    <header className="header">
+                        <div className="nav-container">
+                            <div className="logo">💰 DealCash</div>
+                            <nav className="nav-menu">
+                                <a href="#categories" className="nav-link">Categories</a>
+                                <a href="#how" className="nav-link">How it Works</a>
+                                <a href="#" className="nav-link">Stores</a>
+                            </nav>
+                            <div className="auth-buttons">
+                                {user ? (
+                                    <>
+                                        <div className="user-balance">
+                                            💰 £{(userProfile?.total_cashback || 0).toFixed(2)}
+                                        </div>
+                                        <button 
+                                            className="btn-login"
+                                            onClick={() => window.location.href = '/dashboard.html'}
+                                        >
+                                            Dashboard
+                                        </button>
+                                        <button 
+                                            className="btn-login"
+                                            onClick={async () => {
+                                                await supabase.auth.signOut();
+                                                setUser(null);
+                                                setUserProfile(null);
+                                            }}
+                                        >
+                                            Logout
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button 
+                                            className="btn-login"
+                                            onClick={() => {
+                                                setAuthMode('login');
+                                                setShowAuthModal(true);
+                                            }}
+                                        >
+                                            Login
+                                        </button>
+                                        <button 
+                                            className="btn-signup"
+                                            onClick={() => {
+                                                setAuthMode('signup');
+                                                setShowAuthModal(true);
+                                            }}
+                                        >
+                                            Sign Up
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Banners */}
+                    {banners.length > 0 && (
+                        <div className="banner-slider">
+                            <div className="banner-slide">
+                                <img src={banners[currentSlide].image_url} alt={banners[currentSlide].title} />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Categories */}
+                    <div className="section" id="categories">
+                        <h2 className="section-title">Top Categories</h2>
+                        <div className="categories-scroll">
+                            {categories.map(cat => (
+                                <div key={cat.id} className="category-item">
+                                    <div className="category-icon">{cat.icon}</div>
+                                    <div className="category-name">{cat.name}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Stores */}
+                    <div className="section">
+                        <h2 className="section-title">Most Popular Stores</h2>
+                        <div className="brands-grid">
+                            {stores.map(store => (
+                                <div key={store.id} className="brand-card">
+                                    {store.sale_badge && (
+                                        <div className="sale-badge">{store.sale_badge}</div>
+                                    )}
+                                    <div className="brand-header">
+                                        <img src={store.logo_url} alt={store.name} className="brand-logo" />
+                                        <div>
+                                            <div className="brand-name">{store.name}</div>
+                                            <div className="brand-offer">{store.offer_text}</div>
+                                        </div>
+                                    </div>
+                                    <div className="cashback-highlight">
+                                        {store.cashback_rate}% Cashback
+                                    </div>
+                                    <button 
+                                        className="shop-now-btn"
+                                        onClick={() => handleShopNow(store)}
+                                    >
+                                        Shop Now & Earn
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Auth Modal */}
+                    <AuthModal 
+                        show={showAuthModal}
+                        mode={authMode}
+                        onClose={() => setShowAuthModal(false)}
+                        onSuccess={() => {
+                            setShowAuthModal(false);
+                            checkUser();
+                        }}
+                    />
+
+                    {/* Footer */}
+                    <footer className="footer">
+                        <div className="footer-content">
+                            <div className="footer-section">
+                                <h3>About DealCash</h3>
+                                <a href="#">About Us</a>
+                                <a href="#">How It Works</a>
+                            </div>
+                            <div className="footer-section">
+                                <h3>Support</h3>
+                                <a href="#">Help Centre</a>
+                                <a href="#">Contact Us</a>
+                            </div>
+                            <div className="footer-section">
+                                <h3>Legal</h3>
+                                <a href="#">Terms & Conditions</a>
+                                <a href="#">Privacy Policy</a>
+                            </div>
+                        </div>
+                        <div className="footer-bottom">
+                            © 2026 DealCash. All Rights Reserved.
+                        </div>
+                    </footer>
+                </>
+            );
+        }
+
+        // =====================================================
+        // AUTH MODAL COMPONENT
+        // =====================================================
+        function AuthModal({ show, mode, onClose, onSuccess }) {
+            const [email, setEmail] = React.useState('');
+            const [password, setPassword] = React.useState('');
+            const [fullName, setFullName] = React.useState('');
+            const [error, setError] = React.useState('');
+            const [success, setSuccess] = React.useState('');
+            const [loading, setLoading] = React.useState(false);
+
+            async function handleSubmit(e) {
+                e.preventDefault();
+                setError('');
+                setSuccess('');
+                setLoading(true);
+
+                try {
+                    if (mode === 'signup') {
+                        // Sign up
+                        const { data, error } = await supabase.auth.signUp({
+                            email,
+                            password,
+                            options: {
+                                data: {
+                                    full_name: fullName
+                                }
+                            }
+                        });
+
+                        if (error) throw error;
+
+                        // Create user profile
+                        if (data.user) {
+                            await supabase.from('users').insert({
+                                id: data.user.id,
+                                email: data.user.email,
+                                full_name: fullName
+                            });
+                        }
+
+                        setSuccess('Account created! Please check your email to verify.');
+                        setTimeout(() => onSuccess(), 2000);
+                    } else {
+                        // Login
+                        const { data, error } = await supabase.auth.signInWithPassword({
+                            email,
+                            password
+                        });
+
+                        if (error) throw error;
+
+                        setSuccess('Login successful!');
+                        setTimeout(() => onSuccess(), 1000);
+                    }
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setLoading(false);
+                }
+            }
+
+            if (!show) return null;
+
+            return (
+                <div className="modal active" onClick={onClose}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h2 className="modal-title">
+                            {mode === 'login' ? 'Login' : 'Sign Up'}
+                        </h2>
+                        <form onSubmit={handleSubmit}>
+                            {mode === 'signup' && (
+                                <div className="form-group">
+                                    <label>Full Name</label>
+                                    <input
+                                        type="text"
+                                        value={fullName}
+                                        onChange={(e) => setFullName(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            )}
+                            <div className="form-group">
+                                <label>Email</label>
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Password</label>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    minLength="6"
+                                />
+                            </div>
+                            {error && <div className="error">{error}</div>}
+                            {success && <div className="success">{success}</div>}
+                            <button 
+                                type="submit" 
+                                className="btn-signup"
+                                disabled={loading}
+                                style={{ width: '100%', marginTop: '1rem' }}
+                            >
+                                {loading ? 'Please wait...' : (mode === 'login' ? 'Login' : 'Sign Up')}
+                            </button>
+                        </form>
+                        <p style={{ marginTop: '1rem', textAlign: 'center' }}>
+                            {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
+                            <a 
+                                href="#" 
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setError('');
+                                    setSuccess('');
+                                    onClose();
+                                    setTimeout(() => {
+                                        document.querySelector(mode === 'login' ? '.btn-signup' : '.btn-login').click();
+                                    }, 100);
+                                }}
+                                style={{ color: '#FF6B6B', fontWeight: '600' }}
+                            >
+                                {mode === 'login' ? 'Sign Up' : 'Login'}
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
