@@ -1,0 +1,146 @@
+/* ========================================================================
+   MOBILE HAMBURGER MENU COMPONENT
+   Add this JavaScript to your HTML files (before closing </body> tag)
+   ======================================================================== */
+
+<script>
+// Mobile Menu Toggle Functionality
+(function() {
+    // Create hamburger button if it doesn't exist
+    function createMobileMenuButton() {
+        const navContainer = document.querySelector('.nav-container');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        if (!navContainer || !navMenu) return;
+        
+        // Check if button already exists
+        if (document.querySelector('.mobile-menu-btn')) return;
+        
+        // Create hamburger button
+        const menuBtn = document.createElement('button');
+        menuBtn.className = 'mobile-menu-btn';
+        menuBtn.setAttribute('aria-label', 'Toggle menu');
+        menuBtn.innerHTML = '☰';
+        
+        // Insert before auth buttons or at end of nav
+        const authButtons = navContainer.querySelector('.auth-buttons');
+        if (authButtons) {
+            navContainer.insertBefore(menuBtn, authButtons);
+        } else {
+            navContainer.appendChild(menuBtn);
+        }
+        
+        // Toggle menu on click
+        menuBtn.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            
+            // Change icon
+            if (navMenu.classList.contains('active')) {
+                menuBtn.innerHTML = '✕';
+            } else {
+                menuBtn.innerHTML = '☰';
+            }
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!navContainer.contains(e.target)) {
+                navMenu.classList.remove('active');
+                menuBtn.innerHTML = '☰';
+            }
+        });
+        
+        // Close menu when clicking a link
+        const navLinks = navMenu.querySelectorAll('.nav-link, a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navMenu.classList.remove('active');
+                menuBtn.innerHTML = '☰';
+            });
+        });
+    }
+    
+    // Run when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', createMobileMenuButton);
+    } else {
+        createMobileMenuButton();
+    }
+    
+    // For React apps, also run after a short delay
+    setTimeout(createMobileMenuButton, 500);
+})();
+
+// Prevent zoom on input focus (iOS)
+document.addEventListener('touchstart', function() {
+    const inputs = document.querySelectorAll('input, textarea, select');
+    inputs.forEach(input => {
+        input.style.fontSize = '16px'; // iOS won't zoom if font-size >= 16px
+    });
+}, { passive: true });
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href !== '#' && href !== '#!') {
+            e.preventDefault();
+            const target = document.querySelector(href);
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+    });
+});
+
+// Add viewport height fix for mobile browsers (accounts for address bar)
+function setVH() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+setVH();
+window.addEventListener('resize', setVH);
+window.addEventListener('orientationchange', setVH);
+
+// Detect if touch device
+if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    document.body.classList.add('touch-device');
+} else {
+    document.body.classList.add('no-touch');
+}
+</script>
+
+<style>
+/* Mobile menu button (hidden on desktop) */
+.mobile-menu-btn {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: block;
+        background: none;
+        border: none;
+        font-size: 1.8rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        color: #333;
+        line-height: 1;
+        transition: transform 0.2s;
+    }
+    
+    .mobile-menu-btn:active {
+        transform: scale(0.95);
+    }
+}
+
+/* Viewport height fix for mobile */
+.full-height {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+}
+</style>
