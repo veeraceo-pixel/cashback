@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DealCash - Shop Smart, Get Cashback on Every Purchase</title>
     
+    <!-- FIX 1: config.js MUST load first so SUPABASE_CONFIG is available -->
+    <script src="config.js"></script>
+
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -14,23 +17,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html, body {
-            overflow-x: hidden;
-            max-width: 100vw;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { overflow-x: hidden; max-width: 100vw; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: #f5f5f5;
             color: #333;
         }
-
         .header {
             background: white;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -38,7 +31,6 @@
             top: 0;
             z-index: 100;
         }
-
         .nav-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -48,7 +40,6 @@
             align-items: center;
             position: relative;
         }
-
         .logo {
             font-size: 2rem;
             font-weight: 800;
@@ -57,30 +48,10 @@
             -webkit-text-fill-color: transparent;
             cursor: pointer;
         }
-
-        .nav-menu {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-link {
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .nav-link:hover {
-            color: #FF6B6B;
-        }
-
-        .auth-buttons {
-            display: flex;
-            gap: 1rem;
-        }
-
+        .nav-menu { display: flex; gap: 2rem; align-items: center; }
+        .nav-link { color: #333; text-decoration: none; font-weight: 500; cursor: pointer; transition: color 0.2s; }
+        .nav-link:hover { color: #FF6B6B; }
+        .auth-buttons { display: flex; gap: 1rem; }
         .btn-login, .btn-signup {
             padding: 0.6rem 1.5rem;
             border-radius: 25px;
@@ -90,28 +61,10 @@
             border: none;
             min-height: 44px;
         }
-
-        .btn-login {
-            border: 2px solid #FF6B6B;
-            background: white;
-            color: #FF6B6B;
-        }
-
-        .btn-login:hover {
-            background: #FF6B6B;
-            color: white;
-        }
-
-        .btn-signup {
-            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
-            color: white;
-        }
-
-        .btn-signup:hover {
-            transform: scale(1.05);
-        }
-
-        /* Mobile Menu Button */
+        .btn-login { border: 2px solid #FF6B6B; background: white; color: #FF6B6B; }
+        .btn-login:hover { background: #FF6B6B; color: white; }
+        .btn-signup { background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: white; }
+        .btn-signup:hover { transform: scale(1.05); }
         .mobile-menu-btn {
             display: none;
             background: none;
@@ -121,22 +74,8 @@
             padding: 0.5rem;
             color: #333;
         }
-
-        .hamburger {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .hamburger span {
-            display: block;
-            width: 25px;
-            height: 3px;
-            background: #333;
-            border-radius: 2px;
-            transition: all 0.3s;
-        }
-
+        .hamburger { display: flex; flex-direction: column; gap: 4px; }
+        .hamburger span { display: block; width: 25px; height: 3px; background: #333; border-radius: 2px; transition: all 0.3s; }
         .user-balance {
             display: flex;
             align-items: center;
@@ -147,32 +86,10 @@
             border-radius: 25px;
             font-weight: 600;
         }
-
-        .banner-slider {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        .banner-slide img {
-            width: 100%;
-            height: 400px;
-            object-fit: cover;
-            border-radius: 16px;
-        }
-
-        .section {
-            max-width: 1400px;
-            margin: 3rem auto;
-            padding: 0 2rem;
-        }
-
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-        }
-
+        .banner-slider { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; }
+        .banner-slide img { width: 100%; height: 400px; object-fit: cover; border-radius: 16px; }
+        .section { max-width: 1400px; margin: 3rem auto; padding: 0 2rem; }
+        .section-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; }
         .categories-scroll {
             display: flex;
             gap: 1.5rem;
@@ -180,7 +97,6 @@
             padding-bottom: 1rem;
             -webkit-overflow-scrolling: touch;
         }
-
         .category-item {
             min-width: 120px;
             text-align: center;
@@ -190,22 +106,9 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
-
-        .category-item:hover {
-            transform: translateY(-5px);
-        }
-
-        .category-icon {
-            font-size: 3rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .brands-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
+        .category-item:hover { transform: translateY(-5px); }
+        .category-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+        .brands-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
         .brand-card {
             background: white;
             border-radius: 12px;
@@ -213,12 +116,7 @@
             position: relative;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        .brand-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        }
-
+        .brand-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
         .sale-badge {
             position: absolute;
             top: 1rem;
@@ -230,37 +128,11 @@
             font-size: 0.8rem;
             font-weight: 700;
         }
-
-        .brand-header {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .brand-logo {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-            border-radius: 8px;
-        }
-
-        .brand-name {
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-
-        .brand-offer {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .cashback-highlight {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #FF6B6B;
-            margin: 1rem 0;
-        }
-
+        .brand-header { display: flex; gap: 1rem; margin-bottom: 1rem; }
+        .brand-logo { width: 60px; height: 60px; object-fit: contain; border-radius: 8px; }
+        .brand-name { font-size: 1.2rem; font-weight: 700; }
+        .brand-offer { color: #666; font-size: 0.9rem; }
+        .cashback-highlight { font-size: 1.5rem; font-weight: 800; color: #FF6B6B; margin: 1rem 0; }
         .shop-now-btn {
             width: 100%;
             padding: 0.8rem;
@@ -272,352 +144,107 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
+        .shop-now-btn:hover { transform: scale(1.02); }
 
-        .shop-now-btn:hover {
-            transform: scale(1.02);
+        /* Setup notice banner */
+        .setup-notice {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 1px solid #ffc107;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin: 1rem 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
         }
+        .setup-notice h3 { color: #856404; margin-bottom: 0.5rem; }
+        .setup-notice p { color: #533f03; font-size: 0.95rem; }
+        .setup-notice code { background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 
         /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 16px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .error {
-            background: #fee;
-            color: #c33;
-            padding: 0.8rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
-
-        .success {
-            background: #efe;
-            color: #3c3;
-            padding: 0.8rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 2rem; border-radius: 16px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal-title { font-size: 1.5rem; margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        .form-group input { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        .error { background: #fee; color: #c33; padding: 0.8rem; border-radius: 8px; margin: 1rem 0; }
+        .success { background: #efe; color: #3c3; padding: 0.8rem; border-radius: 8px; margin: 1rem 0; }
 
         /* Footer */
-        .footer {
-            background: #333;
-            color: white;
-            padding: 3rem 2rem;
-            margin-top: 4rem;
-        }
+        .footer { background: #333; color: white; padding: 3rem 2rem; margin-top: 4rem; }
+        .footer-content { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
+        .footer-section h3 { margin-bottom: 1rem; }
+        .footer-section a { display: block; color: #ccc; text-decoration: none; margin-bottom: 0.5rem; }
+        .footer-section a:hover { color: white; }
+        .footer-bottom { text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #555; }
 
-        .footer-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-        }
-
-        .footer-section h3 {
-            margin-bottom: 1rem;
-        }
-
-        .footer-section a {
-            display: block;
-            color: #ccc;
-            text-decoration: none;
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-section a:hover {
-            color: white;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid #555;
-        }
-
-        /* AI Chatbot Styles */
+        /* AI Chatbot */
         .ai-chat-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
+            position: fixed; bottom: 20px; right: 20px;
+            width: 60px; height: 60px;
             background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
+            border-radius: 50%; border: none; cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.8rem;
-            transition: transform 0.2s;
+            z-index: 999; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.8rem; transition: transform 0.2s;
         }
-
-        .ai-chat-button:hover {
-            transform: scale(1.1);
-        }
-
+        .ai-chat-button:hover { transform: scale(1.1); }
         .ai-chat-window {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            width: 350px;
-            height: 500px;
-            background: white;
-            border-radius: 16px;
+            position: fixed; bottom: 90px; right: 20px;
+            width: 350px; height: 500px;
+            background: white; border-radius: 16px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-            z-index: 998;
-            display: none;
-            flex-direction: column;
+            z-index: 998; display: none; flex-direction: column;
         }
-
-        .ai-chat-window.active {
-            display: flex;
-        }
-
+        .ai-chat-window.active { display: flex; }
         .ai-chat-header {
             background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 1rem;
+            color: white; padding: 1rem;
             border-radius: 16px 16px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
         }
+        .ai-chat-close { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+        .ai-chat-messages { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 1rem; }
+        .ai-message { display: flex; gap: 0.5rem; align-items: flex-start; }
+        .ai-message.user { flex-direction: row-reverse; }
+        .ai-message-bubble { max-width: 70%; padding: 0.8rem; border-radius: 12px; background: #f0f0f0; }
+        .ai-message.user .ai-message-bubble { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .ai-chat-input-container { padding: 1rem; border-top: 1px solid #eee; display: flex; gap: 0.5rem; }
+        .ai-chat-input { flex: 1; padding: 0.8rem; border: 1px solid #ddd; border-radius: 20px; font-size: 0.9rem; }
+        .ai-chat-send { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 0.8rem 1.2rem; border-radius: 20px; cursor: pointer; font-weight: 600; }
 
-        .ai-chat-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .ai-chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .ai-message {
-            display: flex;
-            gap: 0.5rem;
-            align-items: flex-start;
-        }
-
-        .ai-message.user {
-            flex-direction: row-reverse;
-        }
-
-        .ai-message-bubble {
-            max-width: 70%;
-            padding: 0.8rem;
-            border-radius: 12px;
-            background: #f0f0f0;
-        }
-
-        .ai-message.user .ai-message-bubble {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-
-        .ai-chat-input-container {
-            padding: 1rem;
-            border-top: 1px solid #eee;
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .ai-chat-input {
-            flex: 1;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            font-size: 0.9rem;
-        }
-
-        .ai-chat-send {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.2rem;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        /* MOBILE RESPONSIVE */
         @media (max-width: 768px) {
-            .nav-container {
-                padding: 1rem;
-            }
-
-            .logo {
-                font-size: 1.5rem;
-            }
-
+            .nav-container { padding: 1rem; }
+            .logo { font-size: 1.5rem; }
             .nav-menu {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: white;
-                flex-direction: column;
-                padding: 1rem;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                gap: 0;
+                display: none; position: absolute; top: 100%; left: 0; right: 0;
+                background: white; flex-direction: column;
+                padding: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); gap: 0;
             }
-
-            .nav-menu.active {
-                display: flex;
-            }
-
-            .nav-link {
-                padding: 1rem;
-                width: 100%;
-                text-align: center;
-                border-bottom: 1px solid #eee;
-            }
-
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .auth-buttons {
-                flex-direction: column;
-                gap: 0.5rem;
-                width: 100%;
-            }
-
-            .btn-login, .btn-signup {
-                width: 100%;
-            }
-
-            .banner-slider {
-                padding: 0 1rem;
-                margin: 1rem auto;
-            }
-
-            .banner-slide img {
-                height: 200px;
-            }
-
-            .section {
-                padding: 0 1rem;
-                margin: 2rem auto;
-            }
-
-            .section-title {
-                font-size: 1.3rem;
-            }
-
-            .brands-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .category-item {
-                min-width: 100px;
-            }
-
-            .category-icon {
-                font-size: 2rem;
-            }
-
-            .footer {
-                padding: 2rem 1rem;
-            }
-
-            .footer-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .ai-chat-window {
-                width: calc(100% - 40px);
-                height: 70vh;
-                bottom: 80px;
-                right: 20px;
-                left: 20px;
-            }
-
-            .ai-chat-button {
-                width: 50px;
-                height: 50px;
-                font-size: 1.5rem;
-            }
+            .nav-menu.active { display: flex; }
+            .nav-link { padding: 1rem; width: 100%; text-align: center; border-bottom: 1px solid #eee; }
+            .mobile-menu-btn { display: block; }
+            .auth-buttons { flex-direction: column; gap: 0.5rem; width: 100%; }
+            .btn-login, .btn-signup { width: 100%; }
+            .banner-slider { padding: 0 1rem; margin: 1rem auto; }
+            .banner-slide img { height: 200px; }
+            .section { padding: 0 1rem; margin: 2rem auto; }
+            .section-title { font-size: 1.3rem; }
+            .brands-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .category-item { min-width: 100px; }
+            .category-icon { font-size: 2rem; }
+            .footer { padding: 2rem 1rem; }
+            .footer-content { grid-template-columns: 1fr; text-align: center; }
+            .ai-chat-window { width: calc(100% - 40px); height: 70vh; bottom: 80px; right: 20px; left: 20px; }
+            .ai-chat-button { width: 50px; height: 50px; font-size: 1.5rem; }
         }
-
         @media (max-width: 480px) {
-            .logo {
-                font-size: 1.3rem;
-            }
-
-            .brand-card {
-                padding: 1rem;
-            }
-
-            .cashback-highlight {
-                font-size: 1.2rem;
-            }
-
-            .modal-content {
-                padding: 1.5rem;
-            }
+            .logo { font-size: 1.3rem; }
+            .brand-card { padding: 1rem; }
+            .cashback-highlight { font-size: 1.2rem; }
+            .modal-content { padding: 1.5rem; }
         }
     </style>
 </head>
@@ -625,21 +252,32 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        // Initialize Supabase - WILL USE YOUR CONFIG.JS FILE
-        // Include your config.js file before this script
+        // FIX 2: Properly initialize Supabase client using the loaded config
+        // Use supabase.createClient (from CDN) not the conflicting variable in old config.js
         const { createClient } = supabase;
-        
-        // This will be replaced by your actual config.js
+
         let supabaseClient;
-        if (typeof SUPABASE_CONFIG !== 'undefined') {
+        let isSupabaseConfigured = false;
+
+        if (typeof SUPABASE_CONFIG !== 'undefined' &&
+            SUPABASE_CONFIG.url !== 'YOUR_SUPABASE_URL' &&
+            SUPABASE_CONFIG.anonKey !== 'YOUR_SUPABASE_ANON_KEY') {
             supabaseClient = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+            isSupabaseConfigured = true;
         } else {
-            // Fallback - user needs to create config.js
-            console.warn('Please create config.js with your Supabase credentials');
-            supabaseClient = createClient('YOUR_URL', 'YOUR_KEY');
+            console.warn('Supabase not configured. Running in demo mode. Edit config.js with real credentials.');
         }
 
-        // Sample data
+        // FIX 3: Demo store data so page shows content even without a database
+        const DEMO_STORES = [
+            { id: 1, name: 'Amazon', logo_url: 'https://logo.clearbit.com/amazon.co.uk', offer_text: 'Free delivery on Prime orders', cashback_rate: 5, sale_badge: '5% Back', affiliate_url: '#', website: 'https://amazon.co.uk' },
+            { id: 2, name: 'ASOS', logo_url: 'https://logo.clearbit.com/asos.com', offer_text: 'Free delivery & returns', cashback_rate: 7, sale_badge: '7% Back', affiliate_url: '#', website: 'https://asos.com' },
+            { id: 3, name: 'eBay', logo_url: 'https://logo.clearbit.com/ebay.co.uk', offer_text: 'Millions of items', cashback_rate: 3, sale_badge: '3% Back', affiliate_url: '#', website: 'https://ebay.co.uk' },
+            { id: 4, name: 'Booking.com', logo_url: 'https://logo.clearbit.com/booking.com', offer_text: 'Best price guarantee', cashback_rate: 4, sale_badge: '4% Back', affiliate_url: '#', website: 'https://booking.com' },
+            { id: 5, name: 'Nike', logo_url: 'https://logo.clearbit.com/nike.com', offer_text: 'Free delivery on orders over £50', cashback_rate: 6, sale_badge: '6% Back', affiliate_url: '#', website: 'https://nike.com' },
+            { id: 6, name: 'Currys', logo_url: 'https://logo.clearbit.com/currys.co.uk', offer_text: 'Price match guaranteed', cashback_rate: 4, sale_badge: '4% Back', affiliate_url: '#', website: 'https://currys.co.uk' },
+        ];
+
         const categories = [
             { id: 1, name: 'Fashion', icon: '👗' },
             { id: 2, name: 'Electronics', icon: '💻' },
@@ -654,76 +292,84 @@
         // =====================================================
         function App() {
             const [user, setUser] = React.useState(null);
-            const [stores, setStores] = React.useState([]);
+            const [stores, setStores] = React.useState(DEMO_STORES); // FIX: default to demo data
             const [showAuthModal, setShowAuthModal] = React.useState(false);
             const [authMode, setAuthMode] = React.useState('login');
             const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
             const [aiChatOpen, setAiChatOpen] = React.useState(false);
             const [chatMessages, setChatMessages] = React.useState([
-                { role: 'assistant', content: 'Hi! I\'m your DealCash AI assistant. How can I help you find the best cashback deals today?' }
+                { role: 'assistant', content: "Hi! I'm your DealCash AI assistant. How can I help you find the best cashback deals today?" }
             ]);
             const [chatInput, setChatInput] = React.useState('');
 
             React.useEffect(() => {
-                checkUser();
-                loadStores();
+                if (isSupabaseConfigured) {
+                    checkUser();
+                    loadStores();
+                }
             }, []);
 
             async function checkUser() {
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                if (user) {
-                    const { data } = await supabaseClient
-                        .from('users')
-                        .select('*')
-                        .eq('id', user.id)
-                        .single();
-                    setUser(data);
-                }
+                try {
+                    const { data: { user } } = await supabaseClient.auth.getUser();
+                    if (user) {
+                        const { data } = await supabaseClient
+                            .from('users')
+                            .select('*')
+                            .eq('id', user.id)
+                            .single();
+                        setUser(data);
+                    }
+                } catch (e) { console.error('checkUser error:', e); }
             }
 
             async function loadStores() {
-                const { data } = await supabaseClient
-                    .from('stores')
-                    .select('*')
-                    .eq('status', 'active')
-                    .order('featured', { ascending: false })
-                    .limit(12);
-                
-                if (data) setStores(data);
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('stores')
+                        .select('*')
+                        .eq('status', 'active')
+                        .order('featured', { ascending: false })
+                        .limit(12);
+                    
+                    if (data && data.length > 0) setStores(data);
+                    // If no data returned, keeps demo stores
+                } catch (e) { console.error('loadStores error:', e); }
             }
 
             async function handleShopNow(store) {
-                if (!user) {
+                if (!user && isSupabaseConfigured) {
                     setAuthMode('signup');
                     setShowAuthModal(true);
                     return;
                 }
 
-                // Track click
-                await supabaseClient.from('clicks').insert({
-                    user_id: user.id,
-                    store_id: store.id,
-                    affiliate_url: store.affiliate_url
-                });
+                if (isSupabaseConfigured && user) {
+                    try {
+                        await supabaseClient.from('clicks').insert({
+                            user_id: user.id,
+                            store_id: store.id,
+                            affiliate_url: store.affiliate_url
+                        });
+                    } catch (e) { console.error('click tracking error:', e); }
+                }
 
-                // Redirect
-                window.open(store.affiliate_url || store.website, '_blank');
+                const url = store.affiliate_url && store.affiliate_url !== '#'
+                    ? store.affiliate_url
+                    : store.website;
+                if (url && url !== '#') window.open(url, '_blank');
             }
 
             function handleLogout() {
-                supabaseClient.auth.signOut();
+                if (supabaseClient) supabaseClient.auth.signOut();
                 setUser(null);
             }
 
-            // AI Chat Functions
             async function sendAIMessage() {
                 if (!chatInput.trim()) return;
-
                 const userMessage = { role: 'user', content: chatInput };
                 setChatMessages(prev => [...prev, userMessage]);
                 setChatInput('');
-
-                // Simulate AI response (Replace with actual API call)
                 setTimeout(() => {
                     const response = getAIResponse(chatInput);
                     setChatMessages(prev => [...prev, { role: 'assistant', content: response }]);
@@ -732,28 +378,17 @@
 
             function getAIResponse(input) {
                 const lower = input.toLowerCase();
-                
-                if (lower.includes('how') && lower.includes('work')) {
-                    return 'DealCash is simple! 1) Sign up for free 2) Click "Shop Now" on any store 3) Shop normally 4) Get cashback in 2-7 days! Would you like me to recommend some stores?';
-                }
-                
-                if (lower.includes('store') || lower.includes('recommend')) {
-                    return 'Great! Here are our top cashback stores: Amazon (5%), ASOS (8%), eBay (3%). What are you shopping for today?';
-                }
-                
-                if (lower.includes('payment') || lower.includes('withdraw')) {
-                    return 'You can withdraw your cashback once you reach £50. We support bank transfer and PayPal. Would you like to know more about our payment process?';
-                }
-                
-                if (lower.includes('fashion') || lower.includes('clothes')) {
-                    return 'For fashion, check out ASOS (8% cashback), Zara (6%), and H&M (5%). Click any store card to start earning!';
-                }
-                
-                if (lower.includes('tech') || lower.includes('electronic')) {
-                    return 'For electronics, try Amazon (5%), Currys (4%), or Apple Store (2%). All verified and tracked automatically!';
-                }
-                
-                return 'I can help you find the best cashback deals! Try asking me about specific stores, categories, or how our cashback system works. What would you like to know?';
+                if (lower.includes('how') && lower.includes('work'))
+                    return 'DealCash is simple! 1) Sign up free 2) Click "Shop Now" on any store 3) Shop normally 4) Earn cashback in 2–7 days!';
+                if (lower.includes('store') || lower.includes('recommend'))
+                    return 'Top cashback stores: Amazon (5%), ASOS (7%), Nike (6%). What are you shopping for?';
+                if (lower.includes('payment') || lower.includes('withdraw'))
+                    return 'Withdraw once you reach £50 via bank transfer or PayPal. Usually processed within 5 working days.';
+                if (lower.includes('fashion') || lower.includes('clothes'))
+                    return 'For fashion, check out ASOS (7% cashback) and Nike (6%). Click Shop Now to start earning!';
+                if (lower.includes('tech') || lower.includes('electronic'))
+                    return 'For electronics, try Amazon (5%) or Currys (4%). All tracked automatically!';
+                return "I can help you find the best cashback deals! Ask me about specific stores, categories, or how cashback works.";
             }
 
             return (
@@ -761,19 +396,10 @@
                     {/* Header */}
                     <header className="header">
                         <div className="nav-container">
-                            <div className="logo" onClick={() => window.location.href = 'index.html'}>
-                                DealCash
-                            </div>
+                            <div className="logo" onClick={() => window.location.href = 'index.html'}>DealCash</div>
 
-                            <button 
-                                className="mobile-menu-btn"
-                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            >
-                                <div className="hamburger">
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
-                                </div>
+                            <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                                <div className="hamburger"><span></span><span></span><span></span></div>
                             </button>
 
                             <nav className={`nav-menu ${mobileMenuOpen ? 'active' : ''}`}>
@@ -781,43 +407,29 @@
                                 <a href="stores.html" className="nav-link">Stores</a>
                                 <a href="how-it-works.html" className="nav-link">How It Works</a>
                                 {user && <a href="dashboard.html" className="nav-link">Dashboard</a>}
-                                
+
                                 {user ? (
                                     <div className="auth-buttons">
-                                        <div className="user-balance">
-                                            £{user.balance?.toFixed(2) || '0.00'}
-                                        </div>
-                                        <button className="btn-login" onClick={handleLogout}>
-                                            Logout
-                                        </button>
+                                        <div className="user-balance">£{user.balance?.toFixed(2) || '0.00'}</div>
+                                        <button className="btn-login" onClick={handleLogout}>Logout</button>
                                     </div>
                                 ) : (
                                     <div className="auth-buttons">
-                                        <button 
-                                            className="btn-login"
-                                            onClick={() => {
-                                                setAuthMode('login');
-                                                setShowAuthModal(true);
-                                                setMobileMenuOpen(false);
-                                            }}
-                                        >
-                                            Login
-                                        </button>
-                                        <button 
-                                            className="btn-signup"
-                                            onClick={() => {
-                                                setAuthMode('signup');
-                                                setShowAuthModal(true);
-                                                setMobileMenuOpen(false);
-                                            }}
-                                        >
-                                            Sign Up
-                                        </button>
+                                        <button className="btn-login" onClick={() => { setAuthMode('login'); setShowAuthModal(true); setMobileMenuOpen(false); }}>Login</button>
+                                        <button className="btn-signup" onClick={() => { setAuthMode('signup'); setShowAuthModal(true); setMobileMenuOpen(false); }}>Sign Up</button>
                                     </div>
                                 )}
                             </nav>
                         </div>
                     </header>
+
+                    {/* Setup notice when not configured */}
+                    {!isSupabaseConfigured && (
+                        <div className="setup-notice">
+                            <h3>⚙️ Setup Required — Showing Demo Data</h3>
+                            <p>Edit <code>config.js</code> and replace <code>YOUR_SUPABASE_URL</code> and <code>YOUR_SUPABASE_ANON_KEY</code> with your real Supabase credentials to enable login, live stores, and cashback tracking. See README.md for full instructions.</p>
+                        </div>
+                    )}
 
                     {/* Banner */}
                     <div className="banner-slider">
@@ -845,23 +457,21 @@
                         <div className="brands-grid">
                             {stores.map(store => (
                                 <div key={store.id} className="brand-card">
-                                    {store.sale_badge && (
-                                        <div className="sale-badge">{store.sale_badge}</div>
-                                    )}
+                                    {store.sale_badge && <div className="sale-badge">{store.sale_badge}</div>}
                                     <div className="brand-header">
-                                        <img src={store.logo_url} alt={store.name} className="brand-logo" />
+                                        <img
+                                            src={store.logo_url}
+                                            alt={store.name}
+                                            className="brand-logo"
+                                            onError={(e) => { e.target.src = 'https://via.placeholder.com/60x60?text=' + store.name[0]; }}
+                                        />
                                         <div>
                                             <div className="brand-name">{store.name}</div>
                                             <div className="brand-offer">{store.offer_text}</div>
                                         </div>
                                     </div>
-                                    <div className="cashback-highlight">
-                                        {store.cashback_rate}% Cashback
-                                    </div>
-                                    <button 
-                                        className="shop-now-btn"
-                                        onClick={() => handleShopNow(store)}
-                                    >
+                                    <div className="cashback-highlight">{store.cashback_rate}% Cashback</div>
+                                    <button className="shop-now-btn" onClick={() => handleShopNow(store)}>
                                         Shop Now & Earn
                                     </button>
                                 </div>
@@ -869,37 +479,25 @@
                         </div>
                     </div>
 
-                    {/* AI Chat Button */}
-                    <button 
-                        className="ai-chat-button"
-                        onClick={() => setAiChatOpen(!aiChatOpen)}
-                        title="AI Assistant"
-                    >
-                        🤖
-                    </button>
-
-                    {/* AI Chat Window */}
+                    {/* AI Chat */}
+                    <button className="ai-chat-button" onClick={() => setAiChatOpen(!aiChatOpen)} title="AI Assistant">🤖</button>
                     <div className={`ai-chat-window ${aiChatOpen ? 'active' : ''}`}>
                         <div className="ai-chat-header">
                             <div>
                                 <strong>AI Assistant</strong>
                                 <div style={{ fontSize: '0.8rem', opacity: 0.9 }}>Always here to help!</div>
                             </div>
-                            <button className="ai-chat-close" onClick={() => setAiChatOpen(false)}>
-                                ✕
-                            </button>
+                            <button className="ai-chat-close" onClick={() => setAiChatOpen(false)}>✕</button>
                         </div>
                         <div className="ai-chat-messages">
                             {chatMessages.map((msg, idx) => (
                                 <div key={idx} className={`ai-message ${msg.role}`}>
-                                    <div className="ai-message-bubble">
-                                        {msg.content}
-                                    </div>
+                                    <div className="ai-message-bubble">{msg.content}</div>
                                 </div>
                             ))}
                         </div>
                         <div className="ai-chat-input-container">
-                            <input 
+                            <input
                                 type="text"
                                 className="ai-chat-input"
                                 placeholder="Ask me anything..."
@@ -907,21 +505,16 @@
                                 onChange={(e) => setChatInput(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && sendAIMessage()}
                             />
-                            <button className="ai-chat-send" onClick={sendAIMessage}>
-                                Send
-                            </button>
+                            <button className="ai-chat-send" onClick={sendAIMessage}>Send</button>
                         </div>
                     </div>
 
                     {/* Auth Modal */}
-                    <AuthModal 
+                    <AuthModal
                         show={showAuthModal}
                         mode={authMode}
                         onClose={() => setShowAuthModal(false)}
-                        onSuccess={() => {
-                            setShowAuthModal(false);
-                            checkUser();
-                        }}
+                        onSuccess={() => { setShowAuthModal(false); checkUser(); }}
                     />
 
                     {/* Footer */}
@@ -943,9 +536,7 @@
                                 <a href="privacy.html">Privacy Policy</a>
                             </div>
                         </div>
-                        <div className="footer-bottom">
-                            © 2026 DealCash. All Rights Reserved.
-                        </div>
+                        <div className="footer-bottom">© 2026 DealCash. All Rights Reserved.</div>
                     </footer>
                 </>
             );
@@ -964,22 +555,21 @@
 
             async function handleSubmit(e) {
                 e.preventDefault();
-                setError('');
-                setSuccess('');
-                setLoading(true);
+                setError(''); setSuccess(''); setLoading(true);
+
+                if (!isSupabaseConfigured) {
+                    setError('Database not configured yet. Please set up Supabase credentials in config.js first.');
+                    setLoading(false);
+                    return;
+                }
 
                 try {
                     if (mode === 'signup') {
                         const { data, error } = await supabaseClient.auth.signUp({
-                            email,
-                            password,
-                            options: {
-                                data: { full_name: fullName }
-                            }
+                            email, password,
+                            options: { data: { full_name: fullName } }
                         });
-
                         if (error) throw error;
-
                         if (data.user) {
                             await supabaseClient.from('users').insert({
                                 id: data.user.id,
@@ -987,17 +577,11 @@
                                 full_name: fullName
                             });
                         }
-
                         setSuccess('Account created! Please check your email to verify.');
                         setTimeout(() => onSuccess(), 2000);
                     } else {
-                        const { data, error } = await supabaseClient.auth.signInWithPassword({
-                            email,
-                            password
-                        });
-
+                        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                         if (error) throw error;
-
                         setSuccess('Login successful!');
                         setTimeout(() => onSuccess(), 1000);
                     }
@@ -1013,63 +597,32 @@
             return (
                 <div className="modal active" onClick={onClose}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <h2 className="modal-title">
-                            {mode === 'login' ? 'Login' : 'Sign Up'}
-                        </h2>
+                        <h2 className="modal-title">{mode === 'login' ? 'Login' : 'Sign Up'}</h2>
                         <form onSubmit={handleSubmit}>
                             {mode === 'signup' && (
                                 <div className="form-group">
                                     <label>Full Name</label>
-                                    <input
-                                        type="text"
-                                        value={fullName}
-                                        onChange={(e) => setFullName(e.target.value)}
-                                        required
-                                    />
+                                    <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
                                 </div>
                             )}
                             <div className="form-group">
                                 <label>Email</label>
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
+                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                             </div>
                             <div className="form-group">
                                 <label>Password</label>
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    minLength="6"
-                                />
+                                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength="6" />
                             </div>
                             {error && <div className="error">{error}</div>}
                             {success && <div className="success">{success}</div>}
-                            <button 
-                                type="submit" 
-                                className="btn-signup"
-                                disabled={loading}
-                                style={{ width: '100%', marginTop: '1rem' }}
-                            >
+                            <button type="submit" className="btn-signup" disabled={loading} style={{ width: '100%', marginTop: '1rem' }}>
                                 {loading ? 'Please wait...' : (mode === 'login' ? 'Login' : 'Sign Up')}
                             </button>
                         </form>
                         <p style={{ marginTop: '1rem', textAlign: 'center' }}>
                             {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
-                            <a 
-                                href="#" 
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setError('');
-                                    setSuccess('');
-                                    onClose();
-                                }}
-                                style={{ color: '#FF6B6B', fontWeight: '600' }}
-                            >
+                            <a href="#" onClick={(e) => { e.preventDefault(); setError(''); setSuccess(''); onClose(); }}
+                               style={{ color: '#FF6B6B', fontWeight: '600' }}>
                                 {mode === 'login' ? 'Sign Up' : 'Login'}
                             </a>
                         </p>
@@ -1080,8 +633,5 @@
 
         ReactDOM.render(<App />, document.getElementById('root'));
     </script>
-
-    <!-- Include your config.js file here -->
-    <script src="config.js"></script>
 </body>
 </html>
