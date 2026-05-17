@@ -1,8 +1,8 @@
 // SmartCash Configuration
 // Replace these with your actual Supabase credentials
 const SUPABASE_CONFIG = {
-    url: 'YOUR_SUPABASE_URL',        // e.g., https://xxxxx.supabase.co
-    anonKey: 'YOUR_SUPABASE_ANON_KEY' // Your public anon key
+    url: 'https://nnmkgtravghlowohlffw.supabase.co',        // e.g., https://xxxxx.supabase.co
+    anonKey: 'sb_publishable_RepdEqTk8_jPgsSYOhYcgQ_bfmwPUnD' // Your public anon key
 };
 
 // Claude AI (Anthropic) - for AI Shopping Assistant
@@ -14,6 +14,6 @@ const AI_CONFIG = {
 
 // Amazon Associates - for order sync
 const AMAZON_CONFIG = {
-    associateId: 'YOUR_AMAZON_ASSOCIATE_ID',  // e.g., yoursite-21
+    associateId: 'veeraseo-21',  // e.g., yoursite-21
     region: 'uk'
 };
