@@ -4,139 +4,89 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>All Stores — SmartCash</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
+<link rel="stylesheet" href="theme.css">
 <style>
-:root{--brand:#00C896;--brand-dark:#00A07A;--brand-glow:rgba(0,200,150,0.12);--dark:#080E1A;--surface:#111827;--surface2:#1A2332;--border:rgba(255,255,255,0.07);--text:#E8EDF5;--muted:#8892A4;--accent:#FF6B6B;--gold:#FFD700;}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;}
-a{text-decoration:none;color:inherit;}
-.hdr{position:sticky;top:0;z-index:200;background:rgba(8,14,26,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
-.nav{max-width:1400px;margin:0 auto;padding:0 2rem;height:68px;display:flex;align-items:center;justify-content:space-between;}
-.logo{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;cursor:pointer;}
-.logo .g{color:var(--brand);}
-.nav-links{display:flex;gap:2rem;}
-.nav-links a{color:var(--muted);font-weight:500;font-size:.9rem;transition:color .2s;}
-.nav-links a:hover,
-.nav-links a.active{color:var(--text);}
-.nav-r{display:flex;gap:.75rem;align-items:center;}
-.btn-p{background:var(--brand);color:var(--dark);border:none;padding:.45rem 1.3rem;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.9rem;transition:all .2s;}
-.btn-p:hover{background:var(--brand-dark);}
-
-/* PAGE HERO */
-.page-hero{padding:3rem 2rem 2rem;background:linear-gradient(135deg,rgba(0,200,150,0.05) 0%,transparent 60%);}
+.page-hero{background:linear-gradient(135deg,#f0fdf9,#ffffff);padding:2.5rem 2rem 2rem;border-bottom:1px solid var(--border);}
 .page-hero-inner{max-width:1400px;margin:0 auto;}
-.page-hero h1{font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;margin-bottom:.5rem;}
-.page-hero p{color:var(--muted);font-size:1rem;}
+.page-hero h1{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--text);margin-bottom:.3rem;}
 .page-hero h1 span{color:var(--brand);}
-
-/* SEARCH & FILTERS */
-.filters-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:1.25rem 2rem;position:sticky;top:68px;z-index:100;}
+.page-hero p{color:var(--muted);font-size:.95rem;}
+.filters-bar{background:white;border-bottom:1px solid var(--border);padding:1rem 2rem;position:sticky;top:68px;z-index:100;box-shadow:var(--shadow-sm);}
 .filters-inner{max-width:1400px;margin:0 auto;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;}
-.search-box{flex:1;min-width:220px;position:relative;}
-.search-box input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.6rem 1rem .6rem 2.5rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;}
-.search-box input:focus{border-color:var(--brand);}
-.search-box input::placeholder{color:var(--muted);}
-.search-icon{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:1rem;}
-.sort-select{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.6rem 1rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;cursor:pointer;outline:none;}
-.cat-tabs{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:2px;flex:1;}
+.search-wrap{flex:0 0 260px;position:relative;}
+.search-wrap input{width:100%;padding:.6rem 1rem .6rem 2.4rem;border:1.5px solid var(--border);border-radius:10px;font-size:.88rem;font-family:inherit;outline:none;background:var(--surface2);color:var(--text);transition:border-color .2s;}
+.search-wrap input:focus{border-color:var(--brand);background:white;}
+.search-wrap input::placeholder{color:var(--muted-light);}
+.search-icon{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:var(--muted-light);font-size:.9rem;}
+.sort-sel{padding:.55rem .9rem;border:1.5px solid var(--border);border-radius:10px;font-size:.85rem;font-family:inherit;background:var(--surface2);color:var(--text);cursor:pointer;outline:none;}
+.cat-tabs{display:flex;gap:.5rem;overflow-x:auto;flex:1;}
 .cat-tabs::-webkit-scrollbar{display:none;}
-.cat-tab{flex-shrink:0;padding:.4rem .9rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;font-size:.8rem;font-weight:600;cursor:pointer;color:var(--muted);transition:all .2s;white-space:nowrap;}
+.cat-tab{flex-shrink:0;padding:.4rem .85rem;border-radius:50px;font-size:.8rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);color:var(--muted);background:white;transition:all .2s;white-space:nowrap;}
 .cat-tab:hover{border-color:var(--brand);color:var(--brand);}
-.cat-tab.active{background:var(--brand);border-color:var(--brand);color:var(--dark);}
-
-/* MAIN */
+.cat-tab.active{background:var(--brand);border-color:var(--brand);color:white;}
 .main{max-width:1400px;margin:0 auto;padding:2rem;}
-
-/* FEATURED BANNER */
 .featured-row{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:2.5rem;}
-.feat-card{position:relative;border-radius:16px;padding:1.75rem;overflow:hidden;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:transform .2s,border-color .2s;}
-.feat-card:hover{transform:translateY(-3px);border-color:rgba(0,200,150,.3);}
-.feat-card.amazon{background:linear-gradient(135deg,rgba(255,153,0,0.12),rgba(255,153,0,0.04));}
-.feat-card.asos{background:linear-gradient(135deg,rgba(102,126,234,0.12),rgba(102,126,234,0.04));}
-.feat-card::before{content:'FEATURED';position:absolute;top:1rem;right:1rem;font-size:.65rem;font-weight:700;letter-spacing:1px;padding:.2rem .6rem;border-radius:50px;}
-.feat-card.amazon::before{background:rgba(255,153,0,.15);color:#FF9900;}
-.feat-card.asos::before{background:rgba(102,126,234,.15);color:#667eea;}
-.feat-store-logo{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;}
-.feat-card.amazon .feat-store-logo{color:#FF9900;}
-.feat-card.asos .feat-store-logo{color:#667eea;}
-.feat-rate{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;color:var(--brand);line-height:1;}
-.feat-rate-lbl{font-size:.8rem;color:var(--muted);margin-top:.25rem;}
-.feat-details{font-size:.85rem;color:var(--muted);margin-top:.5rem;line-height:1.5;}
-.feat-btn{margin-top:1rem;display:inline-block;background:var(--brand);color:var(--dark);padding:.5rem 1.2rem;border-radius:8px;font-weight:700;font-size:.85rem;transition:background .2s;}
-.feat-btn:hover{background:var(--brand-dark);}
-
-/* SECTION HEADER */
-.section-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;}
-.section-hd h2{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;}
+.feat-card{border-radius:16px;padding:1.75rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:all .25s;border:1.5px solid transparent;box-shadow:var(--shadow-sm);position:relative;}
+.feat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+.feat-card.amazon{background:linear-gradient(135deg,#fff8f0,#fff3e0);border-color:rgba(255,153,0,.25);}
+.feat-card.asos{background:linear-gradient(135deg,#f0f4ff,#faf5ff);border-color:rgba(102,126,234,.25);}
+.feat-label{position:absolute;top:1rem;right:1rem;padding:.2rem .6rem;border-radius:50px;font-size:.68rem;font-weight:700;}
+.feat-card.amazon .feat-label{background:rgba(255,153,0,.15);color:#b45309;}
+.feat-card.asos .feat-label{background:rgba(102,126,234,.15);color:#5a67d8;}
+.feat-store{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:.4rem;}
+.feat-card.amazon .feat-store{color:#FF9900;}
+.feat-card.asos .feat-store{color:#667eea;}
+.feat-desc{font-size:.82rem;color:var(--muted);line-height:1.5;margin-bottom:1rem;}
+.feat-btn{display:inline-block;padding:.5rem 1.1rem;border-radius:8px;font-weight:700;font-size:.82rem;border:none;cursor:pointer;transition:all .2s;}
+.feat-card.amazon .feat-btn{background:#FF9900;color:white;}
+.feat-card.asos .feat-btn{background:#667eea;color:white;}
+.feat-rate-big{text-align:right;}
+.feat-rate-num{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;color:var(--brand);line-height:1;}
+.feat-rate-lbl{font-size:.78rem;color:var(--muted);}
+.sec-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;}
+.sec-hd h2{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:700;color:var(--text);}
 .count-badge{background:var(--surface2);border:1px solid var(--border);padding:.2rem .65rem;border-radius:50px;font-size:.8rem;color:var(--muted);}
-
-/* STORES GRID */
 .stores-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.25rem;}
-.store-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
-.store-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--brand),#667eea);opacity:0;transition:opacity .25s;}
-.store-card:hover{border-color:rgba(0,200,150,.25);transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.3);}
+.store-card{background:white;border:1.5px solid var(--border);border-radius:16px;padding:1.5rem;cursor:pointer;transition:all .25s;position:relative;box-shadow:var(--shadow-sm);}
+.store-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--brand);}
+.store-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--brand),#667eea);border-radius:16px 16px 0 0;opacity:0;transition:opacity .25s;}
 .store-card:hover::before{opacity:1;}
-.store-logo-box{width:56px;height:56px;background:var(--surface2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:1rem;border:1px solid var(--border);}
-.store-name{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.25rem;}
-.store-cat{font-size:.75rem;color:var(--muted);margin-bottom:1rem;}
-.store-rate{display:flex;align-items:baseline;gap:.3rem;}
-.store-rate .rate-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--brand);}
-.store-rate .rate-lbl{font-size:.75rem;color:var(--muted);}
-.store-badges{display:flex;gap:.4rem;margin-top:.9rem;flex-wrap:wrap;}
-.badge{padding:.2rem .55rem;border-radius:50px;font-size:.7rem;font-weight:600;}
-.badge-hot{background:rgba(255,107,107,.12);color:#FF6B6B;border:1px solid rgba(255,107,107,.2);}
-.badge-ai{background:rgba(102,126,234,.12);color:#667eea;border:1px solid rgba(102,126,234,.2);}
-.badge-new{background:rgba(0,200,150,.12);color:var(--brand);border:1px solid rgba(0,200,150,.2);}
-.badge-track{background:rgba(255,215,0,.1);color:var(--gold);border:1px solid rgba(255,215,0,.2);}
-.store-actions{display:flex;gap:.5rem;margin-top:1.1rem;}
-.btn-shop{flex:1;background:var(--brand);color:var(--dark);border:none;padding:.5rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;transition:all .2s;}
-.btn-shop:hover{background:var(--brand-dark);}
-.btn-alert{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:.5rem .75rem;border-radius:8px;cursor:pointer;font-size:.85rem;transition:all .2s;}
-.btn-alert:hover{border-color:var(--brand);color:var(--brand);}
-.boost-badge{position:absolute;top:.9rem;right:.9rem;background:linear-gradient(135deg,#FF6B6B,#ff8e53);color:white;padding:.2rem .55rem;border-radius:50px;font-size:.65rem;font-weight:700;}
-
-/* EMPTY STATE */
+.store-logo-box{width:52px;height:52px;background:var(--surface2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem;border:1px solid var(--border);}
+.store-name{font-weight:700;font-size:1rem;color:var(--text);margin-bottom:.2rem;}
+.store-cat{font-size:.75rem;color:var(--muted);margin-bottom:.85rem;}
+.rate-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--brand);}
+.rate-lbl{font-size:.75rem;color:var(--muted);}
+.store-badges{display:flex;gap:.4rem;margin-top:.85rem;flex-wrap:wrap;}
+.store-actions{display:flex;gap:.5rem;margin-top:1rem;}
+.btn-shop-sm{flex:1;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:white;border:none;padding:.55rem;border-radius:8px;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;}
+.btn-shop-sm:hover{transform:scale(1.02);}
+.btn-bell{background:var(--surface2);border:1.5px solid var(--border);color:var(--muted);padding:.5rem .7rem;border-radius:8px;cursor:pointer;transition:all .2s;font-size:.85rem;}
+.btn-bell:hover{border-color:var(--brand);color:var(--brand);}
+.boost-pill{position:absolute;top:.85rem;right:.85rem;background:linear-gradient(135deg,#FF6B6B,#FF8E53);color:white;padding:.15rem .5rem;border-radius:50px;font-size:.65rem;font-weight:700;}
 .empty{text-align:center;padding:4rem 2rem;color:var(--muted);}
 .empty-icon{font-size:3rem;margin-bottom:1rem;}
 .empty h3{font-family:'Syne',sans-serif;font-size:1.2rem;color:var(--text);margin-bottom:.5rem;}
 
-/* MODAL */
-.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
-.modal-ov.open{display:flex;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:90%;max-width:560px;max-height:85vh;overflow-y:auto;position:relative;}
-.modal-head{padding:1.75rem 1.75rem 0;display:flex;justify-content:space-between;align-items:center;}
-.modal-close{background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:background .2s;}
-.modal-close:hover{background:var(--surface2);}
-.modal-body{padding:1.75rem;}
-.modal-logo{width:72px;height:72px;border-radius:16px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;margin-bottom:1.25rem;border:1px solid var(--border);}
-.modal-store-name{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:.25rem;}
-.modal-cat{color:var(--muted);font-size:.9rem;margin-bottom:1.5rem;}
-.modal-rate-big{background:linear-gradient(135deg,rgba(0,200,150,.08),rgba(0,200,150,.04));border:1px solid rgba(0,200,150,.2);border-radius:14px;padding:1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.5rem;}
-.modal-rate-num{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;color:var(--brand);}
-.modal-rate-info p{color:var(--muted);font-size:.85rem;line-height:1.6;}
-.modal-details-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.5rem;}
-.detail-item{background:var(--surface2);border-radius:10px;padding:.9rem;border:1px solid var(--border);}
-.detail-label{font-size:.72rem;color:var(--muted);margin-bottom:.25rem;text-transform:uppercase;letter-spacing:.5px;}
-.detail-value{font-weight:700;font-size:.95rem;}
-.modal-terms{font-size:.8rem;color:var(--muted);line-height:1.6;background:var(--surface2);border-radius:10px;padding:1rem;margin-bottom:1.5rem;}
-.modal-btn-main{width:100%;background:var(--brand);color:var(--dark);border:none;padding:.9rem;border-radius:12px;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:all .2s;margin-bottom:.75rem;}
-.modal-btn-main:hover{background:var(--brand-dark);transform:translateY(-2px);}
-.modal-btn-sec{width:100%;background:none;border:1px solid var(--border);color:var(--muted);padding:.75rem;border-radius:12px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
-.modal-btn-sec:hover{border-color:var(--brand);color:var(--brand);}
+/* Store modal */
+.modal-logo-box{width:68px;height:68px;border-radius:16px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:1.25rem;border:1px solid var(--border);}
+.modal-store-name{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--text);margin-bottom:.2rem;}
+.modal-cat{font-size:.88rem;color:var(--muted);margin-bottom:1.25rem;}
+.modal-rate-box{background:var(--brand-light);border:1px solid rgba(0,200,150,.2);border-radius:14px;padding:1.25rem;display:flex;align-items:center;gap:1.5rem;margin-bottom:1.25rem;}
+.modal-rate-big{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;color:var(--brand);}
+.modal-details{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.25rem;}
+.detail-box{background:var(--surface2);border-radius:10px;padding:.85rem;border:1px solid var(--border);}
+.detail-lbl{font-size:.7rem;color:var(--muted);margin-bottom:.2rem;text-transform:uppercase;letter-spacing:.5px;}
+.detail-val{font-weight:700;font-size:.92rem;color:var(--text);}
+.modal-terms{font-size:.8rem;color:var(--muted);line-height:1.6;background:var(--surface2);border-radius:10px;padding:.9rem;margin-bottom:1.25rem;}
+.btn-modal-main{width:100%;background:var(--brand);color:white;border:none;padding:.85rem;border-radius:12px;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .2s;margin-bottom:.6rem;}
+.btn-modal-main:hover{background:var(--brand-dark);transform:translateY(-1px);}
+.btn-modal-sec{width:100%;background:white;border:1.5px solid var(--border);color:var(--muted);padding:.7rem;border-radius:12px;cursor:pointer;transition:all .2s;font-size:.88rem;}
+.btn-modal-sec:hover{border-color:var(--brand);color:var(--brand);}
 
-/* TOAST */
-.toast{position:fixed;bottom:2rem;right:2rem;background:var(--surface);border:1px solid var(--brand);border-radius:12px;padding:1rem 1.5rem;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;font-size:.9rem;}
-.toast.show{transform:translateY(0);opacity:1;}
-.toast .t-tick{color:var(--brand);font-weight:700;margin-right:.5rem;}
-
-@media(max-width:768px){
-  .featured-row{grid-template-columns:1fr;}
-  .nav-links{display:none;}
-  .filters-inner{flex-direction:column;align-items:stretch;}
-  .main{padding:1.25rem;}
-}
+@media(max-width:768px){.featured-row{grid-template-columns:1fr;}.main{padding:1.25rem;}.filters-inner{flex-direction:column;align-items:stretch;}.search-wrap{flex:none;width:100%;}}
 </style>
 </head>
 <body>
@@ -148,288 +98,165 @@ a{text-decoration:none;color:inherit;}
       <a href="app.html">Home</a>
       <a href="stores.html" class="active">Stores</a>
       <a href="how-it-works.html">How It Works</a>
+      <a href="price-tracker.html">Price Tracker</a>
       <a href="dashboard.html">Dashboard</a>
     </div>
-    <div class="nav-r">
-      <button class="btn-p" onclick="window.location.href='dashboard.html'">My Account</button>
-    </div>
+    <div class="nav-r"><button class="btn-p" onclick="window.location.href='dashboard.html'">My Account</button></div>
   </nav>
 </header>
 
 <div class="page-hero">
   <div class="page-hero-inner">
     <h1>All <span>Cashback</span> Stores</h1>
-    <p>Shop at 500+ top UK retailers and earn cashback on every purchase</p>
+    <p>Shop at 500+ top UK retailers and earn cashback on every purchase — automatically.</p>
   </div>
 </div>
 
 <div class="filters-bar">
   <div class="filters-inner">
-    <div class="search-box">
+    <div class="search-wrap">
       <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="Search stores..." oninput="filterStores()">
+      <input type="text" id="searchInput" placeholder="Search stores…" oninput="filterStores()">
     </div>
-    <select class="sort-select" id="sortSelect" onchange="filterStores()">
+    <select class="sort-sel" id="sortSel" onchange="filterStores()">
       <option value="cashback">Highest Cashback</option>
-      <option value="popular">Most Popular</option>
-      <option value="new">Newly Added</option>
       <option value="az">A → Z</option>
+      <option value="new">Newly Added</option>
     </select>
     <div class="cat-tabs" id="catTabs">
-      <button class="cat-tab active" data-cat="all" onclick="setCategory(this,'all')">All Stores</button>
-      <button class="cat-tab" data-cat="fashion" onclick="setCategory(this,'fashion')">👗 Fashion</button>
-      <button class="cat-tab" data-cat="electronics" onclick="setCategory(this,'electronics')">💻 Electronics</button>
-      <button class="cat-tab" data-cat="travel" onclick="setCategory(this,'travel')">✈️ Travel</button>
-      <button class="cat-tab" data-cat="beauty" onclick="setCategory(this,'beauty')">💄 Beauty</button>
-      <button class="cat-tab" data-cat="home" onclick="setCategory(this,'home')">🏡 Home</button>
-      <button class="cat-tab" data-cat="food" onclick="setCategory(this,'food')">🍔 Food</button>
-      <button class="cat-tab" data-cat="sports" onclick="setCategory(this,'sports')">⚽ Sports</button>
+      <button class="cat-tab active" onclick="setCat(this,'all')">All Stores</button>
+      <button class="cat-tab" onclick="setCat(this,'fashion')">👗 Fashion</button>
+      <button class="cat-tab" onclick="setCat(this,'electronics')">💻 Electronics</button>
+      <button class="cat-tab" onclick="setCat(this,'travel')">✈️ Travel</button>
+      <button class="cat-tab" onclick="setCat(this,'beauty')">💄 Beauty</button>
+      <button class="cat-tab" onclick="setCat(this,'home')">🏡 Home</button>
+      <button class="cat-tab" onclick="setCat(this,'sports')">⚽ Sports</button>
     </div>
   </div>
 </div>
 
 <main class="main">
-  <!-- Featured stores -->
-  <div class="featured-row" id="featuredRow">
+  <div class="featured-row">
     <div class="feat-card amazon" onclick="openModal('amazon')">
-      <div>
-        <div class="feat-store-logo">amazon</div>
-        <div class="feat-details">Earn on millions of products<br>Orders sync to your dashboard automatically</div>
-        <a class="feat-btn" onclick="event.stopPropagation();trackClick('amazon')">Shop & Earn →</a>
-      </div>
-      <div style="text-align:right">
-        <div class="feat-rate">4.5%</div>
-        <div class="feat-rate-lbl">cashback</div>
-      </div>
+      <div><div class="feat-store">amazon</div><div class="feat-desc">Earn on millions of products<br>Orders sync to your dashboard</div><button class="feat-btn" onclick="event.stopPropagation();shopNow('amazon')">Shop & Earn →</button></div>
+      <div class="feat-rate-big"><div class="feat-rate-num">4.5%</div><div class="feat-rate-lbl">cashback</div></div>
+      <span class="feat-label">⭐ Featured</span>
     </div>
     <div class="feat-card asos" onclick="openModal('asos')">
-      <div>
-        <div class="feat-store-logo" style="font-size:2rem">ASOS</div>
-        <div class="feat-details">6% cashback on all clothing<br>AI style recommendations included</div>
-        <a class="feat-btn" onclick="event.stopPropagation();trackClick('asos')">Shop & Earn →</a>
-      </div>
-      <div style="text-align:right">
-        <div class="feat-rate">6%</div>
-        <div class="feat-rate-lbl">cashback</div>
-      </div>
+      <div><div class="feat-store">ASOS</div><div class="feat-desc">6% cashback on all fashion<br>AI style recommendations included</div><button class="feat-btn" onclick="event.stopPropagation();shopNow('asos')">Shop & Earn →</button></div>
+      <div class="feat-rate-big"><div class="feat-rate-num">6%</div><div class="feat-rate-lbl">cashback</div></div>
+      <span class="feat-label">🔥 Hot Deal</span>
     </div>
   </div>
 
-  <div class="section-hd">
+  <div class="sec-hd">
     <h2>All Stores</h2>
-    <span class="count-badge" id="storeCount">Loading…</span>
+    <span class="count-badge" id="storeCount">16 stores</span>
   </div>
-
-  <div class="stores-grid" id="storesGrid">
-    <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted);">Loading stores…</div>
-  </div>
+  <div class="stores-grid" id="storesGrid"></div>
 </main>
 
-<!-- Store Modal -->
+<!-- Store Detail Modal -->
 <div class="modal-ov" id="storeModal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
-    <div class="modal-head">
-      <span style="font-family:'Syne',sans-serif;font-weight:700">Store Details</span>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body" id="modalBody">
-      <!-- Filled dynamically -->
-    </div>
+    <div class="modal-head"><h3>Store Details</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="modal-body" id="modalBody"></div>
   </div>
 </div>
 
-<div class="toast" id="toast"><span class="t-tick">✓</span><span id="toastMsg">Done!</span></div>
+<div class="toast" id="toast"><span class="toast-tick">✓</span><span id="toastMsg">Done!</span></div>
 
 <script>
-// Demo store data
-const DEMO_STORES = [
-  {id:'amazon',name:'Amazon UK',category:'electronics',color:'#FF9900',emoji:'📦',cashback:4.5,tracking:'24h',cookie:'90 days',min_withdrawal:5,badges:['hot','track'],description:'World\'s largest marketplace. Earn cashback on millions of products across every category.',terms:'Excludes digital downloads, gift cards, and third-party sellers. Cashback calculated on product price excl. VAT.',new:false,boost:null},
-  {id:'asos',name:'ASOS',category:'fashion',color:'#667eea',emoji:'👗',cashback:6.0,tracking:'48h',cookie:'30 days',min_withdrawal:5,badges:['hot','ai'],description:'UK\'s #1 online fashion destination. Thousands of brands, fast delivery, free returns.',terms:'Valid on full-price items. Sale and outlet items may have reduced cashback.',new:false,boost:'6% ↑'},
-  {id:'booking',name:'Booking.com',category:'travel',color:'#003580',emoji:'🏨',cashback:5.0,tracking:'72h',cookie:'30 days',min_withdrawal:5,badges:['track'],description:'Book hotels, apartments, villas and more. Earn cashback on your next trip anywhere in the world.',terms:'Cashback applies on stays only. Not valid on flights or car hire.',new:false,boost:null},
-  {id:'nike',name:'Nike',category:'sports',color:'#111',emoji:'👟',cashback:3.5,tracking:'24h',cookie:'14 days',min_withdrawal:5,badges:['new'],description:'Premium sportswear, footwear and equipment from the world\'s leading athletic brand.',terms:'Not valid on Nike sale items or Jordan brand. Custom products excluded.',new:true,boost:null},
-  {id:'currys',name:'Currys',category:'electronics',color:'#e60000',emoji:'📺',cashback:2.5,tracking:'48h',cookie:'30 days',min_withdrawal:5,badges:['track'],description:'UK\'s leading electronics retailer. Laptops, TVs, appliances and more.',terms:'Excludes contract phones and Apple products.',new:false,boost:null},
-  {id:'johnlewis',name:'John Lewis',category:'home',color:'#2e7d32',emoji:'🏡',cashback:3.0,tracking:'72h',cookie:'30 days',min_withdrawal:5,badges:[],description:'Premium UK department store. Home, fashion, electricals and gifts.',terms:'Valid on John Lewis own brand and partner products. Clearance excluded.',new:false,boost:null},
-  {id:'boots',name:'Boots',category:'beauty',color:'#00396e',emoji:'💄',cashback:4.0,tracking:'24h',cookie:'30 days',min_withdrawal:5,badges:['hot'],description:'UK\'s leading pharmacy and beauty retailer. Skincare, makeup, fragrance and more.',terms:'Excludes prescription items, infant formula and tobacco.',new:false,boost:'4% ↑'},
-  {id:'expedia',name:'Expedia',category:'travel',color:'#fbcc33',emoji:'✈️',cashback:4.5,tracking:'72h',cookie:'45 days',min_withdrawal:5,badges:[],description:'Book flights, hotels and holiday packages all in one place.',terms:'Cashback on hotel bookings only. Flights and car hire excluded.',new:false,boost:null},
-  {id:'marksandspencer',name:'M&S',category:'fashion',color:'#2d0a31',emoji:'🛍️',cashback:3.5,tracking:'48h',cookie:'30 days',min_withdrawal:5,badges:['new'],description:'Classic British fashion, food and homeware from Marks & Spencer.',terms:'Excludes M&S Food, gift cards and sale items.',new:true,boost:null},
-  {id:'sephora',name:'Sephora',category:'beauty',color:'#000',emoji:'✨',cashback:5.0,tracking:'48h',cookie:'30 days',min_withdrawal:5,badges:['hot','new'],description:'Premium beauty and skincare brands. Hundreds of top names all in one place.',terms:'Excludes gift sets and bundles. Valid on standard delivery orders.',new:true,boost:'5% ↑'},
-  {id:'wayfair',name:'Wayfair',category:'home',color:'#7f187f',emoji:'🛋️',cashback:5.5,tracking:'72h',cookie:'30 days',min_withdrawal:5,badges:['hot'],description:'Millions of furniture, lighting, rugs, and home decor items delivered to your door.',terms:'Excludes flash sale and clearance items.',new:false,boost:null},
-  {id:'adidas',name:'Adidas',category:'sports',color:'#000',emoji:'🏃',cashback:4.0,tracking:'24h',cookie:'30 days',min_withdrawal:5,badges:[],description:'Official Adidas store. Football, running, training and casual wear.',terms:'Not valid on Yeezy or collaboration collections.',new:false,boost:null},
-  {id:'skyscanner',name:'Skyscanner',category:'travel',color:'#0770e3',emoji:'🌍',cashback:2.0,tracking:'72h',cookie:'30 days',min_withdrawal:5,badges:['ai'],description:'Compare millions of flights and find the cheapest deals instantly.',terms:'Cashback applies on flight bookings only.',new:false,boost:null},
-  {id:'lookfantastic',name:'Lookfantastic',category:'beauty',color:'#c8a96e',emoji:'💅',cashback:6.0,tracking:'48h',cookie:'30 days',min_withdrawal:5,badges:['hot','ai'],description:'Luxury beauty at discounted prices. 600+ top brands, expert advice.',terms:'Excludes gift subscriptions and beauty boxes.',new:false,boost:'6% ↑'},
-  {id:'argos',name:'Argos',category:'electronics',color:'#e60000',emoji:'🛒',cashback:2.0,tracking:'24h',cookie:'30 days',min_withdrawal:5,badges:[],description:'Your everyday retailer for electronics, toys, furniture and more.',terms:'Excludes clearance, gaming consoles and Apple products.',new:false,boost:null},
-  {id:'purenature',name:'Gymshark',category:'sports',color:'#00aeef',emoji:'💪',cashback:7.0,tracking:'24h',cookie:'14 days',min_withdrawal:5,badges:['hot','new'],description:'World-famous fitness apparel. Compression, training and lifestyle wear.',terms:'Excludes outlet section. Valid on full-price items only.',new:true,boost:'7% ↑'},
+const STORES=[
+  {id:'amazon',name:'Amazon UK',cat:'electronics',emoji:'📦',cashback:4.5,track:'24h',cookie:'90 days',badges:['hot','track'],desc:'World\'s largest marketplace. Earn cashback on millions of products across every category.',terms:'Excludes gift cards, digital downloads and third-party seller items.',boost:'🔥 Popular',isNew:false},
+  {id:'asos',name:'ASOS',cat:'fashion',emoji:'👗',cashback:6.0,track:'48h',cookie:'30 days',badges:['hot','ai'],desc:'UK\'s #1 online fashion destination. Thousands of brands, fast delivery, free returns.',terms:'Valid on full-price items only. Sale items may have reduced cashback.',boost:'6% ↑',isNew:false},
+  {id:'booking',name:'Booking.com',cat:'travel',emoji:'🏨',cashback:5.0,track:'72h',cookie:'30 days',badges:['track'],desc:'Book hotels, apartments and villas worldwide. Best price guarantee.',terms:'Hotel bookings only. Flights and car hire excluded.',boost:null,isNew:false},
+  {id:'nike',name:'Nike',cat:'sports',emoji:'👟',cashback:3.5,track:'24h',cookie:'14 days',badges:['new'],desc:'Premium sportswear, footwear and equipment from the world\'s leading athletic brand.',terms:'Not valid on Nike sale items or Jordan brand.',boost:null,isNew:true},
+  {id:'currys',name:'Currys',cat:'electronics',emoji:'📺',cashback:2.5,track:'48h',cookie:'30 days',badges:['track'],desc:'UK\'s leading electronics retailer. Laptops, TVs, appliances and more.',terms:'Excludes Apple products and contract phones.',boost:null,isNew:false},
+  {id:'johnlewis',name:'John Lewis',cat:'home',emoji:'🏡',cashback:3.0,track:'72h',cookie:'30 days',badges:[],desc:'Premium UK department store. Home, fashion, electricals and gifts.',terms:'Clearance items excluded.',boost:null,isNew:false},
+  {id:'boots',name:'Boots',cat:'beauty',emoji:'💄',cashback:4.0,track:'24h',cookie:'30 days',badges:['hot'],desc:'UK\'s leading pharmacy and beauty retailer. Skincare, makeup and fragrance.',terms:'Excludes prescription items and infant formula.',boost:'4% ↑',isNew:false},
+  {id:'expedia',name:'Expedia',cat:'travel',emoji:'✈️',cashback:4.5,track:'72h',cookie:'45 days',badges:[],desc:'Book flights, hotels and holiday packages all in one place.',terms:'Hotel bookings only. Flights excluded.',boost:null,isNew:false},
+  {id:'ms',name:'M&S',cat:'fashion',emoji:'🛍️',cashback:3.5,track:'48h',cookie:'30 days',badges:['new'],desc:'Classic British fashion, food and homeware from Marks & Spencer.',terms:'M&S Food, gift cards and sale items excluded.',boost:null,isNew:true},
+  {id:'sephora',name:'Sephora',cat:'beauty',emoji:'✨',cashback:5.0,track:'48h',cookie:'30 days',badges:['hot','new'],desc:'Premium beauty brands. Hundreds of top names from skincare to fragrance.',terms:'Gift sets and bundles excluded.',boost:'5% ↑',isNew:true},
+  {id:'wayfair',name:'Wayfair',cat:'home',emoji:'🛋️',cashback:5.5,track:'72h',cookie:'30 days',badges:['hot'],desc:'Millions of furniture, lighting, rugs and home decor items.',terms:'Flash sale and clearance items excluded.',boost:null,isNew:false},
+  {id:'adidas',name:'Adidas',cat:'sports',emoji:'🏃',cashback:4.0,track:'24h',cookie:'30 days',badges:[],desc:'Official Adidas store. Football, running, training and casual wear.',terms:'Yeezy and collaboration collections excluded.',boost:null,isNew:false},
+  {id:'skyscanner',name:'Skyscanner',cat:'travel',emoji:'🌍',cashback:2.0,track:'72h',cookie:'30 days',badges:['ai'],desc:'Compare millions of flights and find the cheapest deals instantly.',terms:'Flight bookings only.',boost:null,isNew:false},
+  {id:'lookfantastic',name:'Lookfantastic',cat:'beauty',emoji:'💅',cashback:6.0,track:'48h',cookie:'30 days',badges:['hot','ai'],desc:'Luxury beauty at discounted prices. 600+ top brands, expert advice.',terms:'Gift subscriptions and beauty boxes excluded.',boost:'6% ↑',isNew:false},
+  {id:'argos',name:'Argos',cat:'electronics',emoji:'🛒',cashback:2.0,track:'24h',cookie:'30 days',badges:[],desc:'Your everyday retailer for electronics, toys, furniture and more.',terms:'Gaming consoles and Apple products excluded.',boost:null,isNew:false},
+  {id:'gymshark',name:'Gymshark',cat:'sports',emoji:'💪',cashback:7.0,track:'24h',cookie:'14 days',badges:['hot','new'],desc:'World-famous fitness apparel. Compression, training and lifestyle wear.',terms:'Outlet section excluded. Full-price items only.',boost:'7% ↑',isNew:true},
 ];
 
-let currentCategory = 'all';
-let supabase = null;
-let allStores = [...DEMO_STORES];
-let filteredStores = [...DEMO_STORES];
+let currentCat='all';
+let filtered=[...STORES];
 
-// Init Supabase
-if(SUPABASE_CONFIG.url !== 'YOUR_SUPABASE_URL') {
-  supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
-  loadStoresFromDB();
-} else {
-  renderStores(filteredStores);
-}
-
-async function loadStoresFromDB() {
-  const {data} = await supabase.from('stores').select('*').eq('is_active',true).order('cashback_rate',{ascending:false});
-  if(data && data.length > 0) {
-    allStores = data.map(s=>({
-      id: s.id,
-      name: s.name,
-      category: s.category_id,
-      color: s.logo_color || '#00C896',
-      emoji: s.logo_emoji || '🏪',
-      cashback: parseFloat(s.cashback_rate),
-      tracking: s.tracking_window || '48h',
-      cookie: s.cookie_duration || '30 days',
-      min_withdrawal: 5,
-      badges: [],
-      description: s.description || '',
-      terms: s.terms || '',
-      new: false,
-      boost: null,
-    }));
-    filteredStores = [...allStores];
-  }
-  renderStores(filteredStores);
-}
-
-function setCategory(el, cat) {
-  document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  currentCategory = cat;
-  filterStores();
-}
-
-function filterStores() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  const sort = document.getElementById('sortSelect').value;
-
-  filteredStores = allStores.filter(s=>{
-    const matchCat = currentCategory==='all' || s.category===currentCategory;
-    const matchQ = !q || s.name.toLowerCase().includes(q) || s.category.toLowerCase().includes(q);
-    return matchCat && matchQ;
-  });
-
-  if(sort==='cashback') filteredStores.sort((a,b)=>b.cashback-a.cashback);
-  else if(sort==='az') filteredStores.sort((a,b)=>a.name.localeCompare(b.name));
-  else if(sort==='new') filteredStores.sort((a,b)=>(b.new?1:0)-(a.new?1:0));
-
-  renderStores(filteredStores);
-}
-
-function renderStores(stores) {
-  const grid = document.getElementById('storesGrid');
-  document.getElementById('storeCount').textContent = `${stores.length} stores`;
-
-  if(stores.length===0){
-    grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><h3>No stores found</h3><p>Try a different search or category</p></div>`;
-    return;
-  }
-
-  grid.innerHTML = stores.map(s=>`
+function renderStores(list){
+  const g=document.getElementById('storesGrid');
+  document.getElementById('storeCount').textContent=list.length+' stores';
+  if(!list.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><h3>No stores found</h3><p>Try a different search or category</p></div>';return;}
+  g.innerHTML=list.map(s=>`
     <div class="store-card" onclick="openModal('${s.id}')">
-      ${s.boost?`<div class="boost-badge">🔥 ${s.boost}</div>`:''}
-      <div class="store-logo-box" style="color:${s.color}">${s.emoji}</div>
+      ${s.boost?`<div class="boost-pill">${s.boost}</div>`:''}
+      <div class="store-logo-box">${s.emoji}</div>
       <div class="store-name">${s.name}</div>
-      <div class="store-cat">${capitalise(s.category)}</div>
-      <div class="store-rate">
-        <span class="rate-num">${s.cashback}%</span>
-        <span class="rate-lbl">cashback</span>
-      </div>
+      <div class="store-cat">${cap(s.cat)}</div>
+      <div><span class="rate-num">${s.cashback}%</span> <span class="rate-lbl">cashback</span></div>
       <div class="store-badges">
-        ${s.badges.includes('hot')?'<span class="badge badge-hot">🔥 Hot</span>':''}
-        ${s.badges.includes('ai')?'<span class="badge badge-ai">🤖 AI Deals</span>':''}
-        ${s.badges.includes('new')?'<span class="badge badge-new">✨ New</span>':''}
-        ${s.badges.includes('track')?'<span class="badge badge-track">📊 Price Track</span>':''}
+        ${s.badges.includes('hot')?'<span class="badge badge-red">🔥 Hot</span>':''}
+        ${s.badges.includes('ai')?'<span class="badge badge-purple">🤖 AI</span>':''}
+        ${s.badges.includes('new')?'<span class="badge badge-green">✨ New</span>':''}
+        ${s.badges.includes('track')?'<span class="badge badge-gold">📊 Price Track</span>':''}
       </div>
       <div class="store-actions">
-        <button class="btn-shop" onclick="event.stopPropagation();trackClick('${s.id}')">Shop Now</button>
-        <button class="btn-alert" title="Set alert" onclick="event.stopPropagation();setAlert('${s.id}')">🔔</button>
+        <button class="btn-shop-sm" onclick="event.stopPropagation();shopNow('${s.id}')">Shop Now</button>
+        <button class="btn-bell" onclick="event.stopPropagation();setAlert('${s.id}')" title="Set alert">🔔</button>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-function capitalise(str){ return str?str.charAt(0).toUpperCase()+str.slice(1):str; }
+function cap(s){return s?s[0].toUpperCase()+s.slice(1):s;}
+function setCat(el,cat){document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');currentCat=cat;filterStores();}
+function filterStores(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const sort=document.getElementById('sortSel').value;
+  filtered=STORES.filter(s=>{
+    const mc=currentCat==='all'||s.cat===currentCat;
+    const mq=!q||s.name.toLowerCase().includes(q)||s.cat.includes(q);
+    return mc&&mq;
+  });
+  if(sort==='cashback')filtered.sort((a,b)=>b.cashback-a.cashback);
+  else if(sort==='az')filtered.sort((a,b)=>a.name.localeCompare(b.name));
+  else if(sort==='new')filtered.sort((a,b)=>(b.isNew?1:0)-(a.isNew?1:0));
+  renderStores(filtered);
+}
 
 function openModal(id){
-  const s = allStores.find(x=>x.id===id);
-  if(!s) return;
-  const mb = document.getElementById('modalBody');
-  mb.innerHTML=`
-    <div class="modal-logo" style="color:${s.color};font-size:2rem">${s.emoji}</div>
+  const s=STORES.find(x=>x.id===id);if(!s)return;
+  document.getElementById('modalBody').innerHTML=`
+    <div class="modal-logo-box">${s.emoji}</div>
     <div class="modal-store-name">${s.name}</div>
-    <div class="modal-cat">${capitalise(s.category)}</div>
-    <div class="modal-rate-big">
-      <div class="modal-rate-num">${s.cashback}%</div>
-      <div class="modal-rate-info">
-        <strong>Cashback Rate</strong>
-        <p>Earn ${s.cashback}% back on qualifying purchases.<br>Credited within ${s.tracking} of purchase confirmation.</p>
-      </div>
+    <div class="modal-cat">${cap(s.cat)}</div>
+    <div class="modal-rate-box">
+      <div class="modal-rate-big">${s.cashback}%</div>
+      <div><strong>Cashback Rate</strong><p style="font-size:.82rem;color:var(--muted);margin-top:.25rem">Earn ${s.cashback}% on qualifying purchases.<br>Tracked within ${s.track} of confirmation.</p></div>
     </div>
-    <div class="modal-details-grid">
-      <div class="detail-item"><div class="detail-label">Tracking</div><div class="detail-value">${s.tracking}</div></div>
-      <div class="detail-item"><div class="detail-label">Cookie Life</div><div class="detail-value">${s.cookie}</div></div>
-      <div class="detail-item"><div class="detail-label">Min. Withdrawal</div><div class="detail-value">£${s.min_withdrawal}</div></div>
-      <div class="detail-item"><div class="detail-label">Category</div><div class="detail-value">${capitalise(s.category)}</div></div>
+    <div class="modal-details">
+      <div class="detail-box"><div class="detail-lbl">Tracking Window</div><div class="detail-val">${s.track}</div></div>
+      <div class="detail-box"><div class="detail-lbl">Cookie Life</div><div class="detail-val">${s.cookie}</div></div>
+      <div class="detail-box"><div class="detail-lbl">Min. Withdrawal</div><div class="detail-val">£5</div></div>
+      <div class="detail-box"><div class="detail-lbl">Category</div><div class="detail-val">${cap(s.cat)}</div></div>
     </div>
-    <p style="font-size:.9rem;line-height:1.6;color:var(--muted);margin-bottom:1.25rem">${s.description}</p>
+    <p style="font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:1.1rem">${s.desc}</p>
     <div class="modal-terms">⚠️ <strong>Terms:</strong> ${s.terms}</div>
-    <button class="modal-btn-main" onclick="trackClick('${s.id}')">🛒 Shop & Earn ${s.cashback}% Cashback</button>
-    <button class="modal-btn-sec" onclick="setAlert('${s.id}');closeModal()">🔔 Set Cashback Rate Alert</button>
-  `;
+    <button class="btn-modal-main" onclick="shopNow('${s.id}')">🛒 Shop & Earn ${s.cashback}% Cashback</button>
+    <button class="btn-modal-sec" onclick="setAlert('${s.id}');closeModal()">🔔 Set Cashback Rate Alert</button>`;
   document.getElementById('storeModal').classList.add('open');
 }
-function closeModal(){ document.getElementById('storeModal').classList.remove('open'); }
-
-async function trackClick(storeId) {
-  const store = allStores.find(s=>s.id===storeId);
-  if(!store) return;
-
-  if(supabase){
-    const {data:{user}} = await supabase.auth.getUser();
-    if(user){
-      await supabase.from('clicks').insert({user_id:user.id,store_id:storeId});
-    }
-  }
-
-  // In production: redirect to affiliate tracking URL
-  showToast(`Opening ${store.name} — your cashback is being tracked!`);
-  setTimeout(()=> window.open('https://'+store.name.toLowerCase().replace(/\s/g,'')+'.com','_blank'), 800);
-}
-
-async function setAlert(storeId) {
-  const store = allStores.find(s=>s.id===storeId);
-  if(!store) return;
-
-  if(supabase){
-    const {data:{user}} = await supabase.auth.getUser();
-    if(user){
-      await supabase.from('price_alerts').insert({
-        user_id:user.id,
-        store_id:storeId,
-        alert_type:'cashback_rate',
-        target_value:store.cashback,
-        is_active:true
-      }).onConflict(['user_id','store_id','alert_type']).ignore();
-    }
-  }
-  showToast(`Alert set for ${store.name} — we'll notify you of rate changes!`);
-}
-
-function showToast(msg){
-  document.getElementById('toastMsg').textContent=msg;
-  const t=document.getElementById('toast');
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3500);
-}
-
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+function closeModal(){document.getElementById('storeModal').classList.remove('open');}
+function shopNow(id){const s=STORES.find(x=>x.id===id);if(!s)return;showToast('Opening '+s.name+' — cashback tracking active!');setTimeout(()=>closeModal(),400);}
+function setAlert(id){const s=STORES.find(x=>x.id===id);if(!s)return;showToast('Alert set for '+s.name+' — we\'ll notify you of rate changes!');}
+function showToast(msg){document.getElementById('toastMsg').textContent=msg;const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+renderStores(filtered);
 </script>
 </body>
 </html>
