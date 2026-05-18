@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Privacy & Data — SmartCash</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#f5f7fa;color:#111827;}
+.page-hero{background:linear-gradient(135deg,#f0fdf9,#ffffff);border-bottom:1px solid var(--border);padding:3rem 2rem 2.5rem;text-align:center;}
+.page-hero .badge{display:inline-flex;align-items:center;gap:.5rem;background:#dcfce7;border:1px solid #86efac;color:#166534;padding:.3rem .9rem;border-radius:50px;font-size:.78rem;font-weight:700;margin-bottom:1rem;}
+.page-hero h1{font-family:'Fraunces',serif;font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;color:#111827;margin-bottom:.6rem;letter-spacing:-1px;}
+.page-hero p{color:#4b5563;max-width:520px;margin:0 auto;font-size:.95rem;line-height:1.7;}
+
+.content{max-width:860px;margin:0 auto;padding:3rem 2rem;}
+
+/* ANSWER CARDS — big clear yes/no */
+.answer-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:3rem;}
+.answer-card{border-radius:16px;padding:1.75rem;border:1.5px solid;}
+.answer-card.no{background:#fff5f5;border-color:#fecaca;}
+.answer-card.yes{background:#f0fdf4;border-color:#86efac;}
+.answer-card .ac-icon{font-size:2rem;margin-bottom:.85rem;}
+.answer-card h3{font-size:1rem;font-weight:800;margin-bottom:.5rem;}
+.answer-card.no h3{color:#991b1b;}
+.answer-card.yes h3{color:#166534;}
+.answer-card ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.4rem;}
+.answer-card li{font-size:.85rem;line-height:1.55;display:flex;gap:.5rem;align-items:flex-start;}
+.answer-card.no li::before{content:'✗';color:#dc2626;font-weight:800;flex-shrink:0;}
+.answer-card.yes li::before{content:'✓';color:#16a34a;font-weight:800;flex-shrink:0;}
+.answer-card.no li{color:#7f1d1d;}
+.answer-card.yes li{color:#14532d;}
+
+/* HOW IT ACTUALLY WORKS */
+.flow-section{margin-bottom:3rem;}
+.section-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#6b7280;margin-bottom:1.25rem;}
+.flow-steps{display:flex;flex-direction:column;gap:0;}
+.flow-step{display:flex;gap:1.25rem;align-items:flex-start;padding:1.25rem;background:white;border:1.5px solid #e5e7eb;position:relative;}
+.flow-step:first-child{border-radius:14px 14px 0 0;}
+.flow-step:last-child{border-radius:0 0 14px 14px;border-top:none;}
+.flow-step:not(:first-child):not(:last-child){border-top:none;}
+.flow-step-num{width:32px;height:32px;border-radius:50%;background:#111827;color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;flex-shrink:0;margin-top:2px;}
+.flow-step-content h4{font-size:.92rem;font-weight:700;color:#111827;margin-bottom:.3rem;}
+.flow-step-content p{font-size:.85rem;color:#4b5563;line-height:1.6;margin:0;}
+.flow-step-content .tech-note{display:inline-flex;align-items:center;gap:.3rem;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:6px;padding:.2rem .6rem;font-size:.75rem;color:#374151;margin-top:.5rem;font-family:monospace;}
+
+/* WHAT DATA WE DO STORE */
+.data-table{width:100%;border-collapse:collapse;border-radius:14px;overflow:hidden;border:1.5px solid #e5e7eb;margin-bottom:3rem;}
+.data-table th{background:#f9fafb;padding:.75rem 1.1rem;text-align:left;font-size:.78rem;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;border-bottom:1.5px solid #e5e7eb;}
+.data-table td{padding:.85rem 1.1rem;font-size:.85rem;color:#111827;border-bottom:1px solid #f3f4f6;vertical-align:top;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:#fafafa;}
+.pill{display:inline-block;padding:.15rem .55rem;border-radius:50px;font-size:.7rem;font-weight:700;}
+.pill.stored{background:#dbeafe;color:#1e40af;}
+.pill.not-stored{background:#fef3c7;color:#92400e;}
+.pill.never{background:#fee2e2;color:#991b1b;}
+
+/* AMAZON CONNECT EXPLAINER */
+.amz-box{background:linear-gradient(135deg,#fff7ed,#fffbeb);border:1.5px solid #fed7aa;border-radius:16px;padding:2rem;margin-bottom:3rem;}
+.amz-box h3{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:800;color:#111827;margin-bottom:.75rem;}
+.amz-box p{font-size:.88rem;color:#4b5563;line-height:1.7;margin-bottom:.85rem;}
+.amz-box .amz-steps{display:flex;flex-direction:column;gap:.6rem;margin:.75rem 0;}
+.amz-step{display:flex;gap:.75rem;align-items:flex-start;background:white;border-radius:10px;padding:.8rem;border:1px solid #fed7aa;}
+.amz-step-num{width:24px;height:24px;background:#f97316;color:white;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0;}
+.amz-step p{margin:0;font-size:.83rem;color:#374151;line-height:1.5;}
+.amz-important{background:#fff;border:1.5px solid #f97316;border-radius:10px;padding:1rem 1.1rem;font-size:.85rem;color:#7c2d12;line-height:1.65;}
+.amz-important strong{color:#ea580c;}
+
+/* THIRD PARTY */
+.tp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:3rem;}
+.tp-card{background:white;border:1.5px solid #e5e7eb;border-radius:12px;padding:1.25rem;}
+.tp-card h4{font-size:.85rem;font-weight:700;color:#111827;margin-bottom:.3rem;}
+.tp-card p{font-size:.78rem;color:#6b7280;line-height:1.55;margin:0;}
+.tp-card .tp-purpose{font-size:.72rem;background:#f3f4f6;color:#374151;padding:.2rem .55rem;border-radius:50px;display:inline-block;margin-top:.5rem;}
+
+/* RIGHTS */
+.rights-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:3rem;}
+.right-card{background:white;border:1.5px solid #e5e7eb;border-radius:12px;padding:1.25rem;display:flex;gap:.85rem;align-items:flex-start;}
+.right-icon{width:36px;height:36px;border-radius:10px;background:#f0fdf4;border:1px solid #86efac;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.right-card h4{font-size:.85rem;font-weight:700;color:#111827;margin-bottom:.25rem;}
+.right-card p{font-size:.8rem;color:#6b7280;line-height:1.5;margin:0;}
+
+/* CONTACT */
+.contact-box{background:white;border:1.5px solid #e5e7eb;border-radius:16px;padding:2rem;text-align:center;}
+.contact-box h3{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:800;margin-bottom:.5rem;}
+.contact-box p{color:#6b7280;font-size:.88rem;margin-bottom:1.25rem;}
+.contact-box a{display:inline-block;background:#00C896;color:white;padding:.7rem 2rem;border-radius:10px;font-weight:700;text-decoration:none;font-size:.9rem;transition:background .2s;}
+.contact-box a:hover{background:#009970;}
+
+@media(max-width:700px){.answer-grid,.tp-grid,.rights-grid{grid-template-columns:1fr;}.content{padding:2rem 1.25rem;}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <nav class="nav">
+    <a href="app.html" class="logo">Smart<span class="g">Cash</span></a>
+    <div class="nav-links">
+      <a href="app.html">Home</a>
+      <a href="stores.html">Stores</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="virtual-assistant.html">🛍️ Try-On</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+    <div class="nav-r"><button class="btn-p" onclick="window.location.href='dashboard.html'">My Account</button></div>
+  </nav>
+</header>
+
+<div class="page-hero">
+  <div class="badge">🔒 Full Transparency Report</div>
+  <h1>Your Privacy &amp; Data</h1>
+  <p>Exactly what SmartCash does and doesn't know about you. We believe you deserve a plain-English answer — not a 40-page legal document.</p>
+</div>
+
+<div class="content">
+
+  <!-- BIG CLEAR ANSWERS -->
+  <div class="section-label">The short answers</div>
+  <div class="answer-grid">
+    <div class="answer-card no">
+      <div class="ac-icon">🚫</div>
+      <h3>We NEVER see or store:</h3>
+      <ul>
+        <li>Your Amazon, ASOS or any store password</li>
+        <li>Your payment card details</li>
+        <li>Your bank account information</li>
+        <li>What you browse on store websites</li>
+        <li>Your search history on any retailer</li>
+        <li>Your Amazon browsing behaviour</li>
+        <li>Any login session tokens from stores</li>
+        <li>Your device location</li>
+      </ul>
+    </div>
+    <div class="answer-card yes">
+      <div class="ac-icon">✅</div>
+      <h3>We DO store (with your consent):</h3>
+      <ul>
+        <li>Your SmartCash email &amp; password (encrypted)</li>
+        <li>Order value &amp; cashback amount per transaction</li>
+        <li>Which store you clicked through to</li>
+        <li>Date and status of each cashback claim</li>
+        <li>Your withdrawal payment method (PayPal/bank)</li>
+        <li>Your XP points and loyalty tier</li>
+        <li>Price alerts you have set (product URL + target)</li>
+        <li>AI chat history (only within the session)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- HOW TRACKING ACTUALLY WORKS -->
+  <div class="flow-section">
+    <div class="section-label">How cashback tracking actually works — step by step</div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step-num">1</div>
+        <div class="flow-step-content">
+          <h4>You click "Shop Now" on SmartCash</h4>
+          <p>We redirect you through our affiliate network (AWIN). This creates a small tracking cookie in your browser — a random reference code that says "this visit came from SmartCash". We never see what you do next.</p>
+          <span class="tech-note">Cookie: awinmid + clickref (anonymous random ID)</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">2</div>
+        <div class="flow-step-content">
+          <h4>You shop normally on Amazon / ASOS / any store</h4>
+          <p>You land directly on the retailer's website. You log in using the retailer's own login page — we are not involved in that login at all. Your username and password go directly to Amazon's servers, not through us. We literally cannot see them.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">3</div>
+        <div class="flow-step-content">
+          <h4>You complete a purchase</h4>
+          <p>When your order is confirmed, the retailer's system detects the tracking cookie in your browser. The retailer (e.g. Amazon) sends a report to AWIN — our affiliate network. This report contains only: the order total, the commission amount, and our anonymous click reference. It does NOT include your name, address, items bought, or any personal data.</p>
+          <span class="tech-note">Amazon → AWIN: order_value=£79.99 | commission=£3.60 | clickref=SC_abc123</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">4</div>
+        <div class="flow-step-content">
+          <h4>AWIN tells SmartCash about the sale</h4>
+          <p>AWIN forwards to us: the order value, commission earned, transaction date, and your SmartCash click reference (which links back to your SmartCash account). That's it. We never receive the retailer's transaction ID, your order contents, or your delivery address.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">5</div>
+        <div class="flow-step-content">
+          <h4>We add cashback to your SmartCash balance</h4>
+          <p>We calculate your cashback (e.g. 4.5% of £79.99 = £3.60) and add it to your SmartCash account as "Pending". After the retailer's return window closes (typically 30 days), it becomes "Confirmed" and you can withdraw it.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA TABLE -->
+  <div class="section-label">Complete data inventory — what we store and why</div>
+  <table class="data-table">
+    <thead>
+      <tr><th>Data</th><th>Stored?</th><th>Where</th><th>Why</th><th>How long</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Email address</td><td><span class="pill stored">Stored</span></td><td>Supabase (encrypted)</td><td>Account login &amp; cashback notifications</td><td>Until account deleted</td></tr>
+      <tr><td>Password</td><td><span class="pill stored">Stored</span></td><td>Supabase (bcrypt hashed)</td><td>Account login — we never see plaintext</td><td>Until account deleted</td></tr>
+      <tr><td>Full name</td><td><span class="pill stored">Stored</span></td><td>Supabase</td><td>Dashboard greeting, withdrawal name</td><td>Until account deleted</td></tr>
+      <tr><td>Cashback transactions</td><td><span class="pill stored">Stored</span></td><td>Supabase</td><td>Paying you + HMRC compliance</td><td>7 years (legal requirement)</td></tr>
+      <tr><td>Withdrawal bank details</td><td><span class="pill not-stored">Encrypted</span></td><td>Supabase (AES-256)</td><td>Sending your money</td><td>Deleted after withdrawal</td></tr>
+      <tr><td>Price alerts (URLs)</td><td><span class="pill stored">Stored</span></td><td>Supabase</td><td>Notifying you when price drops</td><td>Until you delete the alert</td></tr>
+      <tr><td>AI chat messages</td><td><span class="pill not-stored">Session only</span></td><td>Browser memory</td><td>Conversation context — not saved to server</td><td>Cleared when you close the tab</td></tr>
+      <tr><td>Try-On avatar choice</td><td><span class="pill not-stored">Session only</span></td><td>Browser memory</td><td>Showing your selected look</td><td>Never saved to our servers</td></tr>
+      <tr><td>Your photo (if uploaded)</td><td><span class="pill never">Never stored</span></td><td>N/A — we removed this feature</td><td>Avatar try-on uses preset body types only</td><td>N/A</td></tr>
+      <tr><td>Amazon password</td><td><span class="pill never">Never</span></td><td>N/A</td><td>We never receive this — Amazon handles login</td><td>N/A</td></tr>
+      <tr><td>Store browsing history</td><td><span class="pill never">Never</span></td><td>N/A</td><td>Tracking cookies expire after purchase</td><td>N/A</td></tr>
+      <tr><td>Payment card details</td><td><span class="pill never">Never</span></td><td>N/A</td><td>Purchases made on retailer's site, not ours</td><td>N/A</td></tr>
+    </tbody>
+  </table>
+
+  <!-- AMAZON CONNECT SPECIAL SECTION -->
+  <div class="amz-box">
+    <h3>📦 The "Connect Amazon" feature — what it actually does</h3>
+    <p>The "Connect Amazon" button uses <strong>Amazon's official OAuth system</strong> — the same technology used by Alexa, Kindle, and other Amazon-authorised apps. Here is exactly what happens:</p>
+    <div class="amz-steps">
+      <div class="amz-step">
+        <div class="amz-step-num">1</div>
+        <p>You click "Connect Amazon". SmartCash sends you to <strong>Amazon's own login page</strong> (amazon.co.uk). You log in directly on Amazon's servers — we never see your credentials.</p>
+      </div>
+      <div class="amz-step">
+        <div class="amz-step-num">2</div>
+        <p>Amazon shows you a permissions screen: "SmartCash wants to access your order history". <strong>You choose whether to approve or deny</strong>. You can revoke this at any time in your Amazon account settings.</p>
+      </div>
+      <div class="amz-step">
+        <div class="amz-step-num">3</div>
+        <p>If you approve, Amazon gives SmartCash a read-only access token. This token lets us fetch your order list (items, dates, totals) so we can match orders against our cashback records. We <strong>cannot</strong> place orders, change your account, or access payment details with this token.</p>
+      </div>
+      <div class="amz-step">
+        <div class="amz-step-num">4</div>
+        <p>We display matching orders in your SmartCash dashboard alongside their cashback status. The raw order data is stored only as long as you keep your account connected.</p>
+      </div>
+    </div>
+    <div class="amz-important">
+      <strong>To revoke access at any time:</strong> Go to Amazon → Account &amp; Lists → Manage Your Content and Devices → Preferences → Manage Your Alexa Data / Apps &amp; Services → SmartCash → Remove Access. Your order data is then deleted from our system within 24 hours.
+    </div>
+  </div>
+
+  <!-- THIRD PARTY PROCESSORS -->
+  <div class="section-label">Third-party services we use</div>
+  <div class="tp-grid">
+    <div class="tp-card">
+      <h4>Supabase</h4>
+      <p>Our database. Stores your account, transactions and balance. Hosted on AWS EU-West (Ireland). GDPR compliant, SOC 2 Type II certified.</p>
+      <span class="tp-purpose">Database &amp; auth</span>
+    </div>
+    <div class="tp-card">
+      <h4>AWIN</h4>
+      <p>UK's largest affiliate network. Tracks purchases on partner stores and pays us commission. They receive anonymous click references — not your personal data.</p>
+      <span class="tp-purpose">Cashback tracking</span>
+    </div>
+    <div class="tp-card">
+      <h4>Claude (Anthropic)</h4>
+      <p>Powers our AI Shopping Advisor. Your chat messages are sent to Anthropic's API. Anthropic does not use conversations to train models (per enterprise API terms).</p>
+      <span class="tp-purpose">AI chat</span>
+    </div>
+    <div class="tp-card">
+      <h4>Amazon Associates</h4>
+      <p>Amazon's affiliate programme. Tracks clicks and purchases on Amazon. Operates under Amazon's privacy policy — we receive sale totals only.</p>
+      <span class="tp-purpose">Amazon cashback</span>
+    </div>
+    <div class="tp-card">
+      <h4>Google Fonts</h4>
+      <p>Loads our website fonts (Syne, DM Sans). Google may log your IP address when fonts are requested — this is standard web practice.</p>
+      <span class="tp-purpose">Typography</span>
+    </div>
+    <div class="tp-card">
+      <h4>Clearbit</h4>
+      <p>Provides store logos displayed on our site (e.g. the Amazon logo). No user data is shared — it's a public logo API.</p>
+      <span class="tp-purpose">Store logos</span>
+    </div>
+  </div>
+
+  <!-- YOUR RIGHTS -->
+  <div class="section-label">Your rights under UK GDPR</div>
+  <div class="rights-grid">
+    <div class="right-card">
+      <div class="right-icon">📋</div>
+      <div>
+        <h4>Right to access</h4>
+        <p>Request a copy of all data we hold about you. We respond within 30 days, free of charge.</p>
+      </div>
+    </div>
+    <div class="right-card">
+      <div class="right-icon">🗑️</div>
+      <div>
+        <h4>Right to erasure</h4>
+        <p>Ask us to delete your account and all associated data. We comply within 14 days (except transaction records required by HMRC for 7 years).</p>
+      </div>
+    </div>
+    <div class="right-card">
+      <div class="right-icon">✏️</div>
+      <div>
+        <h4>Right to rectification</h4>
+        <p>Correct any inaccurate data we hold about you. Update most details directly in your dashboard.</p>
+      </div>
+    </div>
+    <div class="right-card">
+      <div class="right-icon">📤</div>
+      <div>
+        <h4>Right to portability</h4>
+        <p>Request your data in a machine-readable format (JSON or CSV). Useful if you want to move to another cashback platform.</p>
+      </div>
+    </div>
+    <div class="right-card">
+      <div class="right-icon">🚫</div>
+      <div>
+        <h4>Right to object</h4>
+        <p>Object to us processing your data for direct marketing at any time. Unsubscribe from any email with one click.</p>
+      </div>
+    </div>
+    <div class="right-card">
+      <div class="right-icon">🔒</div>
+      <div>
+        <h4>Right to restrict</h4>
+        <p>Ask us to pause processing your data while a complaint is being resolved.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="contact-box">
+    <h3>Questions about your data?</h3>
+    <p>Our Data Protection Officer responds to all requests within 5 working days. You can also lodge a complaint with the ICO (Information Commissioner's Office) at ico.org.uk if you feel we have not handled your data correctly.</p>
+    <a href="mailto:privacy@smartcash.co.uk">Email privacy@smartcash.co.uk</a>
+    <p style="margin-top:1rem;font-size:.8rem;color:#9ca3af">Last updated: May 2026 · Governed by UK GDPR &amp; the Data Protection Act 2018</p>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand"><span class="logo">Smart<span class="g">Cash</span></span><p>UK's smartest cashback platform. Your privacy is not a product we sell.</p></div>
+    <div class="footer-col"><h4>Platform</h4><a href="stores.html">All Stores</a><a href="price-tracker.html">Price Tracker</a><a href="how-it-works.html">How It Works</a><a href="dashboard.html">Dashboard</a></div>
+    <div class="footer-col"><h4>Legal</h4><a href="privacy-how-it-works.html">Privacy &amp; Data</a><a href="#">Terms &amp; Conditions</a><a href="#">Cookie Policy</a></div>
+    <div class="footer-col"><h4>Support</h4><a href="#">Contact Us</a><a href="#">Help Centre</a><a href="https://ico.org.uk" target="_blank">ICO (UK regulator)</a></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 SmartCash. All rights reserved.</span><span>🇬🇧 UK GDPR Compliant</span></div>
+</footer>
+
+</body>
+</html>
