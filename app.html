@@ -165,6 +165,7 @@
       <a href="stores.html">Stores</a>
       <a href="how-it-works.html">How It Works</a>
       <a href="price-tracker.html">Price Tracker</a>
+      <a href="virtual-assistant.html">🛍️ Try-On</a>
       <a href="dashboard.html">Dashboard</a>
     </div>
     <div class="nav-r" id="nav-r">
@@ -375,6 +376,7 @@
 </footer>
 
 <button class="ai-fab" onclick="window.location.href='dashboard.html'" title="AI Shopping Advisor">🤖</button>
+<a href="virtual-assistant.html" style="position:fixed;bottom:96px;right:24px;background:linear-gradient(135deg,#7C3AED,#5B21B6);color:white;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 8px 24px rgba(124,58,237,.4);z-index:300;transition:transform .2s;text-decoration:none" title="Virtual Try-On Assistant" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">🛍️</a>
 
 <div class="modal-ov" id="authModal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
@@ -395,14 +397,22 @@
 
 <script>
 const DEMO_STORES=[
-  {id:'amazon',name:'Amazon UK',offer:'Millions of products · Prime eligible',cashback:4.5,tag:'4.5% Back',cat:'electronics',emoji:'📦',logo:'https://logo.clearbit.com/amazon.co.uk',url:'https://amazon.co.uk'},
-  {id:'asos',name:'ASOS',offer:'Free delivery & returns',cashback:6.0,tag:'6% Back',cat:'fashion',emoji:'👗',logo:'https://logo.clearbit.com/asos.com',url:'https://asos.com'},
-  {id:'booking',name:'Booking.com',offer:'Best price guarantee',cashback:5.0,tag:'5% Back',cat:'travel',emoji:'🏨',logo:'https://logo.clearbit.com/booking.com',url:'https://booking.com'},
-  {id:'nike',name:'Nike',offer:'Free delivery over £50',cashback:3.5,tag:'3.5% Back',cat:'sports',emoji:'👟',logo:'https://logo.clearbit.com/nike.com',url:'https://nike.com'},
-  {id:'currys',name:'Currys',offer:'Price match guaranteed',cashback:2.5,tag:'2.5% Back',cat:'electronics',emoji:'📺',logo:'https://logo.clearbit.com/currys.co.uk',url:'https://currys.co.uk'},
-  {id:'boots',name:'Boots',offer:'Earn Advantage Card points too',cashback:4.0,tag:'4% Back',cat:'beauty',emoji:'💄',logo:'https://logo.clearbit.com/boots.com',url:'https://boots.com'},
-  {id:'johnlewis',name:'John Lewis',offer:'Never knowingly undersold',cashback:3.0,tag:'3% Back',cat:'home',emoji:'🏡',logo:'https://logo.clearbit.com/johnlewis.com',url:'https://johnlewis.com'},
-  {id:'expedia',name:'Expedia',offer:'Bundle & save on flights + hotels',cashback:4.5,tag:'4.5% Back',cat:'travel',emoji:'✈️',logo:'https://logo.clearbit.com/expedia.co.uk',url:'https://expedia.co.uk'},
+  {id:'amazon',name:'Amazon UK',offer:'Millions of products · Prime eligible',cashback:4.5,tag:'4.5% Back',cat:'electronics',emoji:'📦',logo:'https://logo.clearbit.com/amazon.co.uk',
+   url:'https://www.amazon.co.uk/?tag=YOUR_AMAZON_ASSOCIATE_TAG'},
+  {id:'asos',name:'ASOS',offer:'Free delivery & returns',cashback:6.0,tag:'6% Back',cat:'fashion',emoji:'👗',logo:'https://logo.clearbit.com/asos.com',
+   url:'https://www.awin1.com/cread.php?awinmid=4081&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.asos.com%2F'},
+  {id:'booking',name:'Booking.com',offer:'Best price guarantee',cashback:5.0,tag:'5% Back',cat:'travel',emoji:'🏨',logo:'https://logo.clearbit.com/booking.com',
+   url:'https://www.awin1.com/cread.php?awinmid=6776&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.booking.com%2F'},
+  {id:'nike',name:'Nike',offer:'Free delivery over £50',cashback:3.5,tag:'3.5% Back',cat:'sports',emoji:'👟',logo:'https://logo.clearbit.com/nike.com',
+   url:'https://www.awin1.com/cread.php?awinmid=2080&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.nike.com%2Fgb%2F'},
+  {id:'currys',name:'Currys',offer:'Price match guaranteed',cashback:2.5,tag:'2.5% Back',cat:'electronics',emoji:'📺',logo:'https://logo.clearbit.com/currys.co.uk',
+   url:'https://www.awin1.com/cread.php?awinmid=1599&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.currys.co.uk%2F'},
+  {id:'boots',name:'Boots',offer:'Earn Advantage Card points too',cashback:4.0,tag:'4% Back',cat:'beauty',emoji:'💄',logo:'https://logo.clearbit.com/boots.com',
+   url:'https://www.awin1.com/cread.php?awinmid=3602&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.boots.com%2F'},
+  {id:'johnlewis',name:'John Lewis',offer:'Never knowingly undersold',cashback:3.0,tag:'3% Back',cat:'home',emoji:'🏡',logo:'https://logo.clearbit.com/johnlewis.com',
+   url:'https://www.awin1.com/cread.php?awinmid=1203&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.johnlewis.com%2F'},
+  {id:'expedia',name:'Expedia',offer:'Bundle & save on flights + hotels',cashback:4.5,tag:'4.5% Back',cat:'travel',emoji:'✈️',logo:'https://logo.clearbit.com/expedia.co.uk',
+   url:'https://www.awin1.com/cread.php?awinmid=2114&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.expedia.co.uk%2F'},
 ];
 
 function renderStores(stores){

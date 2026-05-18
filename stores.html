@@ -99,6 +99,7 @@
       <a href="stores.html" class="active">Stores</a>
       <a href="how-it-works.html">How It Works</a>
       <a href="price-tracker.html">Price Tracker</a>
+      <a href="virtual-assistant.html">🛍️ Try-On</a>
       <a href="dashboard.html">Dashboard</a>
     </div>
     <div class="nav-r"><button class="btn-p" onclick="window.location.href='dashboard.html'">My Account</button></div>
@@ -168,22 +169,58 @@
 
 <script>
 const STORES=[
-  {id:'amazon',name:'Amazon UK',cat:'electronics',emoji:'📦',cashback:4.5,track:'24h',cookie:'90 days',badges:['hot','track'],desc:'World\'s largest marketplace. Earn cashback on millions of products across every category.',terms:'Excludes gift cards, digital downloads and third-party seller items.',boost:'🔥 Popular',isNew:false},
-  {id:'asos',name:'ASOS',cat:'fashion',emoji:'👗',cashback:6.0,track:'48h',cookie:'30 days',badges:['hot','ai'],desc:'UK\'s #1 online fashion destination. Thousands of brands, fast delivery, free returns.',terms:'Valid on full-price items only. Sale items may have reduced cashback.',boost:'6% ↑',isNew:false},
-  {id:'booking',name:'Booking.com',cat:'travel',emoji:'🏨',cashback:5.0,track:'72h',cookie:'30 days',badges:['track'],desc:'Book hotels, apartments and villas worldwide. Best price guarantee.',terms:'Hotel bookings only. Flights and car hire excluded.',boost:null,isNew:false},
-  {id:'nike',name:'Nike',cat:'sports',emoji:'👟',cashback:3.5,track:'24h',cookie:'14 days',badges:['new'],desc:'Premium sportswear, footwear and equipment from the world\'s leading athletic brand.',terms:'Not valid on Nike sale items or Jordan brand.',boost:null,isNew:true},
-  {id:'currys',name:'Currys',cat:'electronics',emoji:'📺',cashback:2.5,track:'48h',cookie:'30 days',badges:['track'],desc:'UK\'s leading electronics retailer. Laptops, TVs, appliances and more.',terms:'Excludes Apple products and contract phones.',boost:null,isNew:false},
-  {id:'johnlewis',name:'John Lewis',cat:'home',emoji:'🏡',cashback:3.0,track:'72h',cookie:'30 days',badges:[],desc:'Premium UK department store. Home, fashion, electricals and gifts.',terms:'Clearance items excluded.',boost:null,isNew:false},
-  {id:'boots',name:'Boots',cat:'beauty',emoji:'💄',cashback:4.0,track:'24h',cookie:'30 days',badges:['hot'],desc:'UK\'s leading pharmacy and beauty retailer. Skincare, makeup and fragrance.',terms:'Excludes prescription items and infant formula.',boost:'4% ↑',isNew:false},
-  {id:'expedia',name:'Expedia',cat:'travel',emoji:'✈️',cashback:4.5,track:'72h',cookie:'45 days',badges:[],desc:'Book flights, hotels and holiday packages all in one place.',terms:'Hotel bookings only. Flights excluded.',boost:null,isNew:false},
-  {id:'ms',name:'M&S',cat:'fashion',emoji:'🛍️',cashback:3.5,track:'48h',cookie:'30 days',badges:['new'],desc:'Classic British fashion, food and homeware from Marks & Spencer.',terms:'M&S Food, gift cards and sale items excluded.',boost:null,isNew:true},
-  {id:'sephora',name:'Sephora',cat:'beauty',emoji:'✨',cashback:5.0,track:'48h',cookie:'30 days',badges:['hot','new'],desc:'Premium beauty brands. Hundreds of top names from skincare to fragrance.',terms:'Gift sets and bundles excluded.',boost:'5% ↑',isNew:true},
-  {id:'wayfair',name:'Wayfair',cat:'home',emoji:'🛋️',cashback:5.5,track:'72h',cookie:'30 days',badges:['hot'],desc:'Millions of furniture, lighting, rugs and home decor items.',terms:'Flash sale and clearance items excluded.',boost:null,isNew:false},
-  {id:'adidas',name:'Adidas',cat:'sports',emoji:'🏃',cashback:4.0,track:'24h',cookie:'30 days',badges:[],desc:'Official Adidas store. Football, running, training and casual wear.',terms:'Yeezy and collaboration collections excluded.',boost:null,isNew:false},
-  {id:'skyscanner',name:'Skyscanner',cat:'travel',emoji:'🌍',cashback:2.0,track:'72h',cookie:'30 days',badges:['ai'],desc:'Compare millions of flights and find the cheapest deals instantly.',terms:'Flight bookings only.',boost:null,isNew:false},
-  {id:'lookfantastic',name:'Lookfantastic',cat:'beauty',emoji:'💅',cashback:6.0,track:'48h',cookie:'30 days',badges:['hot','ai'],desc:'Luxury beauty at discounted prices. 600+ top brands, expert advice.',terms:'Gift subscriptions and beauty boxes excluded.',boost:'6% ↑',isNew:false},
-  {id:'argos',name:'Argos',cat:'electronics',emoji:'🛒',cashback:2.0,track:'24h',cookie:'30 days',badges:[],desc:'Your everyday retailer for electronics, toys, furniture and more.',terms:'Gaming consoles and Apple products excluded.',boost:null,isNew:false},
-  {id:'gymshark',name:'Gymshark',cat:'sports',emoji:'💪',cashback:7.0,track:'24h',cookie:'14 days',badges:['hot','new'],desc:'World-famous fitness apparel. Compression, training and lifestyle wear.',terms:'Outlet section excluded. Full-price items only.',boost:'7% ↑',isNew:true},
+  // ─── AFFILIATE URLS ───────────────────────────────────────────────────────
+  // Replace the url field with your real AWIN / CJ affiliate tracking links.
+  // Format: https://www.awin1.com/cread.php?awinmid=XXXX&awinaffid=YOUR_ID&clickref=smartcash&p=STORE_URL
+  // Until you have real links, we deep-link direct + add ref param so you can track clicks.
+  {id:'amazon',name:'Amazon UK',cat:'electronics',emoji:'📦',cashback:4.5,track:'24h',cookie:'90 days',
+   url:'https://www.amazon.co.uk/?tag=YOUR_AMAZON_ASSOCIATE_TAG',
+   badges:['hot','track'],desc:'World\'s largest marketplace. Earn cashback on millions of products across every category.',terms:'Excludes gift cards, digital downloads and third-party seller items.',boost:'🔥 Popular',isNew:false},
+  {id:'asos',name:'ASOS',cat:'fashion',emoji:'👗',cashback:6.0,track:'48h',cookie:'30 days',
+   url:'https://www.awin1.com/cread.php?awinmid=4081&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.asos.com%2F',
+   badges:['hot','ai'],desc:'UK\'s #1 online fashion destination. Thousands of brands, fast delivery, free returns.',terms:'Valid on full-price items only. Sale items may have reduced cashback.',boost:'6% ↑',isNew:false},
+  {id:'booking',name:'Booking.com',cat:'travel',emoji:'🏨',cashback:5.0,track:'72h',cookie:'30 days',
+   url:'https://www.awin1.com/cread.php?awinmid=6776&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.booking.com%2F',
+   badges:['track'],desc:'Book hotels, apartments and villas worldwide. Best price guarantee.',terms:'Hotel bookings only. Flights and car hire excluded.',boost:null,isNew:false},
+  {id:'nike',name:'Nike',cat:'sports',emoji:'👟',cashback:3.5,track:'24h',cookie:'14 days',
+   url:'https://www.awin1.com/cread.php?awinmid=2080&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.nike.com%2Fgb%2F',
+   badges:['new'],desc:'Premium sportswear, footwear and equipment from the world\'s leading athletic brand.',terms:'Not valid on Nike sale items or Jordan brand.',boost:null,isNew:true},
+  {id:'currys',name:'Currys',cat:'electronics',emoji:'📺',cashback:2.5,track:'48h',cookie:'30 days',
+   url:'https://www.awin1.com/cread.php?awinmid=1599&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.currys.co.uk%2F',
+   badges:['track'],desc:'UK\'s leading electronics retailer. Laptops, TVs, appliances and more.',terms:'Excludes Apple products and contract phones.',boost:null,isNew:false},
+  {id:'johnlewis',name:'John Lewis',cat:'home',emoji:'🏡',cashback:3.0,track:'72h',cookie:'30 days',
+   url:'https://www.awin1.com/cread.php?awinmid=1203&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.johnlewis.com%2F',
+   badges:[],desc:'Premium UK department store. Home, fashion, electricals and gifts.',terms:'Clearance items excluded.',boost:null,isNew:false},
+  {id:'boots',name:'Boots',cat:'beauty',emoji:'💄',cashback:4.0,track:'24h',cookie:'30 days',
+   url:'https://www.awin1.com/cread.php?awinmid=3602&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.boots.com%2F',
+   badges:['hot'],desc:'UK\'s leading pharmacy and beauty retailer. Skincare, makeup and fragrance.',terms:'Excludes prescription items and infant formula.',boost:'4% ↑',isNew:false},
+  {id:'expedia',name:'Expedia',cat:'travel',emoji:'✈️',cashback:4.5,track:'72h',cookie:'45 days',
+   url:'https://www.awin1.com/cread.php?awinmid=2114&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.expedia.co.uk%2F',
+   badges:[],desc:'Book flights, hotels and holiday packages all in one place.',terms:'Hotel bookings only. Flights excluded.',boost:null,isNew:false},
+  {id:'ms',name:'M&S',cat:'fashion',emoji:'🛍️',cashback:3.5,track:'48h',cookie:'30 days',
+   url:'https://www.awin1.com/cread.php?awinmid=4171&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.marksandspencer.com%2F',
+   badges:['new'],desc:'Classic British fashion, food and homeware from Marks & Spencer.',terms:'M&S Food, gift cards and sale items excluded.',boost:null,isNew:true},
+  {id:'sephora',name:'Sephora',cat:'beauty',emoji:'✨',cashback:5.0,track:'48h',cookie:'30 days',
+   url:'https://www.awin1.com/cread.php?awinmid=19623&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.sephora.co.uk%2F',
+   badges:['hot','new'],desc:'Premium beauty brands. Hundreds of top names from skincare to fragrance.',terms:'Gift sets and bundles excluded.',boost:'5% ↑',isNew:true},
+  {id:'wayfair',name:'Wayfair',cat:'home',emoji:'🛋️',cashback:5.5,track:'72h',cookie:'30 days',
+   url:'https://www.awin1.com/cread.php?awinmid=6678&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.wayfair.co.uk%2F',
+   badges:['hot'],desc:'Millions of furniture, lighting, rugs and home decor items.',terms:'Flash sale and clearance items excluded.',boost:null,isNew:false},
+  {id:'adidas',name:'Adidas',cat:'sports',emoji:'🏃',cashback:4.0,track:'24h',cookie:'30 days',
+   url:'https://www.awin1.com/cread.php?awinmid=5526&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.adidas.co.uk%2F',
+   badges:[],desc:'Official Adidas store. Football, running, training and casual wear.',terms:'Yeezy and collaboration collections excluded.',boost:null,isNew:false},
+  {id:'skyscanner',name:'Skyscanner',cat:'travel',emoji:'🌍',cashback:2.0,track:'72h',cookie:'30 days',
+   url:'https://www.awin1.com/cread.php?awinmid=1690&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.skyscanner.net%2F',
+   badges:['ai'],desc:'Compare millions of flights and find the cheapest deals instantly.',terms:'Flight bookings only.',boost:null,isNew:false},
+  {id:'lookfantastic',name:'Lookfantastic',cat:'beauty',emoji:'💅',cashback:6.0,track:'48h',cookie:'30 days',
+   url:'https://www.awin1.com/cread.php?awinmid=2082&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.lookfantastic.com%2F',
+   badges:['hot','ai'],desc:'Luxury beauty at discounted prices. 600+ top brands, expert advice.',terms:'Gift subscriptions and beauty boxes excluded.',boost:'6% ↑',isNew:false},
+  {id:'argos',name:'Argos',cat:'electronics',emoji:'🛒',cashback:2.0,track:'24h',cookie:'30 days',
+   url:'https://www.awin1.com/cread.php?awinmid=1623&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.argos.co.uk%2F',
+   badges:[],desc:'Your everyday retailer for electronics, toys, furniture and more.',terms:'Gaming consoles and Apple products excluded.',boost:null,isNew:false},
+  {id:'gymshark',name:'Gymshark',cat:'sports',emoji:'💪',cashback:7.0,track:'24h',cookie:'14 days',
+   url:'https://www.awin1.com/cread.php?awinmid=16517&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.gymshark.com%2F',
+   badges:['hot','new'],desc:'World-famous fitness apparel. Compression, training and lifestyle wear.',terms:'Outlet section excluded. Full-price items only.',boost:'7% ↑',isNew:true},
 ];
 
 let currentCat='all';
@@ -252,7 +289,19 @@ function openModal(id){
   document.getElementById('storeModal').classList.add('open');
 }
 function closeModal(){document.getElementById('storeModal').classList.remove('open');}
-function shopNow(id){const s=STORES.find(x=>x.id===id);if(!s)return;showToast('Opening '+s.name+' — cashback tracking active!');setTimeout(()=>closeModal(),400);}
+function shopNow(id){
+  const s=STORES.find(x=>x.id===id);
+  if(!s)return;
+  // Log click for tracking (replace with your server-side click endpoint when ready)
+  console.log('Click tracked:', id, new Date().toISOString());
+  showToast('Opening '+s.name+' — '+s.cashback+'% cashback tracking active! 🛒');
+  setTimeout(()=>{
+    closeModal();
+    // Open the affiliate link — replace url values in STORES with your real AWIN/CJ links
+    const dest = s.url || 'https://'+id+'.co.uk';
+    window.open(dest, '_blank', 'noopener');
+  }, 600);
+}
 function setAlert(id){const s=STORES.find(x=>x.id===id);if(!s)return;showToast('Alert set for '+s.name+' — we\'ll notify you of rate changes!');}
 function showToast(msg){document.getElementById('toastMsg').textContent=msg;const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
