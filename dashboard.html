@@ -207,11 +207,11 @@ tr:hover td{background:var(--surface2);}
         <table>
           <thead><tr><th>Store</th><th>Date</th><th>Order Value</th><th>Cashback</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td><div class="td-store"><div class="td-icon">📦</div><div><div class="td-name">Amazon UK</div><div class="td-sub">Sony XM5 Headphones</div></div></div></td><td style="color:var(--muted)">2 May 2026</td><td>£279.00</td><td class="td-amt positive">+£12.56</td><td><span class="status-badge sb-confirmed">Confirmed</span></td></tr>
-            <tr><td><div class="td-store"><div class="td-icon">👗</div><div><div class="td-name">ASOS</div><div class="td-sub">2x clothing items</div></div></div></td><td style="color:var(--muted)">28 Apr 2026</td><td>£90.00</td><td class="td-amt pending">+£5.40</td><td><span class="status-badge sb-pending">Pending</span></td></tr>
-            <tr><td><div class="td-store"><div class="td-icon">🏨</div><div><div class="td-name">Booking.com</div><div class="td-sub">Barcelona · 3 nights</div></div></div></td><td style="color:var(--muted)">14 Apr 2026</td><td>£450.00</td><td class="td-amt positive">+£22.50</td><td><span class="status-badge sb-confirmed">Confirmed</span></td></tr>
-            <tr><td><div class="td-store"><div class="td-icon">💄</div><div><div class="td-name">Boots</div><div class="td-sub">Skincare order</div></div></div></td><td style="color:var(--muted)">8 Apr 2026</td><td>£65.00</td><td class="td-amt positive">+£2.60</td><td><span class="status-badge sb-confirmed">Confirmed</span></td></tr>
-            <tr><td><div class="td-store"><div class="td-icon">✈️</div><div><div class="td-name">Expedia</div><div class="td-sub">Rome hotel 4 nights</div></div></div></td><td style="color:var(--muted)">1 Apr 2026</td><td>£360.00</td><td class="td-amt pending">+£16.20</td><td><span class="status-badge sb-pending">Pending</span></td></tr>
+            <tr><td><div class="td-store"><div class="td-icon"><img src="https://logo.clearbit.com/amazon.co.uk" onerror="this.parentElement.textContent='📦'" style="width:28px;height:28px;object-fit:contain;border-radius:4px"></div><div><div class="td-name">Amazon UK</div><div class="td-sub">Sony XM5 Headphones</div></div></div></td><td style="color:var(--muted)">2 May 2026</td><td>£279.00</td><td class="td-amt positive">+£12.56</td><td><span class="status-badge sb-confirmed">Confirmed</span></td></tr>
+            <tr><td><div class="td-store"><div class="td-icon"><img src="https://logo.clearbit.com/asos.com" onerror="this.parentElement.textContent='👗'" style="width:28px;height:28px;object-fit:contain;border-radius:4px"></div><div><div class="td-name">ASOS</div><div class="td-sub">2x clothing items</div></div></div></td><td style="color:var(--muted)">28 Apr 2026</td><td>£90.00</td><td class="td-amt pending">+£5.40</td><td><span class="status-badge sb-pending">Pending</span></td></tr>
+            <tr><td><div class="td-store"><div class="td-icon"><img src="https://logo.clearbit.com/booking.com" onerror="this.parentElement.textContent='🏨'" style="width:28px;height:28px;object-fit:contain;border-radius:4px"></div><div><div class="td-name">Booking.com</div><div class="td-sub">Barcelona · 3 nights</div></div></div></td><td style="color:var(--muted)">14 Apr 2026</td><td>£450.00</td><td class="td-amt positive">+£22.50</td><td><span class="status-badge sb-confirmed">Confirmed</span></td></tr>
+            <tr><td><div class="td-store"><div class="td-icon"><img src="https://logo.clearbit.com/boots.com" onerror="this.parentElement.textContent='💄'" style="width:28px;height:28px;object-fit:contain;border-radius:4px"></div><div><div class="td-name">Boots</div><div class="td-sub">Skincare order</div></div></div></td><td style="color:var(--muted)">8 Apr 2026</td><td>£65.00</td><td class="td-amt positive">+£2.60</td><td><span class="status-badge sb-confirmed">Confirmed</span></td></tr>
+            <tr><td><div class="td-store"><div class="td-icon"><img src="https://logo.clearbit.com/expedia.co.uk" onerror="this.parentElement.textContent='✈️'" style="width:28px;height:28px;object-fit:contain;border-radius:4px"></div><div><div class="td-name">Expedia</div><div class="td-sub">Rome hotel 4 nights</div></div></div></td><td style="color:var(--muted)">1 Apr 2026</td><td>£360.00</td><td class="td-amt pending">+£16.20</td><td><span class="status-badge sb-pending">Pending</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -398,6 +398,66 @@ tr:hover td{background:var(--surface2);}
 <div class="toast" id="toast"><span class="toast-tick">✓</span><span id="toastMsg">Done!</span></div>
 
 <script>
+// ---- REAL AUTH ----
+let currentUser = null;
+let sbClient = null;
+
+async function initAuth() {
+  if (typeof SUPABASE_CONFIG === 'undefined' || SUPABASE_CONFIG.url === 'YOUR_SUPABASE_URL') {
+    setDemoUser(); return;
+  }
+  sbClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+
+  // Listen for auth state changes (catches the session set by auth-callback)
+  sbClient.auth.onAuthStateChange(async (event, session) => {
+    if (session?.user) {
+      currentUser = session.user;
+      const displayName = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+      const firstName = displayName.split(' ')[0];
+      setUserUI(firstName, displayName, session.user.email);
+    } else if (event === 'SIGNED_OUT') {
+      window.location.href = 'app.html';
+    }
+  });
+
+  const { data: { session } } = await sbClient.auth.getSession();
+  if (session?.user) {
+    currentUser = session.user;
+    const displayName = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+    setUserUI(displayName.split(' ')[0], displayName, session.user.email);
+  } else {
+    // No session — demo mode (don't redirect, allow browsing)
+    setDemoUser();
+  }
+}
+
+function setUserUI(firstName, fullName, email) {
+  const f = firstName || 'there';
+  document.getElementById('firstName').textContent = f;
+  document.getElementById('sbName').textContent = fullName || email;
+  document.getElementById('sbAva').textContent = (fullName || email)[0].toUpperCase();
+  // Update greeting based on time of day
+  const h = new Date().getHours();
+  const greeting = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+  const greetEl = document.querySelector('.pg-title');
+  if (greetEl) greetEl.innerHTML = `${greeting}, <span id="firstName" style="color:var(--brand)">${f}</span> 👋`;
+  // Update AI greeting
+  aiHistory[0].content = `Hi ${f}! 👋 I'm your personal SmartCash AI advisor. I can help you find the best deals, tell you when to buy, compare products, or answer anything about your cashback. What can I help with today?`;
+  renderAI();
+}
+
+function setDemoUser() {
+  setUserUI('Jamie', 'Jamie Smith', 'jamie@example.com');
+}
+
+async function logout() {
+  if (sbClient) await sbClient.auth.signOut();
+  window.location.href = 'app.html';
+}
+
+initAuth();
+
+// ---- SECTIONS ----
 function showSection(id,el){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
@@ -409,7 +469,7 @@ function showSection(id,el){
 function selectMethod(el){document.querySelectorAll('.method-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');const n=el.querySelector('.method-name').textContent;const form=el.closest('.section').querySelector('.withdraw-form');form.querySelector('h3').textContent=n+' Details';}
 
 const SUGS=['What are the best cashback rates right now?','Which stores have boosted cashback today?','I want to buy a new laptop under £800 — advice?','Is now a good time to book a holiday?','How do I reach Platinum tier faster?','What\'s the best cashback for fashion?'];
-let aiHistory=[{role:'assistant',content:'Hi Jamie! 👋 I\'m your personal SmartCash AI advisor. I can help you find the best deals, tell you when to buy, compare products, or answer anything about your cashback. What can I help with today?'}];
+let aiHistory=[{role:'assistant',content:'Hi! 👋 I\'m your personal SmartCash AI advisor. I can help you find the best deals, tell you when to buy, compare products, or answer anything about your cashback. What can I help with today?'}];
 
 function suggestMsg(el){document.getElementById('aiInput').value=el.textContent;sendAI();}
 
@@ -441,10 +501,9 @@ function renderAI(){
 }
 function scrollAI(){const b=document.getElementById('aiMsgs');b.scrollTop=b.scrollHeight;}
 function showToast(msg){document.getElementById('toastMsg').textContent=msg;const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
-function logout(){window.location.href='app.html';}
 
 // Check hash for direct navigation
-if(location.hash==='#ai')showSection('ai',document.querySelector('.sb-item:nth-child(4)'));
+if(location.hash==='#ai'){setTimeout(()=>showSection('ai',document.querySelector('.sb-item:nth-child(4)')),100);}
 </script>
 </body>
 </html>

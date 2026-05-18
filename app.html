@@ -437,11 +437,48 @@ async function submitAuth(){
     const sb=window.supabase.createClient(SUPABASE_CONFIG.url,SUPABASE_CONFIG.anonKey);
     document.getElementById('authSubmit').textContent='Please wait…';
     try{
-      if(authMode==='signup'){const{error}=await sb.auth.signUp({email,password,options:{data:{full_name:name}}});if(error)throw error;sucEl.textContent='Account created! Check your email to verify.';sucEl.style.display='block';}
-      else{const{error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;sucEl.textContent='Logged in! Redirecting…';sucEl.style.display='block';setTimeout(()=>window.location.href='dashboard.html',1000);}
+      if(authMode==='signup'){
+        // redirectTo must point to YOUR deployed Vercel URL, not localhost
+        const redirectTo = (window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1')
+          ? window.location.origin+'/auth-callback.html'
+          : window.location.origin+'/auth-callback.html';
+        const{error}=await sb.auth.signUp({
+          email,password,
+          options:{
+            data:{full_name:name},
+            emailRedirectTo: redirectTo
+          }
+        });
+        if(error)throw error;
+        sucEl.innerHTML='✅ Account created! <strong>Check your email</strong> and click the confirmation link to activate your account.<br><small style="color:#276749">The link will bring you straight back to SmartCash.</small>';
+        sucEl.style.display='block';
+      }else{
+        const{data,error}=await sb.auth.signInWithPassword({email,password});
+        if(error){
+          if(error.message.includes('Email not confirmed')){
+            errEl.innerHTML='📧 Please check your email and click the confirmation link first. <a href="#" onclick="resendVerification(\''+email+'\')" style="color:#c53030;font-weight:700">Resend email</a>';
+          }else{
+            errEl.textContent=error.message;
+          }
+          errEl.style.display='block';
+        }else{
+          sucEl.textContent='Logged in! Redirecting…';sucEl.style.display='block';
+          setTimeout(()=>window.location.href='dashboard.html',1000);
+        }
+      }
     }catch(e){errEl.textContent=e.message;errEl.style.display='block';}
     document.getElementById('authSubmit').textContent=authMode==='login'?'Login':'Create Account';
   }else{sucEl.textContent='Demo mode — Redirecting to dashboard…';sucEl.style.display='block';setTimeout(()=>window.location.href='dashboard.html',1200);}
+}
+
+async function resendVerification(email){
+  if(typeof SUPABASE_CONFIG==='undefined'||SUPABASE_CONFIG.url==='YOUR_SUPABASE_URL')return;
+  const sb=window.supabase.createClient(SUPABASE_CONFIG.url,SUPABASE_CONFIG.anonKey);
+  const redirectTo=window.location.origin+'/auth-callback.html';
+  const{error}=await sb.auth.resend({type:'signup',email,options:{emailRedirectTo:redirectTo}});
+  const errEl=document.getElementById('modalError');
+  if(error){errEl.textContent='Could not resend: '+error.message;}
+  else{errEl.innerHTML='📧 Verification email resent! Check your inbox.';}
 }
 function showToast(msg){const t=document.createElement('div');t.className='toast';t.innerHTML='<span class="toast-tick">✓</span><span>'+msg+'</span>';document.body.appendChild(t);requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),400);},3500);}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});

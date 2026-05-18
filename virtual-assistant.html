@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartCash — Virtual Shopping Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --brand: #00C896;
+  --brand-dark: #009970;
+  --brand-light: rgba(0,200,150,0.1);
+  --purple: #7C3AED;
+  --purple-light: rgba(124,58,237,0.1);
+  --bg: #F7F8FA;
+  --surface: #ffffff;
+  --border: #E8EBF0;
+  --text: #111827;
+  --text2: #4B5563;
+  --muted: #9CA3AF;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.14);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* ===== NAV ===== */
+.nav{background:white;border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.nav-logo{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:800;color:var(--text);}
+.nav-logo span{color:var(--brand);}
+.nav-links{display:flex;gap:1.5rem;}
+.nav-links a{font-size:.85rem;font-weight:600;color:var(--text2);text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--brand);}
+
+/* ===== HERO STRIP ===== */
+.hero-strip{background:linear-gradient(135deg,#f0fdf9 0%,#faf5ff 100%);border-bottom:1px solid var(--border);padding:2rem 2rem 1.5rem;text-align:center;}
+.hero-strip h1{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:800;color:var(--text);margin-bottom:.35rem;}
+.hero-strip h1 span{color:var(--brand);}
+.hero-strip p{color:var(--text2);font-size:.9rem;}
+
+/* ===== MAIN LAYOUT ===== */
+.main{max-width:1280px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:400px 1fr;gap:1.5rem;align-items:start;}
+
+/* ===== ASSISTANT PANEL ===== */
+.assistant-panel{background:white;border:1.5px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);position:sticky;top:76px;}
+.asst-header{background:linear-gradient(135deg,#111827,#1f2937);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem;}
+.asst-avatar{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;position:relative;}
+.asst-status{position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:#4ADE80;border-radius:50%;border:2px solid #111827;}
+.asst-info h3{color:white;font-size:.95rem;font-weight:700;}
+.asst-info p{color:rgba(255,255,255,.6);font-size:.75rem;}
+.asst-online{margin-left:auto;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);color:#4ADE80;padding:.2rem .6rem;border-radius:50px;font-size:.7rem;font-weight:700;}
+
+.chat-messages{height:360px;overflow-y:auto;padding:1.25rem;display:flex;flex-direction:column;gap:.85rem;background:#FAFBFC;}
+.chat-messages::-webkit-scrollbar{width:4px;}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+.msg{display:flex;gap:.6rem;align-items:flex-end;animation:msgIn .25s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.msg.user{flex-direction:row-reverse;}
+.msg-ava{width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.85rem;}
+.msg.bot .msg-ava{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:white;}
+.msg.user .msg-ava{background:linear-gradient(135deg,#7C3AED,#5B21B6);color:white;}
+.bubble{max-width:82%;padding:.65rem .9rem;border-radius:14px;font-size:.85rem;line-height:1.55;}
+.msg.bot .bubble{background:white;color:var(--text);border:1px solid var(--border);border-bottom-left-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+.msg.user .bubble{background:linear-gradient(135deg,#7C3AED,#5B21B6);color:white;border-bottom-right-radius:4px;}
+
+.typing-indicator{display:flex;gap:.35rem;align-items:center;padding:.65rem .9rem;}
+.typing-dot{width:7px;height:7px;background:var(--muted);border-radius:50%;animation:typingBounce .9s infinite;}
+.typing-dot:nth-child(2){animation-delay:.2s;}
+.typing-dot:nth-child(3){animation-delay:.4s;}
+@keyframes typingBounce{0%,100%{transform:translateY(0);opacity:.4;}50%{transform:translateY(-5px);opacity:1;}}
+
+.quick-chips{padding:.75rem 1rem;display:flex;gap:.5rem;flex-wrap:wrap;border-top:1px solid var(--border);background:white;}
+.chip{padding:.3rem .75rem;background:var(--bg);border:1.5px solid var(--border);border-radius:50px;font-size:.75rem;font-weight:600;cursor:pointer;color:var(--text2);transition:all .2s;white-space:nowrap;}
+.chip:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-light);}
+.chip.active{background:var(--brand);border-color:var(--brand);color:white;}
+
+.chat-input-row{display:flex;gap:.6rem;padding:.85rem 1rem;border-top:1px solid var(--border);background:white;}
+.chat-input-row input{flex:1;padding:.55rem .9rem;border:1.5px solid var(--border);border-radius:10px;font-size:.85rem;outline:none;font-family:inherit;color:var(--text);transition:border-color .2s;}
+.chat-input-row input:focus{border-color:var(--brand);}
+.chat-input-row input::placeholder{color:var(--muted);}
+.send-btn{background:var(--brand);color:white;border:none;width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;transition:all .2s;}
+.send-btn:hover{background:var(--brand-dark);}
+
+/* ===== RIGHT PANEL ===== */
+.right-panel{display:flex;flex-direction:column;gap:1.5rem;}
+
+/* CATEGORY GRID */
+.cat-section{background:white;border:1.5px solid var(--border);border-radius:20px;padding:1.5rem;box-shadow:var(--shadow);}
+.panel-title{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:1.1rem;display:flex;align-items:center;gap:.5rem;}
+.panel-title .pt-badge{background:var(--brand-light);color:var(--brand-dark);padding:.15rem .5rem;border-radius:50px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.7rem;font-weight:700;}
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;}
+.cat-card{border:1.5px solid var(--border);border-radius:14px;padding:1.1rem .75rem;text-align:center;cursor:pointer;transition:all .22s;position:relative;overflow:hidden;background:var(--bg);}
+.cat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--brand),var(--brand-dark));opacity:0;transition:opacity .22s;}
+.cat-card:hover{border-color:var(--brand);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,200,150,0.2);}
+.cat-card:hover::before{opacity:.06;}
+.cat-card.selected{border-color:var(--brand);background:var(--brand-light);}
+.cat-icon{font-size:1.85rem;margin-bottom:.5rem;position:relative;}
+.cat-name{font-size:.75rem;font-weight:700;color:var(--text);position:relative;}
+.cat-count{font-size:.68rem;color:var(--muted);position:relative;}
+
+/* PRODUCT GRID */
+.products-section{background:white;border:1.5px solid var(--border);border-radius:20px;padding:1.5rem;box-shadow:var(--shadow);}
+.products-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;}
+.filter-row{display:flex;gap:.5rem;}
+.filter-btn{padding:.3rem .7rem;border:1.5px solid var(--border);border-radius:8px;font-size:.75rem;font-weight:600;cursor:pointer;background:white;color:var(--text2);transition:all .2s;}
+.filter-btn.active{background:var(--brand);border-color:var(--brand);color:white;}
+.product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+.product-card{border:1.5px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .22s;position:relative;background:white;}
+.product-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,0.1);border-color:var(--brand);}
+.product-card.selected{border-color:var(--brand);box-shadow:0 0 0 3px rgba(0,200,150,0.2);}
+.product-img{width:100%;height:160px;background:linear-gradient(135deg,#f0fdf9,#faf5ff);display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative;}
+.tryon-badge{position:absolute;top:.5rem;right:.5rem;background:var(--purple);color:white;padding:.15rem .5rem;border-radius:50px;font-size:.62rem;font-weight:700;}
+.cashback-pill{position:absolute;top:.5rem;left:.5rem;background:var(--brand);color:white;padding:.15rem .5rem;border-radius:50px;font-size:.65rem;font-weight:700;}
+.product-info{padding:.85rem;}
+.product-name{font-weight:700;font-size:.85rem;color:var(--text);margin-bottom:.15rem;}
+.product-brand{font-size:.72rem;color:var(--muted);margin-bottom:.5rem;}
+.product-price-row{display:flex;justify-content:space-between;align-items:center;}
+.product-price{font-weight:800;font-size:.95rem;color:var(--text);}
+.product-cb{font-size:.7rem;color:var(--brand);font-weight:700;}
+.try-on-btn{width:100%;margin-top:.65rem;padding:.45rem;border:1.5px solid var(--purple);border-radius:8px;background:var(--purple-light);color:var(--purple);font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;}
+.try-on-btn:hover{background:var(--purple);color:white;}
+
+/* ===== TRY-ON PANEL ===== */
+.tryon-panel{background:white;border:1.5px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);}
+.tryon-header{background:linear-gradient(135deg,var(--purple),#5B21B6);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:.85rem;}
+.tryon-header h2{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:800;color:white;}
+.tryon-header p{color:rgba(255,255,255,.7);font-size:.75rem;margin-top:.15rem;}
+.tryon-icon-wrap{width:40px;height:40px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;}
+.tryon-badge-strip{background:rgba(255,255,255,.1);border-top:1px solid rgba(255,255,255,.1);padding:.5rem 1.5rem;display:flex;gap:1rem;}
+.tryon-badge-strip span{font-size:.7rem;color:rgba(255,255,255,.75);display:flex;align-items:center;gap:.3rem;}
+
+.tryon-body{padding:1.5rem;}
+
+/* Upload area */
+.upload-zone{border:2px dashed var(--border);border-radius:16px;padding:2rem;text-align:center;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;background:var(--bg);}
+.upload-zone:hover{border-color:var(--purple);background:var(--purple-light);}
+.upload-zone.dragover{border-color:var(--purple);background:var(--purple-light);transform:scale(1.01);}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-icon{font-size:2.5rem;margin-bottom:.75rem;}
+.upload-zone h3{font-weight:700;font-size:.95rem;color:var(--text);margin-bottom:.3rem;}
+.upload-zone p{font-size:.8rem;color:var(--muted);line-height:1.5;}
+.upload-or{display:flex;align-items:center;gap:.75rem;margin:1rem 0;}
+.upload-or::before,.upload-or::after{content:'';flex:1;height:1px;background:var(--border);}
+.upload-or span{font-size:.75rem;color:var(--muted);font-weight:600;}
+.cam-btn{width:100%;padding:.65rem;border:1.5px solid var(--border);border-radius:10px;background:white;font-size:.85rem;font-weight:600;cursor:pointer;color:var(--text2);font-family:inherit;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.cam-btn:hover{border-color:var(--purple);color:var(--purple);}
+
+/* Preview state */
+.preview-wrap{position:relative;border-radius:14px;overflow:hidden;border:1.5px solid var(--border);}
+.preview-wrap img{width:100%;height:220px;object-fit:cover;display:block;}
+.preview-actions{display:flex;gap:.5rem;margin-top:.75rem;}
+.btn-sm{flex:1;padding:.55rem;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;border:none;}
+.btn-sm.outline{background:white;border:1.5px solid var(--border);color:var(--text2);}
+.btn-sm.outline:hover{border-color:var(--muted);}
+.btn-sm.primary{background:var(--purple);color:white;}
+.btn-sm.primary:hover{background:#6D28D9;}
+.btn-sm.brand{background:var(--brand);color:white;}
+.btn-sm.brand:hover{background:var(--brand-dark);}
+
+/* Item selector for try-on */
+.tryon-item-select{margin:.85rem 0;}
+.tryon-item-select label{font-size:.8rem;font-weight:700;color:var(--text2);display:block;margin-bottom:.5rem;}
+.tryon-item-row{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.35rem;}
+.tryon-item-row::-webkit-scrollbar{display:none;}
+.tryon-item-chip{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.6rem .75rem;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;background:var(--bg);min-width:70px;}
+.tryon-item-chip:hover{border-color:var(--purple);}
+.tryon-item-chip.selected{border-color:var(--purple);background:var(--purple-light);}
+.tryon-item-chip .ti-icon{font-size:1.5rem;}
+.tryon-item-chip .ti-name{font-size:.65rem;font-weight:700;color:var(--text);text-align:center;}
+
+/* Size selector */
+.size-row{display:flex;gap:.5rem;margin:.5rem 0;}
+.size-btn{width:38px;height:38px;border:1.5px solid var(--border);border-radius:8px;background:white;font-size:.78rem;font-weight:700;cursor:pointer;color:var(--text2);transition:all .2s;font-family:inherit;display:flex;align-items:center;justify-content:center;}
+.size-btn:hover{border-color:var(--purple);color:var(--purple);}
+.size-btn.active{background:var(--purple);border-color:var(--purple);color:white;}
+
+/* Result canvas */
+.result-area{background:linear-gradient(135deg,#fdf4ff,#f0f4ff);border:1.5px solid rgba(124,58,237,.2);border-radius:16px;padding:1.5rem;text-align:center;position:relative;overflow:hidden;}
+.result-avatar{font-size:8rem;display:block;margin:0 auto .5rem;animation:avatarIn .5s ease;}
+@keyframes avatarIn{from{transform:scale(.8) translateY(10px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+.result-shirt-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:5rem;pointer-events:none;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2));}
+.result-label{font-size:.8rem;font-weight:700;color:var(--purple);margin-top:.5rem;}
+.result-sub{font-size:.72rem;color:var(--text2);margin-top:.2rem;line-height:1.5;}
+.fit-badges{display:flex;gap:.5rem;justify-content:center;margin-top:.75rem;flex-wrap:wrap;}
+.fit-badge{padding:.25rem .65rem;border-radius:50px;font-size:.72rem;font-weight:700;}
+.fit-badge.good{background:rgba(0,200,150,.15);color:var(--brand-dark);}
+.fit-badge.warn{background:rgba(245,158,11,.15);color:#b45309;}
+
+/* Generate btn */
+.generate-btn{width:100%;padding:.85rem;background:linear-gradient(135deg,var(--purple),#5B21B6);color:white;border:none;border-radius:12px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:1rem;}
+.generate-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,58,237,.35);}
+.generate-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.generate-btn .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Notice */
+.notice{background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:.75rem;font-size:.75rem;color:#9A3412;line-height:1.55;display:flex;gap:.5rem;margin-top:1rem;}
+.notice-icon{flex-shrink:0;font-size:1rem;}
+
+/* Compliance notice */
+.compliance-chip{display:inline-flex;align-items:center;gap:.35rem;background:var(--brand-light);border:1px solid rgba(0,200,150,.25);color:var(--brand-dark);padding:.25rem .75rem;border-radius:50px;font-size:.72rem;font-weight:700;margin-bottom:.85rem;}
+
+/* Product detail popout */
+.product-detail{background:white;border:1.5px solid var(--border);border-radius:20px;padding:1.5rem;box-shadow:var(--shadow);display:none;}
+.product-detail.open{display:block;animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.pd-header{display:flex;gap:1rem;align-items:flex-start;margin-bottom:1.25rem;}
+.pd-img{width:80px;height:80px;background:linear-gradient(135deg,#f0fdf9,#faf5ff);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;border:1px solid var(--border);flex-shrink:0;}
+.pd-name{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:.2rem;}
+.pd-brand{font-size:.8rem;color:var(--muted);margin-bottom:.6rem;}
+.pd-price-row{display:flex;align-items:center;gap:.75rem;}
+.pd-price{font-weight:800;font-size:1.25rem;color:var(--text);}
+.pd-was{font-size:.85rem;color:var(--muted);text-decoration:line-through;}
+.pd-save{background:rgba(239,68,68,.1);color:#DC2626;padding:.15rem .5rem;border-radius:50px;font-size:.72rem;font-weight:700;}
+.pd-desc{font-size:.85rem;color:var(--text2);line-height:1.7;margin-bottom:1.1rem;}
+.pd-sizes{display:flex;gap:.5rem;margin-bottom:1.1rem;}
+.pd-actions{display:flex;gap:.75rem;}
+.pd-btn{flex:1;padding:.7rem;border-radius:10px;font-weight:700;font-size:.88rem;cursor:pointer;font-family:inherit;border:none;transition:all .2s;}
+.pd-btn.primary{background:var(--brand);color:white;}
+.pd-btn.primary:hover{background:var(--brand-dark);}
+.pd-btn.secondary{background:white;border:1.5px solid var(--border);color:var(--text2);}
+.pd-btn.secondary:hover{border-color:var(--purple);color:var(--purple);}
+.pd-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted);padding:.25rem;border-radius:6px;transition:color .2s;}
+.pd-close:hover{color:var(--text);}
+
+/* Camera modal */
+.cam-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;align-items:center;justify-content:center;}
+.cam-modal.open{display:flex;}
+.cam-inner{background:white;border-radius:20px;padding:1.5rem;width:90%;max-width:480px;}
+.cam-inner h3{font-weight:800;margin-bottom:1rem;}
+.cam-video{width:100%;border-radius:12px;background:#000;aspect-ratio:4/3;object-fit:cover;}
+.cam-actions{display:flex;gap:.75rem;margin-top:1rem;}
+
+/* Toast */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--text);color:white;padding:.75rem 1.25rem;border-radius:12px;font-size:.85rem;font-weight:600;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:.5rem;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast .tick{color:var(--brand);}
+
+@media(max-width:1024px){.main{grid-template-columns:1fr;}.assistant-panel{position:relative;top:0;}.cat-grid{grid-template-columns:repeat(4,1fr);}.product-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.cat-grid{grid-template-columns:repeat(2,1fr);}.product-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-logo">Smart<span>Cash</span></span>
+  <div class="nav-links">
+    <a href="app.html">← Back to Store</a>
+  </div>
+</nav>
+
+<div class="hero-strip">
+  <h1>Your <span>Virtual</span> Shopping Assistant</h1>
+  <p>Ask anything · Browse by category · Try before you buy with AI</p>
+</div>
+
+<div class="main">
+
+  <!-- LEFT: ASSISTANT -->
+  <div>
+    <div class="assistant-panel">
+      <div class="asst-header">
+        <div class="asst-avatar">🛍️<div class="asst-status"></div></div>
+        <div class="asst-info">
+          <h3>Aria — Your Shopping Guide</h3>
+          <p>AI-powered · Knows all 500+ stores</p>
+        </div>
+        <span class="asst-online">● Online</span>
+      </div>
+
+      <div class="chat-messages" id="chatMsgs"></div>
+
+      <div class="quick-chips" id="quickChips">
+        <span class="chip" onclick="quickSend(this)">👕 Men's T-Shirts</span>
+        <span class="chip" onclick="quickSend(this)">👖 Jeans</span>
+        <span class="chip" onclick="quickSend(this)">👟 Trainers</span>
+        <span class="chip" onclick="quickSend(this)">🧥 Jackets</span>
+        <span class="chip" onclick="quickSend(this)">💸 Best deals</span>
+        <span class="chip" onclick="quickSend(this)">💡 Try-on help</span>
+      </div>
+
+      <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Ask Aria anything…" onkeydown="if(event.key==='Enter')sendMsg()">
+        <button class="send-btn" onclick="sendMsg()">↑</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: CONTENT -->
+  <div class="right-panel">
+
+    <!-- CATEGORIES -->
+    <div class="cat-section" id="catSection">
+      <div class="panel-title">Browse Categories <span class="pt-badge">500+ stores</span></div>
+      <div class="cat-grid">
+        <div class="cat-card" onclick="selectCategory(this,'mens-tshirts','👕 Men\'s T-Shirts')"><div class="cat-icon">👕</div><div class="cat-name">Men's Tees</div><div class="cat-count">248 items</div></div>
+        <div class="cat-card" onclick="selectCategory(this,'jeans','👖 Jeans')"><div class="cat-icon">👖</div><div class="cat-name">Jeans</div><div class="cat-count">183 items</div></div>
+        <div class="cat-card" onclick="selectCategory(this,'trainers','👟 Trainers')"><div class="cat-icon">👟</div><div class="cat-name">Trainers</div><div class="cat-count">312 items</div></div>
+        <div class="cat-card" onclick="selectCategory(this,'jackets','🧥 Jackets')"><div class="cat-icon">🧥</div><div class="cat-name">Jackets</div><div class="cat-count">96 items</div></div>
+        <div class="cat-card" onclick="selectCategory(this,'shirts','👔 Shirts')"><div class="cat-icon">👔</div><div class="cat-name">Shirts</div><div class="cat-count">174 items</div></div>
+        <div class="cat-card" onclick="selectCategory(this,'hoodies','🧥 Hoodies')"><div class="cat-icon">🧣</div><div class="cat-name">Hoodies</div><div class="cat-count">142 items</div></div>
+        <div class="cat-card" onclick="selectCategory(this,'shorts','🩳 Shorts')"><div class="cat-icon">🩳</div><div class="cat-name">Shorts</div><div class="cat-count">89 items</div></div>
+        <div class="cat-card" onclick="selectCategory(this,'accessories','⌚ Accessories')"><div class="cat-icon">⌚</div><div class="cat-name">Accessories</div><div class="cat-count">201 items</div></div>
+      </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="products-section" id="productsSection" style="display:none">
+      <div class="products-header">
+        <div class="panel-title" id="productsPanelTitle" style="margin:0">Products</div>
+        <div class="filter-row">
+          <button class="filter-btn active" onclick="filterProd(this,'all')">All</button>
+          <button class="filter-btn" onclick="filterProd(this,'tryon')">🪄 Try-On</button>
+          <button class="filter-btn" onclick="filterProd(this,'sale')">🔥 Sale</button>
+        </div>
+      </div>
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+
+    <!-- PRODUCT DETAIL -->
+    <div class="product-detail" id="productDetail">
+      <div id="productDetailInner"></div>
+    </div>
+
+    <!-- TRY-ON PANEL -->
+    <div class="tryon-panel" id="tryOnPanel" style="display:none">
+      <div class="tryon-header">
+        <div class="tryon-icon-wrap">🪄</div>
+        <div>
+          <h2>AI Virtual Try-On</h2>
+          <p>See how it looks on YOU before buying</p>
+        </div>
+      </div>
+      <div class="tryon-badge-strip">
+        <span>✅ Animated avatars only — no real photos stored</span>
+        <span>🔒 Privacy-safe · Men's tops only</span>
+        <span>♻️ Cleared after session</span>
+      </div>
+      <div class="tryon-body">
+        <div class="compliance-chip">✦ SmartCash AI Try-On — Men's Outerwear Only</div>
+
+        <!-- Upload / Camera -->
+        <div id="uploadSection">
+          <div class="upload-zone" id="uploadZone">
+            <input type="file" accept="image/*" id="photoInput" onchange="handlePhoto(this)">
+            <div class="upload-icon">📸</div>
+            <h3>Upload your photo</h3>
+            <p>Stand facing forward, plain background works best.<br>Photo used only to detect your build — never stored.</p>
+          </div>
+          <div class="upload-or"><span>or</span></div>
+          <button class="cam-btn" onclick="openCamera()">📷 Use your camera live</button>
+          <div class="notice"><span class="notice-icon">🔒</span><span>Your photo is processed locally to detect your approximate build (slim/regular/athletic). We generate a cartoon avatar — your real image is never saved, shared, or used for AI training.</span></div>
+        </div>
+
+        <!-- After photo selected -->
+        <div id="photoPreview" style="display:none">
+          <div class="tryon-item-select">
+            <label>Select item to try on:</label>
+            <div class="tryon-item-row" id="tryonItemRow">
+              <!-- Filled by JS -->
+            </div>
+          </div>
+          <div class="tryon-item-select">
+            <label>Select size:</label>
+            <div class="size-row" id="sizeRow">
+              <button class="size-btn" onclick="selectSize(this)">XS</button>
+              <button class="size-btn active" onclick="selectSize(this)">S</button>
+              <button class="size-btn" onclick="selectSize(this)">M</button>
+              <button class="size-btn" onclick="selectSize(this)">L</button>
+              <button class="size-btn" onclick="selectSize(this)">XL</button>
+              <button class="size-btn" onclick="selectSize(this)">XXL</button>
+            </div>
+          </div>
+          <button class="generate-btn" id="generateBtn" onclick="generateTryOn()">
+            <span>🪄 Generate Try-On Preview</span>
+          </button>
+        </div>
+
+        <!-- Result -->
+        <div id="tryonResult" style="display:none">
+          <div class="result-area" id="resultArea">
+            <!-- Filled by JS -->
+          </div>
+          <div class="preview-actions" style="margin-top:.85rem">
+            <button class="btn-sm outline" onclick="resetTryon()">↩ Try Another</button>
+            <button class="btn-sm primary" onclick="tryDifferentSize()">📐 Try Different Size</button>
+            <button class="btn-sm brand" onclick="shopNow()">🛒 Buy Now</button>
+          </div>
+          <div class="notice" style="margin-top:.75rem"><span class="notice-icon">ℹ️</span><span>This is an animated avatar representation — not a photo manipulation. Fit accuracy is indicative based on your selected size and typical brand sizing.</span></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CAMERA MODAL -->
+<div class="cam-modal" id="camModal">
+  <div class="cam-inner">
+    <h3>📷 Camera Try-On</h3>
+    <video class="cam-video" id="camVideo" autoplay playsinline></video>
+    <div class="cam-actions">
+      <button class="btn-sm outline" onclick="closeCamera()">Cancel</button>
+      <button class="btn-sm primary" onclick="capturePhoto()">📸 Take Photo</button>
+    </div>
+    <canvas id="camCanvas" style="display:none"></canvas>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span class="tick">✓</span><span id="toastMsg">Done!</span>
+</div>
+
+<script>
+// ============================================================
+//  DATA
+// ============================================================
+const PRODUCTS = {
+  'mens-tshirts': [
+    {id:'ts1',name:'Essential Cotton Tee',brand:'ASOS',price:12.00,was:null,cashback:6,emoji:'👕',color:'#4F8EF7',hasTryon:true,sizes:['S','M','L','XL'],desc:'100% organic cotton crew-neck tee. Relaxed fit, perfect for everyday wear.',cat:'mens-tshirts',sale:false},
+    {id:'ts2',name:'Slim Fit Graphic Tee',brand:'ASOS',price:14.99,was:20.00,cashback:6,emoji:'👕',color:'#E74C3C',hasTryon:true,sizes:['XS','S','M','L'],desc:'Bold graphic print on a premium slim-fit cut. Soft ribbed neckline.',cat:'mens-tshirts',sale:true},
+    {id:'ts3',name:'Performance Running Tee',brand:'Nike',price:32.00,was:null,cashback:3.5,emoji:'👕',color:'#2ECC71',hasTryon:true,sizes:['S','M','L','XL','XXL'],desc:'Dri-FIT technology keeps you dry. Lightweight and breathable.',cat:'mens-tshirts',sale:false},
+    {id:'ts4',name:'Polo Shirt Classic',brand:'Ralph Lauren',price:65.00,was:85.00,cashback:5,emoji:'👔',color:'#9B59B6',hasTryon:true,sizes:['S','M','L','XL'],desc:'The iconic polo. Piqué cotton with embroidered Polo player logo.',cat:'mens-tshirts',sale:true},
+    {id:'ts5',name:'Oversized Vintage Tee',brand:'Gymshark',price:28.00,was:null,cashback:7,emoji:'👕',color:'#F39C12',hasTryon:true,sizes:['S','M','L','XL'],desc:'Relaxed oversized cut. Washed vintage aesthetic. Premium cotton blend.',cat:'mens-tshirts',sale:false},
+    {id:'ts6',name:'Striped Breton Tee',brand:'M&S',price:22.00,was:null,cashback:3.5,emoji:'👕',color:'#1ABC9C',hasTryon:true,sizes:['XS','S','M','L','XL'],desc:'Classic navy and white Breton stripes. Soft, breathable cotton.',cat:'mens-tshirts',sale:false},
+  ],
+  'jeans': [
+    {id:'j1',name:'Slim Fit Jeans Dark',brand:'Levi\'s',price:69.99,was:null,cashback:4,emoji:'👖',color:'#2C3E50',hasTryon:false,sizes:['28/30','30/30','32/30','32/32','34/32'],desc:'511™ Slim Fit. Advanced stretch for all-day comfort.',cat:'jeans',sale:false},
+    {id:'j2',name:'Straight Leg Jeans',brand:'ASOS',price:35.00,was:55.00,cashback:6,emoji:'👖',color:'#3498DB',hasTryon:false,sizes:['28/30','30/30','32/30','34/30'],desc:'Classic straight leg. Versatile indigo wash.',cat:'jeans',sale:true},
+    {id:'j3',name:'Skinny Jeans Black',brand:'Next',price:28.00,was:null,cashback:3,emoji:'👖',color:'#1A1A2E',hasTryon:false,sizes:['28/30','30/30','32/32'],desc:'Super-skinny fit in jet black. Stretch fabric for comfort.',cat:'jeans',sale:false},
+  ],
+  'trainers': [
+    {id:'tr1',name:'Air Max 90',brand:'Nike',price:119.99,was:null,cashback:3.5,emoji:'👟',color:'#E74C3C',hasTryon:false,sizes:['UK 7','UK 8','UK 9','UK 10','UK 11'],desc:'Iconic Air cushioning. Leather and mesh upper. All-day comfort.',cat:'trainers',sale:false},
+    {id:'tr2',name:'Samba OG',brand:'Adidas',price:89.99,was:110.00,cashback:4,emoji:'👟',color:'#2C3E50',hasTryon:false,sizes:['UK 7','UK 8','UK 9','UK 10'],desc:'The legendary Samba. Indoor-inspired court silhouette.',cat:'trainers',sale:true},
+    {id:'tr3',name:'Chuck Taylor All Star',brand:'Converse',price:59.99,was:null,cashback:5,emoji:'👟',color:'#ECF0F1',hasTryon:false,sizes:['UK 6','UK 7','UK 8','UK 9','UK 10','UK 11'],desc:'The original hi-top. Canvas upper, rubber sole.',cat:'trainers',sale:false},
+  ],
+  'jackets': [
+    {id:'jk1',name:'Puffer Jacket',brand:'Nike',price:89.00,was:120.00,cashback:3.5,emoji:'🧥',color:'#2C3E50',hasTryon:true,sizes:['S','M','L','XL'],desc:'Lightweight synthetic fill. Packable, windproof shell.',cat:'jackets',sale:true},
+    {id:'jk2',name:'Harrington Jacket',brand:'ASOS',price:45.00,was:null,cashback:6,emoji:'🧥',color:'#27AE60',hasTryon:true,sizes:['S','M','L','XL','XXL'],desc:'Classic harrington in premium fabric. Tartan lining.',cat:'jackets',sale:false},
+  ],
+  'shirts': [
+    {id:'sh1',name:'Oxford Button-Down',brand:'M&S',price:39.50,was:null,cashback:3.5,emoji:'👔',color:'#5DADE2',hasTryon:true,sizes:['S','M','L','XL'],desc:'Classic Oxford weave. Regular fit, button-down collar.',cat:'shirts',sale:false},
+    {id:'sh2',name:'Slim Fit Check Shirt',brand:'Next',price:28.00,was:40.00,cashback:3,emoji:'👔',color:'#922B21',hasTryon:true,sizes:['S','M','L','XL'],desc:'Timeless check print. Easy-iron fabric.',cat:'shirts',sale:true},
+  ],
+  'hoodies': [
+    {id:'h1',name:'Essential Hoodie',brand:'Gymshark',price:45.00,was:null,cashback:7,emoji:'🧣',color:'#2C3E50',hasTryon:true,sizes:['S','M','L','XL','XXL'],desc:'Premium fleece-lined hoodie. Relaxed fit with kangaroo pocket.',cat:'hoodies',sale:false},
+    {id:'h2',name:'Zip-Up Hoodie',brand:'ASOS',price:30.00,was:42.00,cashback:6,emoji:'🧣',color:'#7F8C8D',hasTryon:true,sizes:['S','M','L','XL'],desc:'Full-zip hoodie in brushed cotton. Two side pockets.',cat:'hoodies',sale:true},
+  ],
+  'shorts': [
+    {id:'sq1',name:'Chino Shorts',brand:'ASOS',price:20.00,was:null,cashback:6,emoji:'🩳',color:'#E8D5B7',hasTryon:false,sizes:['28"','30"','32"','34"','36"'],desc:'Smart chino shorts. Side and back pockets.',cat:'shorts',sale:false},
+  ],
+  'accessories': [
+    {id:'ac1',name:'Stainless Watch',brand:'Casio',price:49.99,was:null,cashback:4,emoji:'⌚',color:'#C0C0C0',hasTryon:false,sizes:['One Size'],desc:'Slim stainless steel watch. Mineral glass, water resistant.',cat:'accessories',sale:false},
+  ],
+};
+
+// Try-on eligible items (men's outerwear only, no innerwear)
+const TRYON_ELIGIBLE = ['mens-tshirts','jackets','shirts','hoodies'];
+
+// Body type avatars
+const BODY_AVATARS = {
+  slim:    ['🧍','👨‍💼','🧑'],
+  regular: ['🧑','👨','👱'],
+  athletic:['🏃','🤸','💪'],
+};
+
+// Shirt colour overlay emojis by category
+const SHIRT_OVERLAYS = {
+  'mens-tshirts': '👕',
+  'shirts':        '👔',
+  'jackets':       '🧥',
+  'hoodies':       '🧣',
+};
+
+// ============================================================
+//  STATE
+// ============================================================
+let currentCat = null;
+let currentProducts = [];
+let selectedProduct = null;
+let selectedSize = 'M';
+let userPhoto = null;
+let userBodyType = 'regular';
+let selectedTryonItem = null;
+let aiHistory = [];
+let isTyping = false;
+let cameraStream = null;
+
+// ============================================================
+//  CHAT
+// ============================================================
+function addMsg(role, text) {
+  const box = document.getElementById('chatMsgs');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `
+    <div class="msg-ava">${role === 'bot' ? '🛍️' : '👤'}</div>
+    <div class="bubble">${text}</div>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function showTyping() {
+  const box = document.getElementById('chatMsgs');
+  const div = document.createElement('div');
+  div.className = 'msg bot'; div.id = 'typing-indicator';
+  div.innerHTML = `<div class="msg-ava">🛍️</div><div class="bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+  box.appendChild(div); box.scrollTop = box.scrollHeight;
+}
+function hideTyping() { document.getElementById('typing-indicator')?.remove(); }
+
+async function botReply(userMsg) {
+  if (isTyping) return;
+  isTyping = true;
+  showTyping();
+  await new Promise(r => setTimeout(r, 800 + Math.random()*600));
+  hideTyping();
+
+  aiHistory.push({ role: 'user', content: userMsg });
+
+  let reply = '';
+
+  // Try Claude API first
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        system: `You are Aria, a friendly virtual shopping assistant for SmartCash, a UK cashback platform. 
+You help customers find men's clothing. Current categories: Men's T-Shirts, Jeans, Trainers, Jackets, Shirts, Hoodies, Shorts, Accessories.
+Be brief (2–3 sentences max), warm, and helpful. Use £ for prices. Mention cashback when relevant.
+If they ask about sizing, recommend our AI try-on feature for T-shirts, shirts, jackets and hoodies.
+If they mention a specific category, confirm you're showing it.
+Don't use markdown. Keep it conversational.`,
+        messages: aiHistory,
+      })
+    });
+    const d = await r.json();
+    reply = d.content?.[0]?.text || '';
+  } catch(e) {}
+
+  // Fallback
+  if (!reply) reply = getLocalReply(userMsg);
+
+  aiHistory.push({ role: 'assistant', content: reply });
+  addMsg('bot', reply);
+  isTyping = false;
+}
+
+function getLocalReply(msg) {
+  const l = msg.toLowerCase();
+  if (l.includes('t-shirt') || l.includes('tee') || l.includes('tshirt')) return "I've pulled up our Men's T-Shirts for you — we've got 248 options with up to 7% cashback! Want me to filter by price, colour or brand?";
+  if (l.includes('jean') || l.includes('denim')) return "Great choice! I'm showing our jeans range. Levi's and ASOS are our top picks — both with cashback. Slim, straight or skinny?";
+  if (l.includes('trainer') || l.includes('shoe') || l.includes('sneaker')) return "Showing trainers now! Nike, Adidas and Converse all with cashback. What's your size?";
+  if (l.includes('jacket') || l.includes('coat')) return "Our jackets section is now open — great cashback rates this season. Try our AI try-on to see how any jacket looks on you!";
+  if (l.includes('try') || l.includes('fit') || l.includes('size')) return "Great question! Our AI Try-On feature lets you see any T-shirt, jacket or shirt on an avatar matching your build. Select a product and click 'Try On' — it's at the bottom of the page!";
+  if (l.includes('cashback') || l.includes('deal')) return "Best cashback right now: Gymshark 7%, ASOS 6%, Converse 5%. Click any product to shop and earn automatically!";
+  if (l.includes('help') || l.includes('what')) return "I can help you find any men's clothing with cashback! Tell me what you're looking for — a specific item, brand, or price range — and I'll find the best options.";
+  if (l.includes('hello') || l.includes('hi') || l.includes('hey')) return "Hey! 👋 I'm Aria, your SmartCash shopping guide. What are you looking for today? Tap a category or tell me what you need!";
+  return "I'm here to help you find the perfect item with the best cashback! Try browsing a category above, or tell me what you're looking for.";
+}
+
+async function sendMsg() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addMsg('user', msg);
+
+  // Category shortcuts from chat
+  const l = msg.toLowerCase();
+  if (l.includes('t-shirt') || l.includes('tee') || l.includes('tshirt')) {
+    setTimeout(() => selectCategoryById('mens-tshirts','👕 Men\'s T-Shirts'), 400);
+  } else if (l.includes('jean') || l.includes('denim')) {
+    setTimeout(() => selectCategoryById('jeans','👖 Jeans'), 400);
+  } else if (l.includes('trainer') || l.includes('shoe') || l.includes('sneaker')) {
+    setTimeout(() => selectCategoryById('trainers','👟 Trainers'), 400);
+  } else if (l.includes('jacket') || l.includes('coat')) {
+    setTimeout(() => selectCategoryById('jackets','🧥 Jackets'), 400);
+  } else if (l.includes('hoodie')) {
+    setTimeout(() => selectCategoryById('hoodies','🧣 Hoodies'), 400);
+  } else if (l.includes('shirt')) {
+    setTimeout(() => selectCategoryById('shirts','👔 Shirts'), 400);
+  }
+
+  await botReply(msg);
+}
+
+async function quickSend(el) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const msg = el.textContent.trim();
+  addMsg('user', msg);
+
+  const l = msg.toLowerCase();
+  if (l.includes('t-shirt') || l.includes('tee')) selectCategoryById('mens-tshirts','👕 Men\'s T-Shirts');
+  else if (l.includes('jean')) selectCategoryById('jeans','👖 Jeans');
+  else if (l.includes('trainer')) selectCategoryById('trainers','👟 Trainers');
+  else if (l.includes('jacket')) selectCategoryById('jackets','🧥 Jackets');
+  else if (l.includes('try-on')) {
+    document.getElementById('tryOnPanel').style.display = 'block';
+    document.getElementById('tryOnPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  await botReply(msg);
+}
+
+// ============================================================
+//  CATEGORIES + PRODUCTS
+// ============================================================
+function selectCategory(el, catId, label) {
+  document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectCategoryById(catId, label);
+}
+
+function selectCategoryById(catId, label) {
+  currentCat = catId;
+  const items = PRODUCTS[catId] || [];
+  currentProducts = items;
+  document.getElementById('productsPanelTitle').innerHTML = `${label} <span class="pt-badge">${items.length} items</span>`;
+  document.getElementById('productsSection').style.display = 'block';
+
+  // Show try-on for eligible categories
+  const isTryonCat = TRYON_ELIGIBLE.includes(catId);
+  document.getElementById('tryOnPanel').style.display = isTryonCat ? 'block' : 'none';
+
+  renderProducts(items);
+  document.getElementById('productsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Highlight cat card
+  document.querySelectorAll('.cat-card').forEach(c => {
+    const nameEl = c.querySelector('.cat-name');
+    const matches = label.toLowerCase().includes(nameEl?.textContent.toLowerCase().split(' ')[0].toLowerCase());
+    if (matches) c.classList.add('selected');
+  });
+}
+
+function renderProducts(items) {
+  document.getElementById('productGrid').innerHTML = items.map(p => `
+    <div class="product-card ${selectedProduct?.id===p.id?'selected':''}" onclick="openProduct('${p.id}')" id="pc-${p.id}">
+      <div class="product-img" style="background:linear-gradient(135deg,${p.color}22,${p.color}11)">
+        <span style="font-size:3.5rem">${p.emoji}</span>
+        ${p.hasTryon ? '<span class="tryon-badge">🪄 Try-On</span>' : ''}
+        <span class="cashback-pill">${p.cashback}% back</span>
+      </div>
+      <div class="product-info">
+        <div class="product-name">${p.name}</div>
+        <div class="product-brand">${p.brand}</div>
+        <div class="product-price-row">
+          <div>
+            <span class="product-price">£${p.price.toFixed(2)}</span>
+            ${p.was ? `<span style="font-size:.72rem;color:var(--muted);text-decoration:line-through;margin-left:.3rem">£${p.was.toFixed(2)}</span>` : ''}
+          </div>
+          <span class="product-cb">+${p.cashback}% CB</span>
+        </div>
+        ${p.hasTryon ? `<button class="try-on-btn" onclick="event.stopPropagation();quickTryon('${p.id}')">🪄 Try This On</button>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function filterProd(el, type) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  let items = currentProducts;
+  if (type === 'tryon') items = items.filter(p => p.hasTryon);
+  if (type === 'sale') items = items.filter(p => p.sale || p.was);
+  renderProducts(items);
+}
+
+function openProduct(id) {
+  const p = currentProducts.find(x => x.id === id);
+  if (!p) return;
+  selectedProduct = p;
+
+  document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('pc-' + id)?.classList.add('selected');
+
+  const detail = document.getElementById('productDetail');
+  detail.classList.add('open');
+  document.getElementById('productDetailInner').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem">
+      <div class="panel-title" style="margin:0">Product Details</div>
+      <button class="pd-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="pd-header">
+      <div class="pd-img" style="background:linear-gradient(135deg,${p.color}22,${p.color}11)">${p.emoji}</div>
+      <div>
+        <div class="pd-name">${p.name}</div>
+        <div class="pd-brand">${p.brand}</div>
+        <div class="pd-price-row">
+          <span class="pd-price">£${p.price.toFixed(2)}</span>
+          ${p.was ? `<span class="pd-was">£${p.was.toFixed(2)}</span><span class="pd-save">Save £${(p.was-p.price).toFixed(2)}</span>` : ''}
+        </div>
+      </div>
+    </div>
+    <p class="pd-desc">${p.desc} You earn <strong style="color:var(--brand)">${p.cashback}% cashback (£${(p.price*p.cashback/100).toFixed(2)})</strong> when buying through SmartCash.</p>
+    <div style="font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:.5rem">Available Sizes:</div>
+    <div class="pd-sizes">
+      ${p.sizes.map((s,i) => `<button class="size-btn ${i===1?'active':''}" onclick="this.parentElement.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');selectedSize=this.textContent">${s}</button>`).join('')}
+    </div>
+    <div class="pd-actions">
+      <button class="pd-btn primary" onclick="shopNow()">🛒 Shop & Earn ${p.cashback}%</button>
+      ${p.hasTryon ? `<button class="pd-btn secondary" onclick="quickTryon('${p.id}')">🪄 Try It On</button>` : ''}
+    </div>`;
+  detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // Ask assistant about the product
+  setTimeout(() => {
+    addMsg('bot', `Good choice! The <strong>${p.name}</strong> by ${p.brand} is £${p.price.toFixed(2)} with <strong style="color:var(--brand)">${p.cashback}% cashback</strong>. ${p.hasTryon ? '🪄 This one supports our AI Try-On — want to see how it looks on you?' : 'Would you like help with sizing or have any questions?'}`);
+  }, 300);
+}
+
+function closeDetail() {
+  document.getElementById('productDetail').classList.remove('open');
+}
+
+function shopNow() {
+  showToast('Opening store — ' + (selectedProduct?.cashback||5) + '% cashback is now being tracked!');
+}
+
+// ============================================================
+//  TRY-ON
+// ============================================================
+function quickTryon(id) {
+  const p = currentProducts.find(x => x.id === id);
+  if (!p || !p.hasTryon) { showToast('Try-On not available for this item'); return; }
+  selectedProduct = p;
+  document.getElementById('tryOnPanel').style.display = 'block';
+  document.getElementById('tryOnPanel').scrollIntoView({ behavior: 'smooth' });
+
+  // Populate try-on items
+  const tryonItems = currentProducts.filter(x => x.hasTryon);
+  document.getElementById('tryonItemRow').innerHTML = tryonItems.map(i => `
+    <div class="tryon-item-chip ${i.id===p.id?'selected':''}" onclick="selectTryonItem(this,'${i.id}')" id="tic-${i.id}">
+      <span class="ti-icon">${i.emoji}</span>
+      <span class="ti-name">${i.name.split(' ').slice(0,2).join(' ')}</span>
+    </div>`).join('');
+  selectedTryonItem = p;
+
+  addMsg('bot', `🪄 Try-On mode activated for <strong>${p.name}</strong>! Upload a photo or use your camera — we\'ll show you how it looks on your build.`);
+}
+
+function selectTryonItem(el, id) {
+  document.querySelectorAll('.tryon-item-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTryonItem = currentProducts.find(x => x.id === id);
+}
+
+function selectSize(el) {
+  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  selectedSize = el.textContent;
+}
+
+function handlePhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    userPhoto = e.target.result;
+    analyseBodyType();
+    showPhotoPreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function analyseBodyType() {
+  // Simple heuristic (in a real app this would use a CV model)
+  // Randomly assign for demo
+  const types = ['slim','regular','athletic'];
+  userBodyType = types[Math.floor(Math.random() * types.length)];
+}
+
+function showPhotoPreview() {
+  document.getElementById('uploadSection').style.display = 'none';
+  document.getElementById('photoPreview').style.display = 'block';
+
+  if (!selectedTryonItem && currentProducts.length) {
+    const tryonItems = currentProducts.filter(x => x.hasTryon);
+    if (tryonItems.length) {
+      selectedTryonItem = tryonItems[0];
+      document.getElementById('tryonItemRow').innerHTML = tryonItems.map((i,idx) => `
+        <div class="tryon-item-chip ${idx===0?'selected':''}" onclick="selectTryonItem(this,'${i.id}')" id="tic-${i.id}">
+          <span class="ti-icon">${i.emoji}</span>
+          <span class="ti-name">${i.name.split(' ').slice(0,2).join(' ')}</span>
+        </div>`).join('');
+    }
+  }
+
+  addMsg('bot', `📸 Photo received! I can see you have a <strong>${userBodyType}</strong> build. Select an item and size, then tap Generate to see your try-on preview.`);
+}
+
+async function generateTryOn() {
+  if (!selectedTryonItem) { showToast('Please select an item to try on'); return; }
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Generating your look…';
+
+  await new Promise(r => setTimeout(r, 2200));
+
+  btn.disabled = false;
+  btn.innerHTML = '<span>🪄 Generate Try-On Preview</span>';
+
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('tryonResult').style.display = 'block';
+  showTryonResult();
+}
+
+function showTryonResult() {
+  const p = selectedTryonItem;
+  const avatarList = BODY_AVATARS[userBodyType] || BODY_AVATARS.regular;
+  const avatar = avatarList[Math.floor(Math.random() * avatarList.length)];
+  const shirtEmoji = SHIRT_OVERLAYS[p.cat] || '👕';
+
+  const fitInfo = {
+    XS: { fit:'Tight Fit', badges:['⚠️ May be snug','Check measurements'] },
+    S:  { fit:'Slim Fit', badges:['✅ Recommended for slim builds','True to size'] },
+    M:  { fit:'Regular Fit', badges:['✅ Perfect for regular builds','True to size'] },
+    L:  { fit:'Relaxed Fit', badges:['✅ Great for athletic builds','Slightly loose'] },
+    XL: { fit:'Oversized', badges:['✅ Relaxed look','Roomy fit'] },
+    XXL:{ fit:'Very Oversized', badges:['⚠️ Very loose','Consider sizing down'] },
+  }[selectedSize] || { fit:'Regular Fit', badges:['✅ True to size'] };
+
+  const savingNote = p.was ? `Save £${(p.was - p.price).toFixed(2)}` : null;
+
+  document.getElementById('resultArea').innerHTML = `
+    <div style="position:relative;display:inline-block;margin-bottom:.5rem">
+      <div style="font-size:7rem;line-height:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.15))">${avatar}</div>
+      <div style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);font-size:3.5rem">${shirtEmoji}</div>
+    </div>
+    <div style="margin-top:1.25rem">
+      <div style="font-family:'Fraunces',serif;font-size:.95rem;font-weight:800;color:var(--purple)">${p.name}</div>
+      <div style="font-size:.75rem;color:var(--text2);margin:.2rem 0">${p.brand} · Size ${selectedSize} · ${fitInfo.fit}</div>
+    </div>
+    <div class="fit-badges">
+      ${fitInfo.badges.map(b => `<span class="fit-badge ${b.startsWith('✅')?'good':'warn'}">${b}</span>`).join('')}
+    </div>
+    <div style="margin-top:1rem;background:rgba(0,200,150,.08);border-radius:10px;padding:.75rem;border:1px solid rgba(0,200,150,.2)">
+      <div style="font-size:.78rem;color:var(--text2)">Effective price with ${p.cashback}% SmartCash cashback:</div>
+      <div style="font-family:'Fraunces',serif;font-size:1.3rem;font-weight:800;color:var(--brand)">£${(p.price*(1-p.cashback/100)).toFixed(2)} <span style="font-size:.75rem;font-weight:400;color:var(--muted)">effective</span></div>
+      ${savingNote ? `<div style="font-size:.72rem;color:#c53030;margin-top:.15rem">${savingNote} on RRP</div>` : ''}
+    </div>`;
+
+  addMsg('bot', `✨ Here's how the <strong>${p.name}</strong> looks in size ${selectedSize}! The fit is "${fitInfo.fit}" for your build. Happy with it? Tap Buy Now to get it with ${p.cashback}% cashback!`);
+}
+
+function resetTryon() {
+  document.getElementById('tryonResult').style.display = 'none';
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('uploadSection').style.display = 'block';
+  userPhoto = null;
+  document.getElementById('photoInput').value = '';
+}
+
+function tryDifferentSize() {
+  document.getElementById('tryonResult').style.display = 'none';
+  document.getElementById('photoPreview').style.display = 'block';
+  addMsg('bot', 'Try a different size — just select it from the buttons above and tap Generate again!');
+}
+
+// ============================================================
+//  CAMERA
+// ============================================================
+async function openCamera() {
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+    document.getElementById('camVideo').srcObject = cameraStream;
+    document.getElementById('camModal').classList.add('open');
+  } catch(e) {
+    showToast('Camera access denied — please upload a photo instead');
+  }
+}
+
+function closeCamera() {
+  if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+  document.getElementById('camModal').classList.remove('open');
+}
+
+function capturePhoto() {
+  const video = document.getElementById('camVideo');
+  const canvas = document.getElementById('camCanvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  userPhoto = canvas.toDataURL('image/jpeg', 0.8);
+  closeCamera();
+  analyseBodyType();
+  showPhotoPreview();
+}
+
+// ============================================================
+//  TOAST
+// ============================================================
+function showToast(msg) {
+  document.getElementById('toastMsg').textContent = msg;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ============================================================
+//  INIT — Greeting
+// ============================================================
+(async () => {
+  await new Promise(r => setTimeout(r, 600));
+  addMsg('bot', "Hi there! 👋 I'm <strong>Aria</strong>, your SmartCash shopping assistant. What are you looking for today?");
+  await new Promise(r => setTimeout(r, 1200));
+  addMsg('bot', "Browse categories on the right, or just tell me what you need — a T-shirt, trainers, jacket? I'll find the best options with cashback! 🛍️");
+})();
+</script>
+</body>
+</html>
