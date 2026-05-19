@@ -3,167 +3,457 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartCash — AI-Powered Cashback That Learns Your Style</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<title>SmartCash — AI-Powered Cashback. Shop Smarter.</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <link rel="stylesheet" href="theme.css">
 <style>
-.hero{background:linear-gradient(135deg,#f0fdf9 0%,#ffffff 50%,#faf5ff 100%);padding:4.5rem 2rem 4rem;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
-.hero::before{content:'';position:absolute;top:-80px;right:-80px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(0,200,150,0.08),transparent 70%);pointer-events:none;}
-.hero-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
-.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--brand-light);border:1px solid rgba(0,200,150,.25);color:var(--brand-dark);padding:.35rem .9rem;border-radius:50px;font-size:.78rem;font-weight:700;margin-bottom:1.5rem;}
-.badge-dot{width:6px;height:6px;background:var(--brand);border-radius:50%;animation:blink 2s infinite;}
-.hero h1{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,4.5vw,3.4rem);font-weight:800;line-height:1.1;letter-spacing:-1.5px;color:var(--text);margin-bottom:1.25rem;}
-.hero h1 .g{color:var(--brand);}
-.hero-sub{color:var(--muted);font-size:1rem;line-height:1.75;margin-bottom:2rem;max-width:460px;}
-.hero-btns{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:2.5rem;}
-.btn-hp{background:var(--brand);color:white;border:none;padding:.85rem 2rem;border-radius:10px;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .25s;}
-.btn-hp:hover{background:var(--brand-dark);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,200,150,.3);}
-.btn-hs{background:white;color:var(--text);border:1.5px solid var(--border);padding:.85rem 2rem;border-radius:10px;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .25s;}
-.btn-hs:hover{border-color:var(--brand);color:var(--brand);}
-.hero-trust{display:flex;gap:2rem;padding-top:1.75rem;border-top:1px solid var(--border);}
-.ts-num{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--brand);display:block;}
-.ts-lbl{font-size:.78rem;color:var(--muted);}
+/* ═══════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════ */
+.hero {
+  background: linear-gradient(155deg, #f0fdf9 0%, #ffffff 45%, #faf5ff 100%);
+  padding: 5rem 2rem 4.5rem;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -120px; right: -120px;
+  width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,200,150,.07), transparent 68%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: -80px; left: -80px;
+  width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(102,126,234,.06), transparent 68%);
+  pointer-events: none;
+}
+.hero-inner {
+  max-width: 1400px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 4rem; align-items: center;
+  position: relative; z-index: 1;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: var(--brand-light); border: 1px solid rgba(0,200,150,.25);
+  color: var(--brand-dark);
+  padding: .35rem .95rem; border-radius: 50px;
+  font-size: .78rem; font-weight: 700; margin-bottom: 1.5rem;
+}
+.badge-dot { width: 6px; height: 6px; background: var(--brand); border-radius: 50%; animation: blink 2s infinite; }
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+  font-weight: 800; line-height: 1.08;
+  letter-spacing: -2px; color: var(--text);
+  margin-bottom: 1.25rem;
+}
+.hero h1 .g { color: var(--brand); }
+.hero h1 .p { color: var(--purple); }
+.hero-sub {
+  color: var(--muted); font-size: 1rem;
+  line-height: 1.75; margin-bottom: 2rem; max-width: 460px;
+}
+.hero-btns { display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+.btn-hp {
+  background: var(--brand); color: white; border: none;
+  padding: .9rem 2.1rem; border-radius: 10px; font-weight: 700;
+  font-size: .95rem; cursor: pointer; transition: all .25s;
+  font-family: inherit;
+}
+.btn-hp:hover { background: var(--brand-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,200,150,.3); }
+.btn-hs {
+  background: white; color: var(--text);
+  border: 1.5px solid var(--border);
+  padding: .9rem 2rem; border-radius: 10px; font-weight: 700;
+  font-size: .95rem; cursor: pointer; transition: all .25s;
+  font-family: inherit;
+}
+.btn-hs:hover { border-color: var(--brand); color: var(--brand); }
 
-/* DASHBOARD PREVIEW */
-.dash-preview{background:white;border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.12);overflow:hidden;}
-.dp-topbar{background:#1a202c;padding:.65rem 1.25rem;display:flex;align-items:center;gap:.4rem;}
-.dp-dot{width:10px;height:10px;border-radius:50%;}
-.dp-body{padding:1.25rem;}
-.dp-bal-card{background:linear-gradient(135deg,#00C896,#00A07A);border-radius:14px;padding:1.25rem;margin-bottom:1rem;color:white;}
-.dp-bal-lbl{font-size:.72rem;opacity:.85;margin-bottom:.2rem;}
-.dp-bal-amt{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;}
-.dp-bal-sub{font-size:.72rem;opacity:.75;margin-top:.2rem;}
-.dp-row-list{display:flex;flex-direction:column;gap:.6rem;}
-.dp-row{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border);}
-.dp-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
-.dp-store{font-size:.82rem;font-weight:600;color:var(--text);}
-.dp-sub{font-size:.7rem;color:var(--muted);}
-.dp-cb{font-size:.9rem;font-weight:700;color:var(--brand);margin-left:auto;}
-.dp-st{font-size:.65rem;padding:.15rem .5rem;border-radius:50px;margin-left:.4rem;}
-.dp-conf{background:var(--brand-light);color:var(--brand-dark);}
-.dp-pend{background:var(--gold-light);color:#b45309;}
-.dp-ai-tip{margin-top:1rem;padding:.85rem;border-radius:10px;background:var(--purple-light);border:1px solid rgba(102,126,234,.2);display:flex;gap:.6rem;align-items:flex-start;}
-.dp-ai-tip p{font-size:.78rem;color:var(--text-secondary);line-height:1.5;}
+/* Squad CTA strip */
+.squad-strip {
+  display: flex; align-items: center; gap: 1rem;
+  padding: .85rem 1.25rem;
+  background: linear-gradient(135deg, rgba(255,107,107,.06), rgba(102,126,234,.06));
+  border: 1.5px solid rgba(102,126,234,.18);
+  border-radius: 12px; cursor: pointer;
+  transition: all .25s; margin-bottom: 1.75rem;
+}
+.squad-strip:hover { border-color: rgba(102,126,234,.4); background: rgba(102,126,234,.08); transform: translateX(4px); }
+.squad-avatars { display: flex; }
+.squad-avatars span {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem; background: var(--surface2);
+  border: 2px solid white; margin-left: -6px;
+}
+.squad-avatars span:first-child { margin-left: 0; }
+.squad-strip-text { font-size: .85rem; color: var(--text-secondary); font-weight: 500; }
+.squad-strip-text strong { color: var(--purple); }
+.squad-strip-arrow { margin-left: auto; color: var(--purple); font-size: .9rem; }
 
-/* HOW IT WORKS STRIP */
-.how-strip{background:white;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:3rem 2rem;}
-.how-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;}
-.how-step{text-align:center;padding:1.5rem 2rem;position:relative;}
-.how-step:not(:last-child)::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--brand);font-size:1.2rem;font-weight:700;}
-.how-num{width:42px;height:42px;background:var(--brand);color:white;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;margin:0 auto 1rem;font-family:'Syne',sans-serif;}
-.how-icon{font-size:1.75rem;margin-bottom:.6rem;}
-.how-step h3{font-size:.95rem;font-weight:700;margin-bottom:.4rem;color:var(--text);}
-.how-step p{font-size:.82rem;color:var(--muted);line-height:1.55;}
+.hero-trust {
+  display: flex; gap: 2.5rem;
+  padding-top: 1.5rem; border-top: 1px solid var(--border);
+}
+.ts-num { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--brand); display: block; }
+.ts-lbl { font-size: .75rem; color: var(--muted); margin-top: .1rem; }
 
-/* SECTIONS */
-.sec{max-width:1400px;margin:0 auto;padding:4rem 2rem;}
-.sec-hd{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1.5rem;}
-.sec-hd a{font-size:.85rem;color:var(--brand);font-weight:600;}
-.sec-hd a:hover{text-decoration:underline;}
+/* ─ DASHBOARD PREVIEW ─ */
+.dash-preview {
+  background: white; border: 1px solid var(--border);
+  border-radius: 22px; box-shadow: 0 24px 64px rgba(0,0,0,.12);
+  overflow: hidden;
+}
+.dp-topbar {
+  background: #1a202c; padding: .65rem 1.25rem;
+  display: flex; align-items: center; gap: .4rem;
+}
+.dp-dot { width: 10px; height: 10px; border-radius: 50%; }
+.dp-body { padding: 1.25rem; }
+.dp-bal-card {
+  background: linear-gradient(135deg, #00C896, #00A07A);
+  border-radius: 14px; padding: 1.35rem; margin-bottom: 1rem; color: white;
+}
+.dp-bal-lbl { font-size: .72rem; opacity: .85; margin-bottom: .2rem; }
+.dp-bal-amt { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; }
+.dp-bal-sub { font-size: .72rem; opacity: .75; margin-top: .25rem; }
+.dp-rows { display: flex; flex-direction: column; gap: .55rem; }
+.dp-row {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .65rem .75rem;
+  background: var(--surface2); border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.dp-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+.dp-store { font-size: .82rem; font-weight: 600; color: var(--text); }
+.dp-sub { font-size: .7rem; color: var(--muted); }
+.dp-cb { font-size: .9rem; font-weight: 700; color: var(--brand); margin-left: auto; }
+.dp-st { font-size: .65rem; padding: .15rem .5rem; border-radius: 50px; margin-left: .4rem; }
+.dp-conf { background: var(--brand-light); color: var(--brand-dark); }
+.dp-pend { background: var(--gold-light); color: #b45309; }
+.dp-ai-tip {
+  margin-top: 1rem; padding: .85rem;
+  border-radius: 10px; background: var(--purple-light);
+  border: 1px solid rgba(102,126,234,.2);
+  display: flex; gap: .6rem; align-items: flex-start;
+}
+.dp-ai-tip p { font-size: .78rem; color: var(--text-secondary); line-height: 1.5; }
 
-/* CATEGORIES */
-.cat-scroll{display:flex;gap:.75rem;overflow-x:auto;padding-bottom:.5rem;margin-bottom:1.5rem;}
-.cat-scroll::-webkit-scrollbar{display:none;}
-.cat-chip{flex-shrink:0;display:flex;align-items:center;gap:.4rem;padding:.45rem 1rem;border-radius:50px;font-size:.82rem;font-weight:600;background:white;border:1.5px solid var(--border);cursor:pointer;color:var(--muted);transition:all .2s;white-space:nowrap;}
-.cat-chip:hover{border-color:var(--brand);color:var(--brand);}
-.cat-chip.active{background:var(--brand);border-color:var(--brand);color:white;}
+/* ═══════════════════════════════════════════════
+   HOW IT WORKS
+═══════════════════════════════════════════════ */
+.how-strip {
+  background: white;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 3.5rem 2rem;
+}
+.how-inner {
+  max-width: 1400px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 1px;
+}
+.how-step { text-align: center; padding: 1.5rem 2rem; position: relative; }
+.how-step:not(:last-child)::after {
+  content: '→'; position: absolute;
+  right: -14px; top: 50%; transform: translateY(-50%);
+  color: var(--brand); font-size: 1.2rem; font-weight: 800;
+}
+.how-num {
+  width: 42px; height: 42px; background: var(--brand); color: white;
+  border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 1rem; margin: 0 auto 1rem;
+  font-family: 'Syne', sans-serif;
+}
+.how-icon { font-size: 1.75rem; margin-bottom: .6rem; }
+.how-step h3 { font-size: .95rem; font-weight: 700; margin-bottom: .4rem; color: var(--text); }
+.how-step p { font-size: .82rem; color: var(--muted); line-height: 1.55; }
 
-/* STORES */
-.stores-sec{background:var(--surface2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-.stores-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem;}
-.store-card{background:white;border:1.5px solid var(--border);border-radius:16px;padding:1.5rem;cursor:pointer;transition:all .25s;position:relative;box-shadow:var(--shadow-sm);}
-.store-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--brand);}
-.sale-tag{position:absolute;top:1rem;right:1rem;background:linear-gradient(135deg,#FF6B6B,#FF8E53);color:white;padding:.2rem .65rem;border-radius:50px;font-size:.72rem;font-weight:700;}
-.store-logo-row{display:flex;align-items:center;gap:.85rem;margin-bottom:1rem;}
-.store-logo{width:52px;height:52px;border-radius:12px;object-fit:contain;background:var(--surface2);padding:4px;border:1px solid var(--border);}
-.store-name{font-size:1.05rem;font-weight:700;color:var(--text);}
-.store-offer{font-size:.8rem;color:var(--muted);margin-top:.1rem;}
-.cashback-big{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--brand);margin:.75rem 0;}
-.cashback-big span{font-size:.9rem;font-weight:600;color:var(--muted);}
-.btn-shop{width:100%;padding:.75rem;border:none;border-radius:10px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:white;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;}
-.btn-shop:hover{transform:scale(1.02);box-shadow:0 4px 12px rgba(0,200,150,.3);}
+/* ═══════════════════════════════════════════════
+   STORES
+═══════════════════════════════════════════════ */
+.stores-sec {
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.sec { max-width: 1400px; margin: 0 auto; padding: 4rem 2rem; }
+.sec-hd { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; }
+.sec-hd a { font-size: .85rem; color: var(--brand); font-weight: 600; }
+.sec-hd a:hover { text-decoration: underline; }
 
-/* AMAZON BANNER */
-.amz-banner{background:linear-gradient(135deg,#fff8f0,#fff3e0);border:1.5px solid rgba(255,153,0,.3);border-radius:20px;padding:2.5rem;display:flex;gap:2rem;align-items:center;}
-.amz-icon{font-size:3rem;flex-shrink:0;}
-.amz-info h3{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:.5rem;color:var(--text);}
-.amz-info p{color:var(--muted);font-size:.9rem;line-height:1.65;}
-.amz-btn{flex-shrink:0;background:#FF9900;color:white;border:none;padding:.85rem 1.75rem;border-radius:10px;font-weight:700;cursor:pointer;font-size:.9rem;white-space:nowrap;transition:all .2s;}
-.amz-btn:hover{background:#e68900;transform:translateY(-1px);}
+.cat-scroll { display: flex; gap: .75rem; overflow-x: auto; padding-bottom: .5rem; margin-bottom: 1.5rem; }
+.cat-scroll::-webkit-scrollbar { display: none; }
+.cat-chip {
+  flex-shrink: 0; display: flex; align-items: center; gap: .4rem;
+  padding: .45rem 1rem; border-radius: 50px;
+  font-size: .82rem; font-weight: 600;
+  background: white; border: 1.5px solid var(--border);
+  cursor: pointer; color: var(--muted); transition: all .2s; white-space: nowrap;
+}
+.cat-chip:hover { border-color: var(--brand); color: var(--brand); }
+.cat-chip.active { background: var(--brand); border-color: var(--brand); color: white; }
 
-/* DIFFERENTIATORS */
-.diff-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem;}
-.diff-card{background:white;border:1.5px solid var(--border);border-radius:16px;padding:1.75rem;transition:all .25s;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;}
-.diff-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--brand);}
-.diff-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--brand),#667eea);transform:scaleX(0);transition:transform .3s;transform-origin:left;}
-.diff-card:hover::after{transform:scaleX(1);}
-.di{font-size:2rem;margin-bottom:.85rem;display:block;}
-.diff-card h3{font-size:1.05rem;font-weight:700;margin-bottom:.5rem;color:var(--text);}
-.diff-card p{color:var(--muted);font-size:.85rem;line-height:1.65;}
-.diff-excl{display:inline-flex;align-items:center;background:var(--brand-light);color:var(--brand-dark);padding:.2rem .55rem;border-radius:50px;font-size:.7rem;font-weight:700;margin-top:.85rem;}
+.stores-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 1.25rem; }
+.store-card {
+  background: white; border: 1.5px solid var(--border);
+  border-radius: 16px; padding: 1.5rem;
+  cursor: pointer; transition: all .25s;
+  position: relative; box-shadow: var(--shadow-sm);
+}
+.store-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--brand); }
+.sale-tag {
+  position: absolute; top: 1rem; right: 1rem;
+  background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: white;
+  padding: .2rem .65rem; border-radius: 50px; font-size: .72rem; font-weight: 700;
+}
+.store-logo-row { display: flex; align-items: center; gap: .85rem; margin-bottom: 1rem; }
+.store-logo {
+  width: 52px; height: 52px; border-radius: 12px;
+  object-fit: contain; background: var(--surface2);
+  padding: 4px; border: 1px solid var(--border);
+}
+.store-name { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+.store-offer { font-size: .8rem; color: var(--muted); margin-top: .1rem; }
+.cashback-big { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--brand); margin: .75rem 0; }
+.cashback-big span { font-size: .9rem; font-weight: 600; color: var(--muted); }
+.btn-shop {
+  width: 100%; padding: .75rem; border: none; border-radius: 10px;
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  color: white; font-weight: 700; font-size: .9rem; cursor: pointer;
+  transition: all .2s; font-family: inherit;
+}
+.btn-shop:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,200,150,.3); }
 
-/* AI SECTION */
-.ai-sec{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;}
-.ai-chat-demo{background:white;border:1.5px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:var(--shadow-lg);}
-.ai-chat-hd{background:linear-gradient(135deg,#667eea,#764ba2);padding:1rem 1.25rem;display:flex;align-items:center;gap:.75rem;}
-.ai-ava{width:32px;height:32px;background:rgba(255,255,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
-.ai-chat-hd h4{color:white;font-size:.9rem;font-weight:700;}
-.ai-chat-hd p{color:rgba(255,255,255,.75);font-size:.72rem;}
-.ai-msgs{padding:1rem;display:flex;flex-direction:column;gap:.75rem;}
-.ai-msg{display:flex;gap:.5rem;}
-.ai-msg.user{flex-direction:row-reverse;}
-.ai-bubble{max-width:78%;padding:.65rem .9rem;border-radius:12px;font-size:.82rem;line-height:1.5;}
-.ai-msg:not(.user) .ai-bubble{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
-.ai-msg.user .ai-bubble{background:linear-gradient(135deg,#667eea,#764ba2);color:white;}
-.ai-input-row{padding:.75rem;border-top:1px solid var(--border);display:flex;gap:.5rem;}
-.ai-input-row input{flex:1;padding:.55rem .9rem;border:1.5px solid var(--border);border-radius:50px;font-size:.82rem;outline:none;font-family:inherit;}
-.ai-input-row button{background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;padding:.55rem 1rem;border-radius:50px;cursor:pointer;font-size:.82rem;font-weight:600;}
+/* ═══════════════════════════════════════════════
+   AMAZON BANNER
+═══════════════════════════════════════════════ */
+.amz-banner {
+  background: linear-gradient(135deg, #fff8f0, #fff3e0);
+  border: 1.5px solid rgba(255,153,0,.3);
+  border-radius: 20px; padding: 2.5rem;
+  display: flex; gap: 2rem; align-items: center;
+}
+.amz-icon { font-size: 3rem; flex-shrink: 0; }
+.amz-info h3 { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; margin-bottom: .5rem; }
+.amz-info p { color: var(--muted); font-size: .9rem; line-height: 1.65; }
+.amz-btn {
+  flex-shrink: 0; background: #FF9900; color: white;
+  border: none; padding: .85rem 1.75rem; border-radius: 10px;
+  font-weight: 700; cursor: pointer; font-size: .9rem; white-space: nowrap;
+  transition: all .2s; font-family: inherit;
+}
+.amz-btn:hover { background: #e68900; transform: translateY(-1px); }
 
-/* PRICE TRACKER */
-.pt-sec{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;background:white;border:1.5px solid var(--border);border-radius:24px;padding:2.5rem;box-shadow:var(--shadow-sm);}
-.a-inp{width:100%;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;margin-bottom:.75rem;font-family:inherit;outline:none;transition:border-color .2s;}
-.a-inp:focus{border-color:var(--brand);}
-.pt-chart{background:var(--surface2);border-radius:16px;padding:1.25rem;border:1px solid var(--border);}
-.pt-ch-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
-.pt-product{font-size:.85rem;font-weight:700;color:var(--text);}
-.pt-saving{background:var(--brand-light);color:var(--brand-dark);padding:.2rem .65rem;border-radius:50px;font-size:.75rem;font-weight:700;}
-.chart-pts{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);}
+/* ═══════════════════════════════════════════════
+   SQUAD SECTION
+═══════════════════════════════════════════════ */
+.squad-sec {
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+  padding: 4rem 2rem;
+}
+.squad-inner { max-width: 1400px; margin: 0 auto; }
+.squad-header { text-align: center; margin-bottom: 2.5rem; }
+.squad-tag {
+  display: inline-block; background: rgba(102,126,234,.2);
+  color: #a5b4fc; border: 1px solid rgba(102,126,234,.3);
+  padding: .3rem .85rem; border-radius: 50px;
+  font-size: .72rem; font-weight: 700; letter-spacing: .5px;
+  text-transform: uppercase; margin-bottom: .85rem;
+}
+.squad-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 800; color: white;
+  letter-spacing: -1px; margin-bottom: .75rem;
+}
+.squad-sub { color: #a0aec0; font-size: .95rem; line-height: 1.75; max-width: 520px; margin: 0 auto; }
 
-/* LEVELS */
-.levels-row{display:flex;gap:1rem;overflow-x:auto;padding-bottom:.5rem;}
-.levels-row::-webkit-scrollbar{display:none;}
-.level-card{flex-shrink:0;background:white;border:1.5px solid var(--border);border-radius:16px;padding:1.4rem;text-align:center;min-width:165px;box-shadow:var(--shadow-sm);transition:all .2s;}
-.level-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
-.lv-icon{font-size:2rem;margin-bottom:.6rem;}
-.lv-name{font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;color:var(--text);margin-bottom:.2rem;}
-.lv-xp{font-size:.72rem;color:var(--muted);margin-bottom:.75rem;}
-.lv-bonus{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--brand);}
-.lv-bonus-lbl{font-size:.7rem;color:var(--muted);}
+.squad-modes { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 2rem; }
+.squad-mode-card {
+  background: rgba(255,255,255,.06); border: 1.5px solid rgba(255,255,255,.1);
+  border-radius: 16px; padding: 1.5rem; text-align: center;
+  cursor: pointer; transition: all .3s; position: relative; overflow: hidden;
+}
+.squad-mode-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(102,126,234,.15), rgba(124,58,237,.1));
+  opacity: 0; transition: opacity .3s;
+}
+.squad-mode-card:hover::before { opacity: 1; }
+.squad-mode-card:hover { border-color: rgba(165,180,252,.4); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+.squad-mode-icon { font-size: 2rem; margin-bottom: .75rem; }
+.squad-mode-name { color: white; font-weight: 700; font-size: .95rem; margin-bottom: .35rem; }
+.squad-mode-desc { color: #718096; font-size: .78rem; line-height: 1.5; }
+.squad-cta-btn {
+  display: block; width: fit-content; margin: 0 auto;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white; border: none;
+  padding: .9rem 2.5rem; border-radius: 12px;
+  font-weight: 700; font-size: .95rem; cursor: pointer;
+  transition: all .25s; font-family: inherit;
+}
+.squad-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(102,126,234,.4); }
 
-/* AUTH MODAL */
-.auth-form{display:flex;flex-direction:column;gap:.9rem;}
-.auth-switch{text-align:center;font-size:.85rem;color:var(--muted);margin-top:.75rem;}
-.auth-switch a{color:var(--brand);font-weight:600;cursor:pointer;}
+/* ═══════════════════════════════════════════════
+   DIFFERENTIATORS
+═══════════════════════════════════════════════ */
+.diff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap: 1.25rem; }
+.diff-card {
+  background: white; border: 1.5px solid var(--border);
+  border-radius: 16px; padding: 1.75rem;
+  transition: all .25s; box-shadow: var(--shadow-sm);
+  position: relative; overflow: hidden;
+}
+.diff-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--brand); }
+.diff-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--brand), #667eea);
+  transform: scaleX(0); transition: transform .3s; transform-origin: left;
+}
+.diff-card:hover::after { transform: scaleX(1); }
+.di { font-size: 2rem; margin-bottom: .85rem; display: block; }
+.diff-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: .5rem; color: var(--text); }
+.diff-card p { color: var(--muted); font-size: .85rem; line-height: 1.65; }
+.diff-excl {
+  display: inline-flex; align-items: center;
+  background: var(--brand-light); color: var(--brand-dark);
+  padding: .2rem .55rem; border-radius: 50px;
+  font-size: .7rem; font-weight: 700; margin-top: .85rem;
+}
 
-/* AI FAB */
-.ai-fab{position:fixed;bottom:24px;right:24px;width:58px;height:58px;border-radius:50%;border:none;background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-size:1.6rem;cursor:pointer;box-shadow:0 8px 24px rgba(102,126,234,.4);z-index:300;transition:transform .2s;display:flex;align-items:center;justify-content:center;}
-.ai-fab:hover{transform:scale(1.1);}
+/* ═══════════════════════════════════════════════
+   AI SECTION
+═══════════════════════════════════════════════ */
+.ai-sec-wrap {
+  background: white; border: 1.5px solid var(--border);
+  border-radius: 24px; padding: 2.5rem;
+  box-shadow: var(--shadow-sm);
+}
+.ai-sec { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+.ai-chat-demo {
+  background: white; border: 1.5px solid var(--border);
+  border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg);
+}
+.ai-chat-hd {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  padding: 1rem 1.25rem; display: flex; align-items: center; gap: .75rem;
+}
+.ai-ava {
+  width: 32px; height: 32px; background: rgba(255,255,255,.2);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+.ai-chat-hd h4 { color: white; font-size: .9rem; font-weight: 700; }
+.ai-chat-hd p { color: rgba(255,255,255,.75); font-size: .72rem; }
+.ai-msgs { padding: 1rem; display: flex; flex-direction: column; gap: .75rem; }
+.ai-msg { display: flex; gap: .5rem; }
+.ai-msg.user { flex-direction: row-reverse; }
+.ai-bubble {
+  max-width: 78%; padding: .65rem .9rem; border-radius: 12px;
+  font-size: .82rem; line-height: 1.5;
+}
+.ai-msg:not(.user) .ai-bubble { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.ai-msg.user .ai-bubble { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+.ai-input-row {
+  padding: .75rem; border-top: 1px solid var(--border);
+  display: flex; gap: .5rem;
+}
+.ai-input-row input {
+  flex: 1; padding: .55rem .9rem; border: 1.5px solid var(--border);
+  border-radius: 50px; font-size: .82rem; outline: none; font-family: inherit;
+}
+.ai-input-row button {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white; border: none; padding: .55rem 1rem;
+  border-radius: 50px; cursor: pointer; font-size: .82rem; font-weight: 600;
+  font-family: inherit;
+}
 
-@media(max-width:900px){.hero-inner,.ai-sec,.pt-sec{grid-template-columns:1fr;gap:2rem;}.how-inner{grid-template-columns:1fr 1fr;}.how-step:nth-child(2)::after,.how-step:nth-child(4)::after{display:none;}.amz-banner{flex-direction:column;text-align:center;}}
-@media(max-width:600px){.hero{padding:2.5rem 1.25rem 2rem;}.hero h1{font-size:2rem;}.how-inner{grid-template-columns:1fr;}.how-step::after{display:none!important;}.sec{padding:2.5rem 1.25rem;}.diff-grid{grid-template-columns:1fr;}}
+/* ═══════════════════════════════════════════════
+   PRICE TRACKER
+═══════════════════════════════════════════════ */
+.pt-sec {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;
+  align-items: center;
+  background: white; border: 1.5px solid var(--border);
+  border-radius: 24px; padding: 2.5rem; box-shadow: var(--shadow-sm);
+}
+.a-inp {
+  width: 100%; padding: .7rem 1rem; border: 1.5px solid var(--border);
+  border-radius: 10px; font-size: .9rem; margin-bottom: .75rem;
+  font-family: inherit; outline: none; transition: border-color .2s;
+}
+.a-inp:focus { border-color: var(--brand); }
+.pt-chart { background: var(--surface2); border-radius: 16px; padding: 1.25rem; border: 1px solid var(--border); }
+.chart-pts { display: flex; justify-content: space-between; font-size: .75rem; color: var(--muted); }
+
+/* ═══════════════════════════════════════════════
+   LOYALTY LEVELS
+═══════════════════════════════════════════════ */
+.levels-row { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: .5rem; }
+.levels-row::-webkit-scrollbar { display: none; }
+.level-card {
+  flex-shrink: 0; background: white; border: 1.5px solid var(--border);
+  border-radius: 16px; padding: 1.4rem; text-align: center;
+  min-width: 165px; box-shadow: var(--shadow-sm); transition: all .2s;
+}
+.level-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.lv-icon { font-size: 2rem; margin-bottom: .6rem; }
+.lv-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: .95rem; color: var(--text); margin-bottom: .2rem; }
+.lv-xp { font-size: .72rem; color: var(--muted); margin-bottom: .75rem; }
+.lv-bonus { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--brand); }
+.lv-bonus-lbl { font-size: .7rem; color: var(--muted); }
+
+/* ═══════════════════════════════════════════════
+   AUTH MODAL
+═══════════════════════════════════════════════ */
+.auth-form { display: flex; flex-direction: column; gap: .9rem; }
+.auth-switch { text-align: center; font-size: .85rem; color: var(--muted); margin-top: .75rem; }
+.auth-switch a { color: var(--brand); font-weight: 600; cursor: pointer; }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media(max-width:900px) {
+  .hero-inner, .ai-sec, .pt-sec { grid-template-columns: 1fr; gap: 2rem; }
+  .how-inner { grid-template-columns: 1fr 1fr; }
+  .how-step:nth-child(2)::after, .how-step:nth-child(4)::after { display: none; }
+  .amz-banner { flex-direction: column; text-align: center; }
+  .squad-modes { grid-template-columns: 1fr 1fr; }
+}
+@media(max-width:600px) {
+  .hero { padding: 2.5rem 1.25rem 2rem; }
+  .how-inner { grid-template-columns: 1fr; }
+  .how-step::after { display: none !important; }
+  .sec { padding: 2.5rem 1.25rem; }
+  .diff-grid { grid-template-columns: 1fr; }
+  .squad-modes { grid-template-columns: 1fr 1fr; }
+  .hero-trust { gap: 1.5rem; }
+}
 </style>
 </head>
 <body>
 
+<!-- ═══ HEADER ═══════════════════════════════════════════ -->
 <header class="hdr">
   <nav class="nav">
-    <span class="logo">Smart<span class="g">Cash</span></span>
+    <span class="logo" onclick="window.location.href='app.html'">Smart<span class="g">Cash</span></span>
     <div class="nav-links">
       <a href="app.html" class="active">Home</a>
       <a href="stores.html">Stores</a>
-      <a href="how-it-works.html">How It Works</a>
       <a href="price-tracker.html">Price Tracker</a>
       <a href="virtual-assistant.html">🛍️ Try-On</a>
       <a href="dashboard.html">Dashboard</a>
@@ -175,6 +465,7 @@
   </nav>
 </header>
 
+<!-- ═══ HERO ═══════════════════════════════════════════════ -->
 <section class="hero">
   <div class="hero-inner">
     <div>
@@ -185,6 +476,18 @@
         <button class="btn-hp" onclick="openModal('signup')">Start Earning Free →</button>
         <button class="btn-hs" onclick="document.getElementById('stores').scrollIntoView({behavior:'smooth'})">Browse Stores</button>
       </div>
+
+      <!-- Squad strip -->
+      <div class="squad-strip" onclick="SCAI.setMode('squad',document.querySelector('[data-mode=squad]'));SCAI.open_()">
+        <div class="squad-avatars">
+          <span>💑</span><span>👯</span><span>👨‍👩‍👧</span>
+        </div>
+        <div class="squad-strip-text">
+          <strong>New: Squad Shopping</strong> — shop together in real time
+        </div>
+        <span class="squad-strip-arrow">→</span>
+      </div>
+
       <div class="hero-trust">
         <div><span class="ts-num">50K+</span><span class="ts-lbl">Members</span></div>
         <div><span class="ts-num">£2.4M</span><span class="ts-lbl">Paid Out</span></div>
@@ -192,6 +495,8 @@
         <div><span class="ts-num">24h</span><span class="ts-lbl">Payouts</span></div>
       </div>
     </div>
+
+    <!-- Dashboard preview -->
     <div class="dash-preview">
       <div class="dp-topbar">
         <div class="dp-dot" style="background:#ff5f57"></div>
@@ -205,30 +510,67 @@
           <div class="dp-bal-amt">£84.32</div>
           <div class="dp-bal-sub">↑ £12.50 this week · Withdraw anytime</div>
         </div>
-        <div class="dp-row-list">
-          <div class="dp-row"><div class="dp-icon" style="background:#fff8f0">📦</div><div><div class="dp-store">Amazon UK</div><div class="dp-sub">Sony XM5 Headphones</div></div><div class="dp-cb">+£12.56</div><span class="dp-st dp-conf">Confirmed</span></div>
-          <div class="dp-row"><div class="dp-icon" style="background:#f0f4ff">👗</div><div><div class="dp-store">ASOS</div><div class="dp-sub">Summer clothing order</div></div><div class="dp-cb">+£5.40</div><span class="dp-st dp-pend">Pending</span></div>
-          <div class="dp-row"><div class="dp-icon" style="background:#f0fdf9">🏨</div><div><div class="dp-store">Booking.com</div><div class="dp-sub">Barcelona 3 nights</div></div><div class="dp-cb">+£22.50</div><span class="dp-st dp-conf">Confirmed</span></div>
+        <div class="dp-rows">
+          <div class="dp-row">
+            <div class="dp-icon" style="background:#fff8f0">📦</div>
+            <div><div class="dp-store">Amazon UK</div><div class="dp-sub">Sony XM5 Headphones</div></div>
+            <div class="dp-cb">+£12.56</div><span class="dp-st dp-conf">Confirmed</span>
+          </div>
+          <div class="dp-row">
+            <div class="dp-icon" style="background:#f0f4ff">👗</div>
+            <div><div class="dp-store">ASOS</div><div class="dp-sub">Summer clothing order</div></div>
+            <div class="dp-cb">+£5.40</div><span class="dp-st dp-pend">Pending</span>
+          </div>
+          <div class="dp-row">
+            <div class="dp-icon" style="background:#f0fdf9">🏨</div>
+            <div><div class="dp-store">Booking.com</div><div class="dp-sub">Barcelona 3 nights</div></div>
+            <div class="dp-cb">+£22.50</div><span class="dp-st dp-conf">Confirmed</span>
+          </div>
         </div>
-        <div class="dp-ai-tip"><span>🤖</span><p><strong>AI Tip:</strong> Sony XM5 is 19% below average — SmartCash AI says <strong>buy now</strong> before prices rise.</p></div>
+        <div class="dp-ai-tip">
+          <span>🤖</span>
+          <p><strong>AI Tip:</strong> Sony XM5 is 19% below average — SmartCash AI says <strong>buy now</strong> before prices rise.</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- ═══ HOW IT WORKS ══════════════════════════════════════ -->
 <div class="how-strip">
   <div class="how-inner">
-    <div class="how-step"><div class="how-icon">🆓</div><div class="how-num">1</div><h3>Create Free Account</h3><p>Sign up in 30 seconds. No credit card ever.</p></div>
-    <div class="how-step"><div class="how-icon">🏪</div><div class="how-num">2</div><h3>Click to a Store</h3><p>500+ UK retailers. One click activates tracking.</p></div>
-    <div class="how-step"><div class="how-icon">🛍️</div><div class="how-num">3</div><h3>Shop Normally</h3><p>Buy anything — we track your cashback automatically.</p></div>
-    <div class="how-step"><div class="how-icon">💷</div><div class="how-num">4</div><h3>Get Paid in 24h</h3><p>Bank, PayPal or Amazon gift card from just £10.</p></div>
+    <div class="how-step">
+      <div class="how-icon">🆓</div>
+      <div class="how-num">1</div>
+      <h3>Create Free Account</h3>
+      <p>Sign up in 30 seconds. No credit card ever.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-icon">🏪</div>
+      <div class="how-num">2</div>
+      <h3>Click to a Store</h3>
+      <p>500+ UK retailers. One click activates tracking.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-icon">🛍️</div>
+      <div class="how-num">3</div>
+      <h3>Shop Normally</h3>
+      <p>Buy anything — we track your cashback automatically.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-icon">💷</div>
+      <div class="how-num">4</div>
+      <h3>Get Paid in 24h</h3>
+      <p>Bank, PayPal or Amazon gift card from just £10.</p>
+    </div>
   </div>
 </div>
 
+<!-- ═══ STORES ════════════════════════════════════════════ -->
 <div class="stores-sec">
   <div class="sec" id="stores">
     <div class="sec-hd" style="flex-direction:column;align-items:flex-start;gap:1rem">
-      <h2 class="sec-title" style="margin:0">Top Categories</h2>
+      <h2 class="sec-title" style="margin:0">Browse by Category</h2>
       <div class="cat-scroll" id="cat-filter">
         <div class="cat-chip active" onclick="filterStores('all',this)">🏪 All Stores</div>
         <div class="cat-chip" onclick="filterStores('electronics',this)">💻 Electronics</div>
@@ -247,7 +589,8 @@
   </div>
 </div>
 
-<div class="sec" style="padding-top:2.5rem">h
+<!-- ═══ AMAZON BANNER ════════════════════════════════════ -->
+<div class="sec" style="padding-top:2.5rem">
   <div class="amz-banner">
     <div class="amz-icon">📦</div>
     <div class="amz-info">
@@ -258,7 +601,42 @@
   </div>
 </div>
 
-<div class="sec" style="padding-top:2rem">
+<!-- ═══ SQUAD SECTION ════════════════════════════════════ -->
+<section class="squad-sec">
+  <div class="squad-inner">
+    <div class="squad-header">
+      <div class="squad-tag">✦ New Feature</div>
+      <h2 class="squad-title">Squad Shopping Mode</h2>
+      <p class="squad-sub">Shopping is more fun together. Invite your partner, friends, or family and shop in real-time — vote on items, coordinate outfits, and split your wishlist.</p>
+    </div>
+    <div class="squad-modes">
+      <div class="squad-mode-card" onclick="SCAI.openSquadModal()">
+        <div class="squad-mode-icon">💑</div>
+        <div class="squad-mode-name">Couples</div>
+        <div class="squad-mode-desc">Shop together, vote on matching outfits & holidays</div>
+      </div>
+      <div class="squad-mode-card" onclick="SCAI.openSquadModal()">
+        <div class="squad-mode-icon">👯</div>
+        <div class="squad-mode-name">Best Friends</div>
+        <div class="squad-mode-desc">Coordinate styles, find matching looks, share wishlists</div>
+      </div>
+      <div class="squad-mode-card" onclick="SCAI.openSquadModal()">
+        <div class="squad-mode-icon">👨‍👩‍👧‍👦</div>
+        <div class="squad-mode-name">Family</div>
+        <div class="squad-mode-desc">Family shopping trips — kids, parents, everyone earns</div>
+      </div>
+      <div class="squad-mode-card" onclick="SCAI.openSquadModal()">
+        <div class="squad-mode-icon">🎉</div>
+        <div class="squad-mode-name">Occasion</div>
+        <div class="squad-mode-desc">Weddings, parties, events — shop your theme together</div>
+      </div>
+    </div>
+    <button class="squad-cta-btn" onclick="SCAI.openSquadModal()">Start Your Squad Now →</button>
+  </div>
+</section>
+
+<!-- ═══ WHY SMARTCASH ════════════════════════════════════ -->
+<div class="sec" style="padding-top:4rem">
   <div style="margin-bottom:1.75rem">
     <div class="sec-tag">Why SmartCash</div>
     <h2 class="sec-title">6 Things Competitors Don't Offer</h2>
@@ -266,57 +644,68 @@
   </div>
   <div class="diff-grid">
     <div class="diff-card"><span class="di">🔗</span><h3>Amazon Order Auto-Sync</h3><p>Connect once. Every Amazon purchase made through us appears in both your Amazon account and SmartCash dashboard with live cashback status.</p><span class="diff-excl">✦ SmartCash exclusive</span></div>
-    <div class="diff-card"><span class="di">🤖</span><h3>Personal AI Shopping Advisor</h3><p>Powered by Claude AI. Ask in plain English — "best laptop under £600" or "when should I buy a TV?" — and get genuinely intelligent answers.</p><span class="diff-excl">✦ SmartCash exclusive</span></div>
+    <div class="diff-card"><span class="di">🤖</span><h3>Personal AI Shopping Advisor</h3><p>Ask in plain English — "best laptop under £600" or "when should I buy a TV?" — and get genuinely intelligent answers, powered by Claude AI.</p><span class="diff-excl">✦ SmartCash exclusive</span></div>
     <div class="diff-card"><span class="di">📊</span><h3>AI Price History & Predictions</h3><p>Full 18-month price charts on any product plus AI-powered Buy Now vs Wait predictions with confidence scores.</p><span class="diff-excl">✦ SmartCash exclusive</span></div>
-    <div class="diff-card"><span class="di">🏆</span><h3>Gamified Loyalty Tiers</h3><p>Earn XP on purchases. Level up from Bronze to Diamond for 0.5%–2% bonus cashback boosts, priority support and exclusive deals.</p><span class="diff-excl">✦ SmartCash exclusive</span></div>
-    <div class="diff-card"><span class="di">🔔</span><h3>Smart Proactive Alerts</h3><p>AI learns your shopping habits and alerts you proactively — price drops, cashback spikes, flash boosts — before you even ask.</p><span class="diff-excl">✦ SmartCash exclusive</span></div>
+    <div class="diff-card"><span class="di">👥</span><h3>Squad Shopping Mode</h3><p>Shop in real-time with your partner, friends or family. Vote on items, find matching outfits, coordinate purchases together.</p><span class="diff-excl">✦ SmartCash exclusive</span></div>
+    <div class="diff-card"><span class="di">🏆</span><h3>Gamified Loyalty Tiers</h3><p>Earn XP on every purchase. Level up from Bronze to Diamond for 0.5%–2% bonus cashback boosts, priority support and exclusive deals.</p><span class="diff-excl">✦ SmartCash exclusive</span></div>
     <div class="diff-card"><span class="di">⚡</span><h3>£10 Minimum, 24h Payout</h3><p>UK's lowest withdrawal threshold and fastest payout. £10 min (vs £25+ elsewhere), paid within 24 hours, not 5–7 days.</p><span class="diff-excl">✦ SmartCash exclusive</span></div>
   </div>
 </div>
 
-<div class="sec" style="background:white;border-radius:24px;border:1.5px solid var(--border);box-shadow:var(--shadow-sm);padding:2.5rem">
-  <div class="ai-sec">
-    <div>
-      <div class="sec-tag">AI Shopping Advisor</div>
-      <h2 class="sec-title">Ask Anything. Get Real Answers.</h2>
-      <p class="sec-sub">Your personal AI advisor is powered by Claude. Not keyword search — actual conversational intelligence that understands what you need.</p>
-      <ul style="margin-top:1.25rem;display:flex;flex-direction:column;gap:.65rem;list-style:none">
-        <li style="display:flex;gap:.6rem;font-size:.88rem;color:var(--muted)"><span style="color:var(--brand)">✓</span>"Find me a gaming chair under £200 with back support"</li>
-        <li style="display:flex;gap:.6rem;font-size:.88rem;color:var(--muted)"><span style="color:var(--brand)">✓</span>"Is this a good time to buy a MacBook or should I wait?"</li>
-        <li style="display:flex;gap:.6rem;font-size:.88rem;color:var(--muted)"><span style="color:var(--brand)">✓</span>"Where's the best cashback for my Bali holiday?"</li>
-        <li style="display:flex;gap:.6rem;font-size:.88rem;color:var(--muted)"><span style="color:var(--brand)">✓</span>"Alert me when Sony XM5 drops below £250"</li>
-      </ul>
-      <button class="btn-hp" style="margin-top:1.5rem" onclick="window.location.href='dashboard.html'">Try AI Advisor Free →</button>
-    </div>
-    <div class="ai-chat-demo">
-      <div class="ai-chat-hd"><div class="ai-ava">🤖</div><div><h4>SmartCash AI</h4><p>Powered by Claude · Online</p></div><div style="margin-left:auto;width:8px;height:8px;background:#4ade80;border-radius:50%"></div></div>
-      <div class="ai-msgs">
-        <div class="ai-msg"><div class="ai-bubble">Hi! I can help you find deals and predict the perfect time to buy. What are you shopping for?</div></div>
-        <div class="ai-msg user"><div class="ai-bubble">Is now a good time to buy AirPods Pro?</div></div>
-        <div class="ai-msg"><div class="ai-bubble">📊 AirPods Pro are £219 — 18% below the 6-month average of £267. With 4.5% cashback you'd effectively pay £208.95. I'd say <strong>buy now</strong> — 79% confidence.</div></div>
-        <div class="ai-msg user"><div class="ai-bubble">Set an alert if they go below £200 too</div></div>
-        <div class="ai-msg"><div class="ai-bubble">✅ Alert set at £200! I'll email you instantly when the price drops. Also watching for cashback rate spikes above 5%.</div></div>
+<!-- ═══ AI SECTION ════════════════════════════════════════ -->
+<div class="sec" style="padding-top:2rem">
+  <div class="ai-sec-wrap">
+    <div class="ai-sec">
+      <div>
+        <div class="sec-tag">AI Shopping Advisor</div>
+        <h2 class="sec-title">Ask Anything. Get Real Answers.</h2>
+        <p class="sec-sub">Your personal AI is available right here — click the 🤖 button anytime. Not keyword search — actual conversational intelligence.</p>
+        <ul style="margin-top:1.25rem;display:flex;flex-direction:column;gap:.65rem;list-style:none">
+          <li style="display:flex;gap:.6rem;font-size:.88rem;color:var(--muted)"><span style="color:var(--brand)">✓</span>"Find me men's t-shirts under £40"</li>
+          <li style="display:flex;gap:.6rem;font-size:.88rem;color:var(--muted)"><span style="color:var(--brand)">✓</span>"Is now a good time to buy a MacBook?"</li>
+          <li style="display:flex;gap:.6rem;font-size:.88rem;color:var(--muted)"><span style="color:var(--brand)">✓</span>"Where's the best cashback for my Barcelona holiday?"</li>
+          <li style="display:flex;gap:.6rem;font-size:.88rem;color:var(--muted)"><span style="color:var(--brand)">✓</span>"Start a couple shopping session with my partner"</li>
+        </ul>
+        <button class="btn-hp" style="margin-top:1.5rem" onclick="SCAI.open_()">Chat with AI Assistant →</button>
       </div>
-      <div class="ai-input-row">
-        <input type="text" placeholder="Ask about any product…" readonly onclick="window.location.href='dashboard.html'">
-        <button onclick="window.location.href='dashboard.html'">Ask →</button>
+      <div class="ai-chat-demo">
+        <div class="ai-chat-hd">
+          <div class="ai-ava">🤖</div>
+          <div><h4>SmartCash AI</h4><p>Always on · Sidebar on every page</p></div>
+          <div style="margin-left:auto;width:8px;height:8px;background:#4ade80;border-radius:50%"></div>
+        </div>
+        <div class="ai-msgs">
+          <div class="ai-msg"><div class="ai-bubble">Namaste! 🙏 I'm your SmartCash AI. What are you shopping for today?</div></div>
+          <div class="ai-msg user"><div class="ai-bubble">I want some men's t-shirts</div></div>
+          <div class="ai-msg"><div class="ai-bubble">👕 Great choice! ASOS has <strong>6% cashback</strong> right now — best rate for men's fashion. Here are top picks…</div></div>
+          <div class="ai-msg user"><div class="ai-bubble">Can my girlfriend join and vote on them?</div></div>
+          <div class="ai-msg"><div class="ai-bubble">💑 Absolutely! Squad mode is perfect for this. I'll create a private link — she joins, you both browse and vote on your favourites together in real time!</div></div>
+        </div>
+        <div class="ai-input-row">
+          <input type="text" placeholder="Ask me anything about deals…" readonly onclick="SCAI.open_()">
+          <button onclick="SCAI.open_()">Ask →</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- ═══ PRICE TRACKER ════════════════════════════════════ -->
 <div class="sec" style="padding-top:2rem">
   <div class="pt-sec">
     <div>
       <div class="sec-tag">Price Intelligence</div>
       <h2 class="sec-title">Never Overpay Again</h2>
-      <p class="sec-sub" style="margin-bottom:1.5rem">Track any product's full price history. Set alerts. Combined with cashback, you'll always get the absolute best price possible.</p>
+      <p class="sec-sub" style="margin-bottom:1.5rem">Track any product's full price history. Set alerts. Combined with cashback, you'll always get the absolute best price.</p>
       <input class="a-inp" type="text" placeholder="Paste a product URL to track…">
       <input class="a-inp" type="number" placeholder="Target price alert (£)">
       <button class="btn-hp" onclick="window.location.href='price-tracker.html'" style="width:100%;padding:.85rem">Track Price Free →</button>
     </div>
     <div class="pt-chart">
-      <div class="pt-ch-head"><div class="pt-product">📈 Sony WH-1000XM5</div><div class="pt-saving">£70 below peak 🔥</div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <div style="font-size:.85rem;font-weight:700;color:var(--text)">📈 Sony WH-1000XM5</div>
+        <div style="background:var(--brand-light);color:var(--brand-dark);padding:.2rem .65rem;border-radius:50px;font-size:.75rem;font-weight:700">£70 below peak 🔥</div>
+      </div>
       <svg viewBox="0 0 300 80" preserveAspectRatio="none" style="width:100%;height:100px;border-radius:10px;overflow:hidden">
         <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00C896" stop-opacity="0.2"/><stop offset="100%" stop-color="#00C896" stop-opacity="0"/></linearGradient></defs>
         <rect width="300" height="80" fill="#f8fafc"/>
@@ -326,10 +715,14 @@
         <line x1="240" y1="5" x2="240" y2="80" stroke="rgba(245,158,11,0.5)" stroke-dasharray="4,3"/>
         <text x="218" y="12" fill="#b45309" font-size="7.5" font-family="sans-serif" font-weight="700">Your alert</text>
       </svg>
-      <div class="chart-pts" style="margin-top:.75rem"><span>6mo ago<br><strong>£349</strong></span><span style="text-align:center">3mo ago<br><strong>£319</strong></span><span style="text-align:right">Today<br><strong style="color:var(--brand)">£279</strong></span></div>
+      <div class="chart-pts" style="margin-top:.75rem">
+        <span>6mo ago<br><strong>£349</strong></span>
+        <span style="text-align:center">3mo ago<br><strong>£319</strong></span>
+        <span style="text-align:right">Today<br><strong style="color:var(--brand)">£279</strong></span>
+      </div>
       <div style="margin-top:1rem;padding:.9rem;background:white;border-radius:10px;border:1px solid var(--border)">
         <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:.3rem"><span style="color:var(--muted)">Current price</span><strong>£279.00</strong></div>
-        <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:.3rem"><span style="color:var(--muted)">4.5% cashback back</span><strong style="color:var(--brand)">+£12.56</strong></div>
+        <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:.3rem"><span style="color:var(--muted)">4.5% cashback</span><strong style="color:var(--brand)">+£12.56</strong></div>
         <div style="display:flex;justify-content:space-between;font-size:.82rem;padding-top:.5rem;border-top:1px solid var(--border)"><span style="font-weight:700">Effective price</span><strong style="color:var(--brand)">£266.44</strong></div>
       </div>
       <div style="margin-top:.85rem;background:var(--brand-light);border-radius:10px;padding:.75rem;font-size:.82rem;display:flex;gap:.6rem">
@@ -339,10 +732,11 @@
   </div>
 </div>
 
+<!-- ═══ LOYALTY LEVELS ═══════════════════════════════════ -->
 <div class="sec" style="padding-top:2rem">
   <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
     <div><div class="sec-tag">Loyalty System</div><h2 class="sec-title" style="margin:0">Level Up. Earn More.</h2></div>
-    <a href="how-it-works.html" style="color:var(--brand);font-weight:600;font-size:.88rem">Learn how XP works →</a>
+    <a href="#" style="color:var(--brand);font-weight:600;font-size:.88rem">Learn how XP works →</a>
   </div>
   <div class="levels-row">
     <div class="level-card"><div class="lv-icon">🥉</div><div class="lv-name">Bronze</div><div class="lv-xp">0–500 XP</div><div class="lv-bonus">+0%</div><div class="lv-bonus-lbl">bonus cashback</div></div>
@@ -353,6 +747,7 @@
   </div>
 </div>
 
+<!-- ═══ CTA ═══════════════════════════════════════════════ -->
 <div class="sec" style="padding-top:0">
   <div style="background:linear-gradient(135deg,#f0fdf9,#faf5ff);border:1.5px solid rgba(0,200,150,.2);border-radius:24px;padding:4rem 3rem;text-align:center">
     <div class="sec-tag">Get Started Today</div>
@@ -365,22 +760,48 @@
   </div>
 </div>
 
+<!-- ═══ FOOTER ════════════════════════════════════════════ -->
 <footer class="footer">
   <div class="footer-inner">
-    <div class="footer-brand"><span class="logo">Smart<span class="g">Cash</span></span><p>UK's smartest cashback platform. Earn money back on every purchase with AI-powered price tracking and 24-hour payouts.</p></div>
-    <div class="footer-col"><h4>Platform</h4><a href="stores.html">All Stores</a><a href="price-tracker.html">Price Tracker</a><a href="how-it-works.html">How It Works</a><a href="dashboard.html">Dashboard</a></div>
-    <div class="footer-col"><h4>Company</h4><a href="#">About Us</a><a href="#">Blog</a><a href="#">Affiliate Programme</a><a href="#">Press</a></div>
-    <div class="footer-col"><h4>Legal</h4><a href="#">Terms & Conditions</a><a href="#">Privacy Policy</a><a href="#">Cookie Policy</a><a href="#">Contact Us</a></div>
+    <div class="footer-brand">
+      <span class="logo" style="color:white">Smart<span class="g">Cash</span></span>
+      <p>UK's smartest cashback platform. Earn money back on every purchase with AI-powered price tracking and 24-hour payouts.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <a href="stores.html">All Stores</a>
+      <a href="price-tracker.html">Price Tracker</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="virtual-assistant.html">Virtual Try-On</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="about.html">About Us</a>
+      <a href="#">Blog</a>
+      <a href="#">Affiliate Programme</a>
+      <a href="#">Press</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="#">Terms & Conditions</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="#">Cookie Policy</a>
+      <a href="contact.html">Contact Us</a>
+    </div>
   </div>
-  <div class="footer-bottom"><span>© 2026 SmartCash. All rights reserved.</span><span>Made with ♥ in the UK</span></div>
+  <div class="footer-bottom">
+    <span>© 2026 SmartCash. All rights reserved.</span>
+    <span>Made with ♥ in the UK · Ctrl+/ to open AI</span>
+  </div>
 </footer>
 
-<button class="ai-fab" onclick="window.location.href='dashboard.html'" title="AI Shopping Advisor">🤖</button>
-<a href="virtual-assistant.html" style="position:fixed;bottom:96px;right:24px;background:linear-gradient(135deg,#7C3AED,#5B21B6);color:white;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 8px 24px rgba(124,58,237,.4);z-index:300;transition:transform .2s;text-decoration:none" title="Virtual Try-On Assistant" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">🛍️</a>
-
+<!-- ═══ AUTH MODAL ════════════════════════════════════════ -->
 <div class="modal-ov" id="authModal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
-    <div class="modal-head"><h3 id="modalTitle">Create Free Account</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="modal-head">
+      <h3 id="modalTitle">Create Free Account</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
     <div class="modal-body">
       <div id="modalError" style="display:none;background:#fff5f5;border:1px solid #fed7d7;border-radius:8px;padding:.75rem 1rem;font-size:.85rem;color:#c53030;margin-bottom:1rem"></div>
       <div id="modalSuccess" style="display:none;background:#f0fff4;border:1px solid #c6f6d5;border-radius:8px;padding:.75rem 1rem;font-size:.85rem;color:#276749;margin-bottom:1rem"></div>
@@ -395,32 +816,36 @@
   </div>
 </div>
 
+<!-- ═══ VIRTUAL TRY-ON FAB ════════════════════════════════ -->
+<a href="virtual-assistant.html"
+   style="position:fixed;bottom:80px;right:24px;background:linear-gradient(135deg,#7C3AED,#5B21B6);color:white;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 6px 20px rgba(124,58,237,.4);z-index:300;transition:all .2s;text-decoration:none"
+   id="tryon-fab" title="Virtual Try-On"
+   onmouseover="this.style.transform='scale(1.1)'"
+   onmouseout="this.style.transform='scale(1)'">🛍️</a>
+
+<!-- ═══ SCRIPTS ═══════════════════════════════════════════ -->
 <script>
-const DEMO_STORES=[
-  {id:'amazon',name:'Amazon UK',offer:'Millions of products · Prime eligible',cashback:4.5,tag:'4.5% Back',cat:'electronics',emoji:'📦',logo:'https://logo.clearbit.com/amazon.co.uk',
-   url:'https://www.amazon.co.uk/?tag=veeraseo-21'},
-  {id:'asos',name:'ASOS',offer:'Free delivery & returns',cashback:6.0,tag:'6% Back',cat:'fashion',emoji:'👗',logo:'https://logo.clearbit.com/asos.com',
-   url:'https://www.awin1.com/cread.php?awinmid=4081&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.asos.com%2F'},
-  {id:'booking',name:'Booking.com',offer:'Best price guarantee',cashback:5.0,tag:'5% Back',cat:'travel',emoji:'🏨',logo:'https://logo.clearbit.com/booking.com',
-   url:'https://www.awin1.com/cread.php?awinmid=6776&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.booking.com%2F'},
-  {id:'nike',name:'Nike',offer:'Free delivery over £50',cashback:3.5,tag:'3.5% Back',cat:'sports',emoji:'👟',logo:'https://logo.clearbit.com/nike.com',
-   url:'https://www.awin1.com/cread.php?awinmid=2080&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.nike.com%2Fgb%2F'},
-  {id:'currys',name:'Currys',offer:'Price match guaranteed',cashback:2.5,tag:'2.5% Back',cat:'electronics',emoji:'📺',logo:'https://logo.clearbit.com/currys.co.uk',
-   url:'https://www.awin1.com/cread.php?awinmid=1599&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.currys.co.uk%2F'},
-  {id:'boots',name:'Boots',offer:'Earn Advantage Card points too',cashback:4.0,tag:'4% Back',cat:'beauty',emoji:'💄',logo:'https://logo.clearbit.com/boots.com',
-   url:'https://www.awin1.com/cread.php?awinmid=3602&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.boots.com%2F'},
-  {id:'johnlewis',name:'John Lewis',offer:'Never knowingly undersold',cashback:3.0,tag:'3% Back',cat:'home',emoji:'🏡',logo:'https://logo.clearbit.com/johnlewis.com',
-   url:'https://www.awin1.com/cread.php?awinmid=1203&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.johnlewis.com%2F'},
-  {id:'expedia',name:'Expedia',offer:'Bundle & save on flights + hotels',cashback:4.5,tag:'4.5% Back',cat:'travel',emoji:'✈️',logo:'https://logo.clearbit.com/expedia.co.uk',
-   url:'https://www.awin1.com/cread.php?awinmid=2114&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.expedia.co.uk%2F'},
+/* ─ STORES DATA ─ */
+const DEMO_STORES = [
+  { id:'amazon', name:'Amazon UK', offer:'Millions of products · Prime eligible', cashback:4.5, tag:'4.5% Back', cat:'electronics', emoji:'📦', logo:'https://logo.clearbit.com/amazon.co.uk', url:'https://www.amazon.co.uk/?tag=veeraseo-21' },
+  { id:'asos', name:'ASOS', offer:'Free delivery & returns', cashback:6.0, tag:'6% Back', cat:'fashion', emoji:'👗', logo:'https://logo.clearbit.com/asos.com', url:'https://www.awin1.com/cread.php?awinmid=4081&awinaffid=YOUR_AWIN_ID&clickref=smartcash&p=https%3A%2F%2Fwww.asos.com%2F' },
+  { id:'booking', name:'Booking.com', offer:'Best price guarantee', cashback:5.0, tag:'5% Back', cat:'travel', emoji:'🏨', logo:'https://logo.clearbit.com/booking.com', url:'https://www.awin1.com/cread.php?awinmid=6776&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.booking.com%2F' },
+  { id:'nike', name:'Nike', offer:'Free delivery over £50', cashback:3.5, tag:'3.5% Back', cat:'sports', emoji:'👟', logo:'https://logo.clearbit.com/nike.com', url:'https://www.awin1.com/cread.php?awinmid=2080&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.nike.com%2Fgb%2F' },
+  { id:'currys', name:'Currys', offer:'Price match guaranteed', cashback:2.5, tag:'2.5% Back', cat:'electronics', emoji:'📺', logo:'https://logo.clearbit.com/currys.co.uk', url:'https://www.awin1.com/cread.php?awinmid=1599&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.currys.co.uk%2F' },
+  { id:'boots', name:'Boots', offer:'Earn Advantage Card points too', cashback:4.0, tag:'4% Back', cat:'beauty', emoji:'💄', logo:'https://logo.clearbit.com/boots.com', url:'https://www.awin1.com/cread.php?awinmid=3602&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.boots.com%2F' },
+  { id:'johnlewis', name:'John Lewis', offer:'Never knowingly undersold', cashback:3.0, tag:'3% Back', cat:'home', emoji:'🏡', logo:'https://logo.clearbit.com/johnlewis.com', url:'https://www.awin1.com/cread.php?awinmid=1203&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.johnlewis.com%2F' },
+  { id:'expedia', name:'Expedia', offer:'Bundle & save on flights + hotels', cashback:4.5, tag:'4.5% Back', cat:'travel', emoji:'✈️', logo:'https://logo.clearbit.com/expedia.co.uk', url:'https://www.awin1.com/cread.php?awinmid=2114&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.expedia.co.uk%2F' },
+  { id:'next', name:'NEXT', offer:'Fast delivery & easy returns', cashback:4.0, tag:'4% Back', cat:'fashion', emoji:'👔', logo:'https://logo.clearbit.com/next.co.uk', url:'https://www.awin1.com/cread.php?awinmid=3441&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.next.co.uk%2F' },
+  { id:'argos', name:'Argos', offer:'Same-day delivery & Fast Track', cashback:2.0, tag:'2% Back', cat:'home', emoji:'🛒', logo:'https://logo.clearbit.com/argos.co.uk', url:'https://www.awin1.com/cread.php?awinmid=1623&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.argos.co.uk%2F' },
 ];
 
-function renderStores(stores){
-  document.getElementById('stores-grid').innerHTML=stores.map(s=>`
+function renderStores(stores) {
+  document.getElementById('stores-grid').innerHTML = stores.map(s => `
     <div class="store-card">
-      ${s.tag?`<div class="sale-tag">${s.tag}</div>`:''}
+      ${s.tag ? `<div class="sale-tag">${s.tag}</div>` : ''}
       <div class="store-logo-row">
-        <img class="store-logo" src="${s.logo}" alt="${s.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <img class="store-logo" src="${s.logo}" alt="${s.name}"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         <div style="display:none;width:52px;height:52px;border-radius:12px;background:var(--surface2);border:1px solid var(--border);align-items:center;justify-content:center;font-size:1.4rem">${s.emoji}</div>
         <div><div class="store-name">${s.name}</div><div class="store-offer">${s.offer}</div></div>
       </div>
@@ -428,71 +853,90 @@ function renderStores(stores){
       <button class="btn-shop" onclick="trackClick('${s.id}')">Shop Now & Earn</button>
     </div>`).join('');
 }
-function filterStores(cat,el){document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');const f=cat==='all'?DEMO_STORES:DEMO_STORES.filter(s=>s.cat===cat);renderStores(f.length?f:DEMO_STORES);}
-function trackClick(id){const s=DEMO_STORES.find(x=>x.id===id);if(!s)return;showToast('Opening '+s.name+' — your cashback is being tracked!');setTimeout(()=>window.open(s.url,'_blank'),700);}
 
-let authMode='signup';
-function openModal(mode){authMode=mode;document.getElementById('authModal').classList.add('open');document.getElementById('modalTitle').textContent=mode==='login'?'Login to SmartCash':'Create Free Account';document.getElementById('authSubmit').textContent=mode==='login'?'Login':'Create Account';document.getElementById('nameField').style.display=mode==='signup'?'block':'none';document.getElementById('authSwitch').innerHTML=mode==='login'?"Don't have an account? <a onclick='toggleAuthMode()'>Sign Up Free</a>":"Already have an account? <a onclick='toggleAuthMode()'>Login</a>";document.getElementById('modalError').style.display='none';document.getElementById('modalSuccess').style.display='none';}
-function closeModal(){document.getElementById('authModal').classList.remove('open');}
-function toggleAuthMode(){openModal(authMode==='login'?'signup':'login');}
+function filterStores(cat, el) {
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const f = cat === 'all' ? DEMO_STORES : DEMO_STORES.filter(s => s.cat === cat);
+  renderStores(f.length ? f : DEMO_STORES);
+}
 
-async function submitAuth(){
-  const email=document.getElementById('authEmail').value.trim();
-  const password=document.getElementById('authPassword').value;
-  const name=document.getElementById('authName').value.trim();
-  const errEl=document.getElementById('modalError');const sucEl=document.getElementById('modalSuccess');
-  errEl.style.display='none';sucEl.style.display='none';
-  if(!email||!password){errEl.textContent='Please fill in all fields.';errEl.style.display='block';return;}
-  if(typeof SUPABASE_CONFIG!=='undefined'&&SUPABASE_CONFIG.url!=='YOUR_SUPABASE_URL'){
-    const sb=window.supabase.createClient(SUPABASE_CONFIG.url,SUPABASE_CONFIG.anonKey);
-    document.getElementById('authSubmit').textContent='Please wait…';
-    try{
-      if(authMode==='signup'){
-        // redirectTo must point to YOUR deployed Vercel URL, not localhost
-        const redirectTo = (window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1')
-          ? window.location.origin+'/auth-callback.html'
-          : window.location.origin+'/auth-callback.html';
-        const{error}=await sb.auth.signUp({
-          email,password,
-          options:{
-            data:{full_name:name},
-            emailRedirectTo: redirectTo
-          }
-        });
-        if(error)throw error;
-        sucEl.innerHTML='✅ Account created! <strong>Check your email</strong> and click the confirmation link to activate your account.<br><small style="color:#276749">The link will bring you straight back to SmartCash.</small>';
-        sucEl.style.display='block';
-      }else{
-        const{data,error}=await sb.auth.signInWithPassword({email,password});
-        if(error){
-          if(error.message.includes('Email not confirmed')){
-            errEl.innerHTML='📧 Please check your email and click the confirmation link first. <a href="#" onclick="resendVerification(\''+email+'\')" style="color:#c53030;font-weight:700">Resend email</a>';
-          }else{
-            errEl.textContent=error.message;
-          }
-          errEl.style.display='block';
-        }else{
-          sucEl.textContent='Logged in! Redirecting…';sucEl.style.display='block';
-          setTimeout(()=>window.location.href='dashboard.html',1000);
-        }
+function trackClick(id) {
+  const s = DEMO_STORES.find(x => x.id === id);
+  if (!s) return;
+  showToast('Opening ' + s.name + ' — your cashback is being tracked!');
+  setTimeout(() => window.open(s.url, '_blank'), 700);
+}
+
+/* ─ AUTH MODAL ─ */
+let authMode = 'signup';
+function openModal(mode) {
+  authMode = mode;
+  document.getElementById('authModal').classList.add('open');
+  document.getElementById('modalTitle').textContent = mode === 'login' ? 'Login to SmartCash' : 'Create Free Account';
+  document.getElementById('authSubmit').textContent = mode === 'login' ? 'Login' : 'Create Account';
+  document.getElementById('nameField').style.display = mode === 'signup' ? 'block' : 'none';
+  document.getElementById('authSwitch').innerHTML = mode === 'login'
+    ? "Don't have an account? <a onclick='toggleAuthMode()'>Sign Up Free</a>"
+    : "Already have an account? <a onclick='toggleAuthMode()'>Login</a>";
+  document.getElementById('modalError').style.display = 'none';
+  document.getElementById('modalSuccess').style.display = 'none';
+}
+function closeModal() { document.getElementById('authModal').classList.remove('open'); }
+function toggleAuthMode() { openModal(authMode === 'login' ? 'signup' : 'login'); }
+
+async function submitAuth() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const name = document.getElementById('authName').value.trim();
+  const errEl = document.getElementById('modalError');
+  const sucEl = document.getElementById('modalSuccess');
+  errEl.style.display = 'none'; sucEl.style.display = 'none';
+  if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.style.display = 'block'; return; }
+  if (typeof SUPABASE_CONFIG !== 'undefined' && SUPABASE_CONFIG.url !== 'YOUR_SUPABASE_URL') {
+    const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+    document.getElementById('authSubmit').textContent = 'Please wait…';
+    try {
+      if (authMode === 'signup') {
+        const redirectTo = window.location.origin + '/auth-callback.html';
+        const { error } = await sb.auth.signUp({ email, password, options: { data: { full_name: name }, emailRedirectTo: redirectTo } });
+        if (error) throw error;
+        sucEl.innerHTML = '✅ Account created! <strong>Check your email</strong> and click the confirmation link.';
+        sucEl.style.display = 'block';
+      } else {
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
+        else { sucEl.textContent = 'Logged in! Redirecting…'; sucEl.style.display = 'block'; setTimeout(() => window.location.href = 'dashboard.html', 1000); }
       }
-    }catch(e){errEl.textContent=e.message;errEl.style.display='block';}
-    document.getElementById('authSubmit').textContent=authMode==='login'?'Login':'Create Account';
-  }else{sucEl.textContent='Demo mode — Redirecting to dashboard…';sucEl.style.display='block';setTimeout(()=>window.location.href='dashboard.html',1200);}
+    } catch (e) { errEl.textContent = e.message; errEl.style.display = 'block'; }
+    document.getElementById('authSubmit').textContent = authMode === 'login' ? 'Login' : 'Create Account';
+  } else {
+    sucEl.textContent = 'Demo mode — Redirecting to dashboard…'; sucEl.style.display = 'block';
+    setTimeout(() => window.location.href = 'dashboard.html', 1200);
+  }
 }
 
-async function resendVerification(email){
-  if(typeof SUPABASE_CONFIG==='undefined'||SUPABASE_CONFIG.url==='YOUR_SUPABASE_URL')return;
-  const sb=window.supabase.createClient(SUPABASE_CONFIG.url,SUPABASE_CONFIG.anonKey);
-  const redirectTo=window.location.origin+'/auth-callback.html';
-  const{error}=await sb.auth.resend({type:'signup',email,options:{emailRedirectTo:redirectTo}});
-  const errEl=document.getElementById('modalError');
-  if(error){errEl.textContent='Could not resend: '+error.message;}
-  else{errEl.innerHTML='📧 Verification email resent! Check your inbox.';}
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<span class="toast-tick">✓</span><span>' + msg + '</span>';
+  document.body.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('show'));
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
 }
-function showToast(msg){const t=document.createElement('div');t.className='toast';t.innerHTML='<span class="toast-tick">✓</span><span>'+msg+'</span>';document.body.appendChild(t);requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),400);},3500);}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 renderStores(DEMO_STORES);
+
+/* Shift try-on FAB when sidebar opens */
+const obs = new MutationObserver(() => {
+  const fab = document.getElementById('tryon-fab');
+  if (fab) fab.style.right = document.body.classList.contains('sc-open') ? '384px' : '24px';
+});
+obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 </script>
+
+<!-- ═══ AI SIDEBAR — included on every page ═══════════════ -->
+<script src="ai-sidebar.js"></script>
 </body>
 </html>
