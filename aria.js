@@ -75,17 +75,21 @@ function getVoice(){
 SYN.onvoiceschanged=getVoice;
 
 function speak(txt,cb){
-  if(isSpk){SYN.cancel();} // cancel any current speech first
+  SYN.cancel();
   const c=txt.replace(/[^\x00-\x7F]/g,'').replace(/\*\*(.*?)\*\*/g,'$1').trim().substring(0,300);
   if(!c){cb&&cb();return;}
   const u=new SpeechSynthesisUtterance(c);
   u.voice=getVoice();u.rate=1.05;u.pitch=1.15;u.volume=1;
-  let ended=false; // prevent double-fire
+  let ended=false;
   isSpk=true;lipStart();waveOn(true);setStatus('Speaking…');
+  /* pause mic while Lucky speaks — prevents speaker->mic feedback loop */
+  if(voiceOn&&recog){try{recog.stop();}catch(e){}}
   u.onend=u.onerror=()=>{
     if(ended)return; ended=true;
     isSpk=false;lipStop();waveOn(false);
     setStatus(voiceOn?'🎤 Listening…':'Here for you ✨');
+    /* resume mic 600ms after speech — prevents echo pickup */
+    if(voiceOn&&recog){setTimeout(()=>{try{recog.start();}catch(e){}},600);}
     cb&&cb();
   };
   SYN.speak(u);
@@ -356,6 +360,9 @@ document.body.insertAdjacentHTML('beforeend',`
       <div id="aria-results-title">👋 Welcome! I'm Lucky</div>
       <div id="aria-results-sub">Tell me what you want — I'll search Amazon, eBay & Flipkart instantly</div>
       <div style="display:flex;gap:.5rem;align-items:center;flex-shrink:0">
+        <button id="squad-invite-btn" onclick="Aria.openSquadInvite()" style="background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:white;padding:.38rem .9rem;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:.35rem">
+          👥 Shop with Friends
+        </button>
         <button id="aria-basket-toggle" onclick="Aria.toggleBasketPanel()" style="display:none">🛒 <span id="basket-count-badge">0</span></button>
         <button id="aria-widget-close" onclick="Aria.close()">✕ Close</button>
       </div>
@@ -396,6 +403,50 @@ document.body.insertAdjacentHTML('beforeend',`
 </div>
 
 <!-- FAB -->
+<!-- ══ SQUAD INVITE MODAL ══ -->
+<div id="squad-invite-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1100;align-items:center;justify-content:center;backdrop-filter:blur(8px)" onclick="if(event.target===this)Aria.closeSquadInvite()">
+  <div style="background:#111827;border:1px solid rgba(255,255,255,.12);border-radius:24px;width:90%;max-width:480px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.6);animation:sqModalIn .3s ease">
+    <div style="background:linear-gradient(135deg,#1e1b4b,#1e3a5f);padding:1.5rem 1.75rem;border-bottom:1px solid rgba(255,255,255,.08)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem">
+        <div style="font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;color:white">👥 Shop Together</div>
+        <button onclick="Aria.closeSquadInvite()" style="background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:.85rem">✕</button>
+      </div>
+      <div style="font-size:.82rem;color:rgba(255,255,255,.5);line-height:1.6">Create a squad and shop in real-time — split screen, group chat, voice, and voting. No extra app needed.</div>
+    </div>
+    <div style="padding:1.5rem">
+      <!-- Squad type -->
+      <div style="font-size:.72rem;color:rgba(255,255,255,.4);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.65rem">Who are you shopping with?</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:1.25rem">
+        <div class="sq-invite-type active" onclick="Aria.selectInviteType('couple',this)">💑<br><span>Couple</span></div>
+        <div class="sq-invite-type" onclick="Aria.selectInviteType('friends',this)">👯<br><span>Friends</span></div>
+        <div class="sq-invite-type" onclick="Aria.selectInviteType('family',this)">👨‍👩‍👧<br><span>Family</span></div>
+        <div class="sq-invite-type" onclick="Aria.selectInviteType('occasion',this)">🎉<br><span>Event</span></div>
+      </div>
+      <!-- Name input -->
+      <input id="squad-your-name" style="width:100%;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);color:#e2e8f0;padding:.65rem 1rem;border-radius:10px;font-size:.88rem;outline:none;font-family:inherit;margin-bottom:.75rem;box-sizing:border-box;transition:border-color .2s" placeholder="Your name (so your friend knows it's you)" oninput="Aria._genInviteLink()">
+      <!-- Generated link -->
+      <div style="background:rgba(0,200,150,.08);border:1.5px solid rgba(0,200,150,.25);border-radius:12px;padding:.85rem 1rem;margin-bottom:.85rem">
+        <div style="font-size:.7rem;color:rgba(0,200,150,.8);font-weight:700;margin-bottom:.4rem">📎 Your squad invite link</div>
+        <div style="display:flex;gap:.4rem">
+          <input id="squad-invite-link" readonly style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#4ade80;padding:.5rem .8rem;font-size:.78rem;outline:none;font-family:inherit">
+          <button onclick="Aria.copyInviteLink()" id="squad-copy-btn" style="background:rgba(0,200,150,.2);border:1px solid rgba(0,200,150,.3);color:#4ade80;padding:.5rem .9rem;border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:inherit;white-space:nowrap">Copy Link</button>
+        </div>
+      </div>
+      <!-- Share options -->
+      <div style="display:flex;gap:.5rem;margin-bottom:.85rem">
+        <button onclick="Aria.shareViaWhatsApp()" style="flex:1;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);color:#25D366;padding:.55rem;border-radius:9px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit">📱 WhatsApp</button>
+        <button onclick="Aria.copyInviteLink()" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);padding:.55rem;border-radius:9px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit">📋 Copy</button>
+        <button onclick="Aria.shareNative()" style="flex:1;background:rgba(102,126,234,.15);border:1px solid rgba(102,126,234,.3);color:#a5b4fc;padding:.55rem;border-radius:9px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit">↗️ Share</button>
+      </div>
+      <!-- Enter room button -->
+      <button onclick="Aria.enterSquadRoom()" style="width:100%;background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:white;padding:.85rem;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s">
+        🎮 Open Squad Room
+      </button>
+      <div style="text-align:center;font-size:.7rem;color:rgba(255,255,255,.25);margin-top:.65rem">Your friend clicks the link → joins your split-screen session instantly</div>
+    </div>
+  </div>
+</div>
+
 <button id="aria-fab" onclick="Aria.toggle()">
   <!-- Mini Sonic face -->
   <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" width="44" height="44" style="border-radius:50%;border:2px solid rgba(79,195,247,.5)">
@@ -806,6 +857,16 @@ ST.textContent=`
   #sonic-svg{width:70px;}
   #sonic-nameplate,#sonic-wave,#voice-indicator-wrap{display:none;}
 }
+/* squad invite modal */
+@keyframes sqModalIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.sq-invite-type{
+  background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);
+  border-radius:12px;padding:.8rem .4rem;text-align:center;
+  font-size:.8rem;color:rgba(255,255,255,.5);cursor:pointer;transition:all .2s;font-weight:600;line-height:1.7;
+}
+.sq-invite-type span{font-size:.68rem;}
+.sq-invite-type.active{background:rgba(102,126,234,.2);border-color:#667eea;color:#a5b4fc;}
+.sq-invite-type:hover{border-color:rgba(102,126,234,.5);color:#c4b5fd;}
 `;
 document.head.appendChild(ST);
 
@@ -984,12 +1045,12 @@ function getReply(msg){
     S.lastProds=prods;S.activeFilter='all';
     const ns=[...new Set(prods.map(p=>p.store))].length;
     return{
-      text:`Found **${prods.length} results**${maxP?` under £${maxP}`:''}  across ${ns} stores! Add any item to your basket.`,
+      text:`Found ${prods.length} results${maxP?` under £${maxP}`:''}  across ${ns} stores — all with cashback!`,
       prods,
       qr:['Cheapest first','Best rated','Highest cashback','Only Amazon','Only eBay','Only Flipkart']
     };
   }
-  if(/hello|hi|hey|namaste/.test(m)) return{text:"I'm Lucky — your personal shopping assistant! I search Amazon, eBay and Flipkart all at once. What are we finding today?",prods:null,qr:['T-shirts under £20','Headphones under £50','Best deals today','Squad shopping']};
+  if(/hello|hi|hey|namaste/.test(m)) return{text:"I'm Lucky — your personal shopping assistant! I search Amazon, eBay and Flipkart all at once. What are we finding today?",prods:null,showWelcome:!S.lastProds.length,qr:['T-shirts under £20','Headphones under £50','Best deals today','Squad shopping']};
   if(/deal|best|offer|today/.test(m)){
     const all=Object.values(PRODUCTS).flat().sort(()=>Math.random()-.5).slice(0,12);
     S.lastProds=all;
@@ -1078,9 +1139,10 @@ window.Aria={
     await new Promise(r=>setTimeout(r,550+Math.random()*350));
     const reply=getReply(msg);
     setSonicMsg(reply.text,reply.qr);
+    /* only update grid when reply explicitly has products */
     if(reply.prods) renderProducts(reply.prods);
-    else if(S.lastProds.length) renderProducts(S.lastProds);
-    else showWelcome();
+    else if(reply.showWelcome) showWelcome();
+    /* else: leave existing grid as-is — don't re-render old results */
     speak(reply.text);
   },
 
@@ -1237,6 +1299,74 @@ window.Aria={
 
 // also expose as SCAI for compatibility
 window.SCAI=window.Aria;
+
+/* ─── SQUAD INVITE MODAL API ─── */
+Object.assign(window.Aria, {
+  _inviteSquadType: 'couple',
+
+  openSquadInvite(){
+    const modal = document.getElementById('squad-invite-modal');
+    modal.style.display = 'flex';
+    this._genInviteLink();
+    speak("Let's set up your squad! Choose who you're shopping with, then share the invite link.");
+    setSonicMsg("Setting up your squad! Pick your type and share the link with your friend. They click it and join instantly — no sign-up needed! 🎮",['Or open squad room now','Back to shopping']);
+  },
+
+  closeSquadInvite(){
+    document.getElementById('squad-invite-modal').style.display = 'none';
+  },
+
+  selectInviteType(type, el){
+    this._inviteSquadType = type;
+    document.querySelectorAll('.sq-invite-type').forEach(e=>e.classList.remove('active'));
+    el.classList.add('active');
+    this._genInviteLink();
+  },
+
+  _genInviteLink(){
+    const code = sessionStorage.getItem('lucky_squad_code') || Math.random().toString(36).substr(2,6).toUpperCase();
+    sessionStorage.setItem('lucky_squad_code', code);
+    const name = document.getElementById('squad-your-name')?.value.trim() || 'You';
+    const link = `${window.location.origin}/squad.html?code=${code}&host=${encodeURIComponent(name)}&type=${this._inviteSquadType}`;
+    const el = document.getElementById('squad-invite-link');
+    if(el) el.value = link;
+    return link;
+  },
+
+  copyInviteLink(){
+    const link = this._genInviteLink();
+    navigator.clipboard?.writeText(link).catch(()=>{});
+    const btn = document.getElementById('squad-copy-btn');
+    if(btn){ btn.textContent='✓ Copied!'; btn.style.background='rgba(0,200,150,.35)'; setTimeout(()=>{ btn.textContent='Copy Link'; btn.style.background=''; },2000); }
+    speak("Link copied! Share it with your friend on WhatsApp or any chat app. They click it and join your squad instantly.");
+  },
+
+  shareViaWhatsApp(){
+    const link = this._genInviteLink();
+    const name = document.getElementById('squad-your-name')?.value.trim() || 'Your friend';
+    const msg = `Hey! Come shop with me on SmartCash — split screen, voice chat, and we can vote on items together! Click here: ${link}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+  },
+
+  shareNative(){
+    const link = this._genInviteLink();
+    if(navigator.share){
+      navigator.share({title:'Shop with me on SmartCash!', text:'Join my squad shopping session — split screen, voice chat, vote together!', url:link}).catch(()=>{});
+    } else {
+      this.copyInviteLink();
+    }
+  },
+
+  enterSquadRoom(){
+    this.closeSquadInvite();
+    const link = this._genInviteLink();
+    // Extract code from link
+    const code = new URL(link).searchParams.get('code') || 'SQUAD1';
+    window.open(`squad.html?code=${code}&host=${encodeURIComponent(document.getElementById('squad-your-name')?.value.trim()||'You')}&type=${this._inviteSquadType}`, '_blank');
+    speak("Opening your squad room now! Share that link with your friend and they'll join you.");
+    setSonicMsg("Your squad room is open in a new tab! Share the link and your friend joins instantly. 🎮",['Continue shopping','Best deals']);
+  },
+});
 
 /* badge after 4s */
 setTimeout(()=>{

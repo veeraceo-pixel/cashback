@@ -527,6 +527,38 @@ const MEMBER_COLORS = ['#00C896','#667eea','#F59E0B','#EC4899','#8B5CF6','#06B6D
 const SQUAD_TYPE_NAMES = {couple:'Partner',friends:'Best Friend',family:'Family',occasion:'Guest'};
 
 /* ═══════════════════════════════════════════════════════════
+   AUTO-JOIN FROM URL PARAMS
+═══════════════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', ()=>{
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  const host = params.get('host');
+  const type = params.get('type') || 'couple';
+  if(code && host){
+    // Someone clicked an invite link — pre-fill join form
+    const nameInput = document.getElementById('join-name-input');
+    const codeInput = document.getElementById('join-code-input');
+    if(nameInput && codeInput){
+      codeInput.value = code;
+      document.getElementById('create-section').style.display = 'none';
+      document.getElementById('join-section').style.display = 'block';
+      document.getElementById('join-section').insertAdjacentHTML('afterbegin',
+        `<div style="background:rgba(0,200,150,.1);border:1px solid rgba(0,200,150,.3);border-radius:10px;padding:.75rem 1rem;margin-bottom:.85rem;font-size:.82rem;color:#4ade80">
+          🎉 <strong>${host}</strong> invited you to their squad shopping session! Enter your name to join.
+        </div>`);
+      nameInput.placeholder = 'Your name';
+      nameInput.focus();
+    }
+    // Set squad type
+    const typeEl = document.querySelector(`.est[onclick*="${type}"]`);
+    if(typeEl){
+      document.querySelectorAll('.est').forEach(e=>e.classList.remove('active'));
+      typeEl.classList.add('active');
+    }
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════
    ENTRY FLOW
 ═══════════════════════════════════════════════════════════ */
 function selectType(t, el) {
