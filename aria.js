@@ -75,13 +75,19 @@ function getVoice(){
 SYN.onvoiceschanged=getVoice;
 
 function speak(txt,cb){
-  SYN.cancel();
+  if(isSpk){SYN.cancel();} // cancel any current speech first
   const c=txt.replace(/[^\x00-\x7F]/g,'').replace(/\*\*(.*?)\*\*/g,'$1').trim().substring(0,300);
   if(!c){cb&&cb();return;}
   const u=new SpeechSynthesisUtterance(c);
   u.voice=getVoice();u.rate=1.05;u.pitch=1.15;u.volume=1;
+  let ended=false; // prevent double-fire
   isSpk=true;lipStart();waveOn(true);setStatus('Speaking…');
-  u.onend=u.onerror=()=>{isSpk=false;lipStop();waveOn(false);setStatus(voiceOn?'🎤 Listening…':'Here for you ✨');cb&&cb();};
+  u.onend=u.onerror=()=>{
+    if(ended)return; ended=true;
+    isSpk=false;lipStop();waveOn(false);
+    setStatus(voiceOn?'🎤 Listening…':'Here for you ✨');
+    cb&&cb();
+  };
   SYN.speak(u);
 }
 
@@ -97,7 +103,7 @@ function lipStart(){
   },90);
 }
 function lipStop(){clearInterval(lipT);const m=document.getElementById('sonic-mouth');if(m)m.setAttribute('d',mPath(1));}
-function mPath(o){const y=148,w=16,cx=100;return `M${cx-w} ${y} Q${cx} ${y-3} ${cx+w} ${y} Q${cx} ${y+o*1.1+1} ${cx-w} ${y} Z`;}
+function mPath(o){const y=128,w=14,cx=100;return `M${cx-w} ${y} Q${cx} ${y-2} ${cx+w} ${y} Q${cx} ${y+o+1} ${cx-w} ${y} Z`;}
 function waveOn(on){const w=document.getElementById('sonic-wave');if(w)w.style.opacity=on?'1':'0';}
 function setStatus(t){const el=document.getElementById('sonic-status');if(el)el.textContent=t;}
 
@@ -248,12 +254,12 @@ document.body.insertAdjacentHTML('beforeend',`
         <ellipse cx="98" cy="116" rx="2" ry="1.5" fill="rgba(255,255,255,0.4)"/>
 
         <!-- ── MOUTH — animated ── -->
-        <path id="sonic-mouth" d="M84 148 Q100 145 116 148 Q100 149 84 148 Z" fill="#1A0A00"/>
-        <!-- Smile lines -->
-        <path d="M82 146 Q83 150 84 154" fill="none" stroke="rgba(255,140,0,.4)" stroke-width="1.2" stroke-linecap="round"/>
-        <path d="M118 146 Q117 150 116 154" fill="none" stroke="rgba(255,140,0,.4)" stroke-width="1.2" stroke-linecap="round"/>
-        <!-- Teeth when open -->
-        <path id="sonic-teeth" d="M88 148 Q100 148 112 148" fill="white" opacity="0"/>
+        <path id="sonic-mouth" d="M86 128 Q100 126 114 128 Q100 130 86 128 Z" fill="#1A0A00"/>
+        <!-- Smile corners -->
+        <path d="M84 127 Q83 131 85 134" fill="none" stroke="rgba(255,140,0,.35)" stroke-width="1" stroke-linecap="round"/>
+        <path d="M116 127 Q117 131 115 134" fill="none" stroke="rgba(255,140,0,.35)" stroke-width="1" stroke-linecap="round"/>
+        <!-- Teeth (shown when mouth open) -->
+        <path id="sonic-teeth" d="M88 129 Q100 129 112 129" fill="white" opacity="0"/>
 
         <!-- ── ARMS ── -->
         <path d="M48 185 Q20 175 12 195 Q18 215 30 208 Q38 192 52 192Z" fill="url(#sg-blue)"/>
@@ -347,7 +353,7 @@ document.body.insertAdjacentHTML('beforeend',`
   <!-- ══ RIGHT COL — Full page results ══ -->
   <div id="aria-results-col">
     <div id="aria-results-header">
-      <div id="aria-results-title">👋 Hey! I'm Lucky</div>
+      <div id="aria-results-title">👋 Welcome! I'm Lucky</div>
       <div id="aria-results-sub">Tell me what you want — I'll search Amazon, eBay & Flipkart instantly</div>
       <div style="display:flex;gap:.5rem;align-items:center;flex-shrink:0">
         <button id="aria-basket-toggle" onclick="Aria.toggleBasketPanel()" style="display:none">🛒 <span id="basket-count-badge">0</span></button>
@@ -808,7 +814,7 @@ setTimeout(()=>{const m=document.getElementById('sonic-mouth');if(m)m.setAttribu
 
 /* ─── STATE ──────────────────────────────────────────── */
 const S={
-  open:false, greeted:false, mode:'shop',
+  open:false, greeted:!!sessionStorage.getItem('lucky_greeted'), mode:'shop',
   lastProds:[], activeFilter:'all', squadType:'couple',
   basketPanelOpen:false,
 };
@@ -983,7 +989,7 @@ function getReply(msg){
       qr:['Cheapest first','Best rated','Highest cashback','Only Amazon','Only eBay','Only Flipkart']
     };
   }
-  if(/hello|hi|hey|namaste/.test(m)) return{text:"Hey! I'm Lucky — your personal shopping assistant! I search Amazon, eBay and Flipkart all at once.",prods:null,qr:['T-shirts under £20','Headphones under £50','Best deals today','Squad shopping']};
+  if(/hello|hi|hey|namaste/.test(m)) return{text:"I'm Lucky — your personal shopping assistant! I search Amazon, eBay and Flipkart all at once. What are we finding today?",prods:null,qr:['T-shirts under £20','Headphones under £50','Best deals today','Squad shopping']};
   if(/deal|best|offer|today/.test(m)){
     const all=Object.values(PRODUCTS).flat().sort(()=>Math.random()-.5).slice(0,12);
     S.lastProds=all;
@@ -1032,7 +1038,12 @@ window.Aria={
     if(!S.greeted){
       S.greeted=true;
       showWelcome();
-      const g="Hey! I'm Lucky, your personal shopping assistant. I can search Amazon, eBay and Flipkart all at once. Or hit the mic button and just talk to me! What are we shopping for?";
+      // Only speak greeting if not already greeted this session
+      const alreadyGreeted = sessionStorage.getItem('lucky_greeted');
+      const g = alreadyGreeted
+        ? "Welcome back! What are we shopping for today?"
+        : "Welcome to SmartCash! I'm Lucky, your personal shopping assistant. I search Amazon, eBay and Flipkart all at once — just tell me what you need, or tap the mic and talk to me!";
+      sessionStorage.setItem('lucky_greeted','1');
       setTimeout(()=>{
         setSonicMsg(g,['T-shirts under £20','Headphones under £50','Best deals today','Start squad shopping']);
         speak(g);
