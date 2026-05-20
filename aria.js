@@ -1,5 +1,5 @@
 /* ============================================================
-   SmartCash — Aria v6
+   SmartCash — Lucky v6
    Sonic avatar · Always-on voice · Full-page results · Squad
    ============================================================ */
 (function(){
@@ -282,7 +282,7 @@ document.body.insertAdjacentHTML('beforeend',`
 
       <!-- Name + status -->
       <div id="sonic-nameplate">
-        <div id="sonic-name">Sonic AI <span id="sonic-dot">●</span></div>
+        <div id="sonic-name">Lucky <span id="sonic-dot">●</span></div>
         <div id="sonic-status">SmartCash Assistant</div>
       </div>
 
@@ -347,7 +347,7 @@ document.body.insertAdjacentHTML('beforeend',`
   <!-- ══ RIGHT COL — Full page results ══ -->
   <div id="aria-results-col">
     <div id="aria-results-header">
-      <div id="aria-results-title">👋 Hey! I'm Sonic AI</div>
+      <div id="aria-results-title">👋 Hey! I'm Lucky</div>
       <div id="aria-results-sub">Tell me what you want — I'll search Amazon, eBay & Flipkart instantly</div>
       <div style="display:flex;gap:.5rem;align-items:center;flex-shrink:0">
         <button id="aria-basket-toggle" onclick="Aria.toggleBasketPanel()" style="display:none">🛒 <span id="basket-count-badge">0</span></button>
@@ -422,7 +422,7 @@ document.body.insertAdjacentHTML('beforeend',`
     <circle cx="46" cy="10" r="6" fill="#4ade80" stroke="#0D47A1" stroke-width="2"/>
   </svg>
   <div style="display:flex;flex-direction:column;line-height:1.2">
-    <div style="font-size:.85rem;font-weight:800;color:white">Sonic AI</div>
+    <div style="font-size:.85rem;font-weight:800;color:white">Lucky</div>
     <div style="font-size:.62rem;color:rgba(255,255,255,.45)">Your shopping assistant</div>
   </div>
   <div id="aria-fab-notif" style="display:none;position:absolute;top:-5px;right:-5px;background:#FF6B6B;color:white;width:18px;height:18px;border-radius:50%;font-size:.65rem;font-weight:800;display:none;align-items:center;justify-content:center;border:2px solid #071a0e">1</div>
@@ -983,7 +983,7 @@ function getReply(msg){
       qr:['Cheapest first','Best rated','Highest cashback','Only Amazon','Only eBay','Only Flipkart']
     };
   }
-  if(/hello|hi|hey|namaste/.test(m)) return{text:"Hey! I'm Sonic AI — your personal shopping assistant! I search Amazon, eBay and Flipkart all at once.",prods:null,qr:['T-shirts under £20','Headphones under £50','Best deals today','Squad shopping']};
+  if(/hello|hi|hey|namaste/.test(m)) return{text:"Hey! I'm Lucky — your personal shopping assistant! I search Amazon, eBay and Flipkart all at once.",prods:null,qr:['T-shirts under £20','Headphones under £50','Best deals today','Squad shopping']};
   if(/deal|best|offer|today/.test(m)){
     const all=Object.values(PRODUCTS).flat().sort(()=>Math.random()-.5).slice(0,12);
     S.lastProds=all;
@@ -1032,7 +1032,7 @@ window.Aria={
     if(!S.greeted){
       S.greeted=true;
       showWelcome();
-      const g="Hey! I'm Sonic AI, your personal shopping assistant. I can search Amazon, eBay and Flipkart all at once. Or hit the mic button and just talk to me! What are we shopping for?";
+      const g="Hey! I'm Lucky, your personal shopping assistant. I can search Amazon, eBay and Flipkart all at once. Or hit the mic button and just talk to me! What are we shopping for?";
       setTimeout(()=>{
         setSonicMsg(g,['T-shirts under £20','Headphones under £50','Best deals today','Start squad shopping']);
         speak(g);
@@ -1242,3 +1242,24 @@ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='/')A
 setInterval(()=>waveOn(isSpk),200);
 
 })();
+
+/* ─── SQUAD PAGE REDIRECT ─── */
+(function(){
+  // Override startSquad to open squad.html
+  const origStart = window.Aria.startSquad.bind(window.Aria);
+  window.Aria.startSquad = function() {
+    window.open('squad.html', '_blank');
+    setSonicMsg('Opening your Squad Shopping room! 🎮 Share the link with your crew.',['T-shirts','Headphones','Dresses']);
+    speak('Opening your squad shopping room! Share the link with your crew and shop together.');
+  };
+  window.SCAI.startSquad = window.Aria.startSquad;
+})();
+
+function setSonicMsg(txt,qrs){
+  const el=document.getElementById('aria-latest-msg');
+  if(!el)return;
+  el.style.display='block';
+  el.innerHTML=txt.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  const qrRow=document.getElementById('aria-qr-row');
+  if(qrRow) qrRow.innerHTML=(qrs||[]).map(q=>`<button class="aria-qr" onclick="Aria.ask('${q}')">${q}</button>`).join('');
+}

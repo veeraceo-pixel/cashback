@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartCash — Squad Shopping</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+/* ═══ SQUAD LAYOUT ═══════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'DM Sans',-apple-system,sans-serif;
+  background:#0a0e17;color:#e2e8f0;
+  height:100vh;overflow:hidden;display:flex;flex-direction:column;
+}
+
+/* TOP BAR */
+#squad-topbar{
+  height:52px;background:#111827;border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;padding:0 1rem;gap:.75rem;flex-shrink:0;
+  z-index:100;
+}
+#squad-logo{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:#fff;
+  display:flex;align-items:center;gap:.4rem;
+}
+#squad-logo span{color:#00C896;}
+#squad-name-pill{
+  background:rgba(102,126,234,.2);border:1px solid rgba(102,126,234,.3);
+  color:#a5b4fc;padding:.25rem .85rem;border-radius:50px;font-size:.75rem;font-weight:700;
+}
+#squad-code{color:rgba(255,255,255,.4);font-size:.72rem;}
+.squad-member-pill{
+  display:flex;align-items:center;gap:.4rem;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+  border-radius:50px;padding:.22rem .7rem;font-size:.73rem;font-weight:600;
+}
+.smp-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+#topbar-right{margin-left:auto;display:flex;align-items:center;gap:.5rem;}
+
+/* VOICE CHAT BAR */
+#voice-bar{
+  display:flex;align-items:center;gap:.5rem;
+  background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.25);
+  border-radius:50px;padding:.28rem .85rem;
+}
+#voice-bar-label{font-size:.7rem;color:#4ade80;font-weight:700;}
+.voice-member{
+  display:flex;align-items:center;gap:.3rem;font-size:.7rem;
+  background:rgba(255,255,255,.06);border-radius:50px;padding:.15rem .5rem;
+}
+.vm-wave{display:flex;gap:1.5px;align-items:center;height:10px;}
+.vm-bar{
+  width:2px;border-radius:1px;background:#4ade80;height:3px;
+  transition:height .1s;
+}
+#mic-toggle-btn{
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+  color:#fff;padding:.28rem .7rem;border-radius:50px;
+  font-size:.7rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;
+}
+#mic-toggle-btn.muted{background:rgba(255,107,107,.2);border-color:rgba(255,107,107,.4);color:#FF6B6B;}
+#leave-btn{
+  background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);
+  color:#f87171;padding:.28rem .85rem;border-radius:8px;
+  font-size:.73rem;font-weight:700;cursor:pointer;font-family:inherit;
+}
+#invite-btn{
+  background:linear-gradient(135deg,#00C896,#00A07A);border:none;
+  color:#fff;padding:.32rem .9rem;border-radius:8px;
+  font-size:.73rem;font-weight:700;cursor:pointer;font-family:inherit;
+}
+
+/* MAIN SPLIT SCREEN AREA */
+#squad-main{
+  flex:1;display:flex;overflow:hidden;
+  transition:all .4s cubic-bezier(.4,0,.2,1);
+}
+
+/* MEMBER PANEL */
+.member-panel{
+  flex:1;display:flex;flex-direction:column;
+  border-right:2px solid rgba(255,255,255,.06);
+  position:relative;overflow:hidden;
+  transition:all .4s cubic-bezier(.4,0,.2,1);
+  min-width:0;
+}
+.member-panel:last-child{border-right:none;}
+.member-panel.is-me{border-top:3px solid #00C896;}
+.member-panel.is-other{border-top:3px solid #667eea;}
+.member-panel.is-other2{border-top:3px solid #F59E0B;}
+
+/* PANEL HEADER */
+.panel-header{
+  display:flex;align-items:center;gap:.6rem;padding:.6rem .85rem;
+  background:rgba(0,0,0,.35);border-bottom:1px solid rgba(255,255,255,.07);
+  flex-shrink:0;
+}
+.panel-avatar{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;flex-shrink:0;
+}
+.panel-member-name{font-size:.82rem;font-weight:700;color:#fff;}
+.panel-online-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0;}
+.panel-header-actions{margin-left:auto;display:flex;gap:.35rem;}
+.panel-action-btn{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.6);padding:.22rem .55rem;border-radius:6px;
+  font-size:.68rem;cursor:pointer;font-family:inherit;transition:all .2s;
+}
+.panel-action-btn:hover{background:rgba(255,255,255,.15);color:#fff;}
+
+/* PANEL SEARCH BAR */
+.panel-search-wrap{
+  padding:.55rem .7rem;background:rgba(0,0,0,.2);
+  border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;display:flex;gap:.4rem;
+}
+.panel-search{
+  flex:1;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);
+  color:#e2e8f0;padding:.45rem .75rem;border-radius:8px;font-size:.78rem;
+  outline:none;font-family:inherit;transition:border-color .2s;
+}
+.panel-search:focus{border-color:#00C896;}
+.panel-search::placeholder{color:rgba(255,255,255,.3);}
+.panel-search-btn{
+  background:#00C896;border:none;color:#fff;
+  padding:.45rem .85rem;border-radius:8px;font-size:.75rem;
+  font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0;
+}
+
+/* PANEL CONTENT */
+.panel-content{
+  flex:1;overflow-y:auto;padding:.65rem;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+  gap:.6rem;align-content:start;
+}
+.panel-content::-webkit-scrollbar{width:4px;}
+.panel-content::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px;}
+
+/* PRODUCT CARD — dark themed */
+.sq-card{
+  background:#1a2035;border:1.5px solid rgba(255,255,255,.08);
+  border-radius:12px;overflow:hidden;cursor:pointer;
+  transition:all .22s;display:flex;flex-direction:column;
+  animation:sqCardIn .25s ease both;position:relative;
+}
+@keyframes sqCardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sq-card:hover{border-color:#00C896;background:rgba(0,200,150,.05);}
+.sq-card.in-basket{border-color:#00C896;background:rgba(0,200,150,.08);}
+.sq-card.voted{border-color:#F59E0B;box-shadow:0 0 0 2px rgba(245,158,11,.25);}
+.sq-card-img{
+  height:90px;display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;background:rgba(255,255,255,.04);position:relative;
+}
+.sq-badge{
+  position:absolute;top:.35rem;left:.35rem;
+  font-size:.55rem;font-weight:700;padding:.12rem .4rem;
+  border-radius:50px;background:#FF6B6B;color:white;
+}
+.sq-store-tag{
+  position:absolute;bottom:.3rem;right:.3rem;
+  font-size:.55rem;font-weight:700;padding:.1rem .38rem;
+  border-radius:5px;color:white;
+}
+.sq-card-body{padding:.55rem .6rem;flex:1;display:flex;flex-direction:column;gap:.18rem;}
+.sq-card-name{font-size:.72rem;font-weight:700;color:#e2e8f0;line-height:1.3;}
+.sq-card-price{font-size:.9rem;font-weight:800;color:#00C896;font-family:'Syne',sans-serif;}
+.sq-card-cb{font-size:.6rem;color:rgba(0,200,150,.8);font-weight:600;}
+.sq-card-btns{display:flex;gap:.3rem;margin-top:auto;padding-top:.35rem;}
+.sq-add-btn{
+  flex:1;padding:.38rem .3rem;
+  background:linear-gradient(135deg,#00C896,#00A07A);
+  border:none;color:white;border-radius:7px;font-size:.65rem;font-weight:700;
+  cursor:pointer;font-family:inherit;transition:all .2s;
+}
+.sq-add-btn.done{background:rgba(0,200,150,.15);color:#00C896;border:1.5px solid rgba(0,200,150,.3);}
+.sq-vote-btn{
+  width:28px;height:28px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);
+  color:#F59E0B;border-radius:7px;cursor:pointer;font-size:.75rem;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;
+}
+.sq-vote-btn.voted{background:rgba(245,158,11,.3);color:#FCD34D;}
+
+/* VOTE OVERLAY on card */
+.vote-count{
+  position:absolute;top:.35rem;right:.35rem;
+  background:rgba(245,158,11,.85);color:#fff;
+  font-size:.6rem;font-weight:800;padding:.12rem .38rem;
+  border-radius:50px;z-index:1;
+}
+
+/* EMPTY STATE */
+.panel-empty{
+  grid-column:1/-1;text-align:center;padding:2rem 1rem;
+  display:flex;flex-direction:column;align-items:center;gap:.75rem;
+}
+.panel-empty-icon{font-size:2.5rem;}
+.panel-empty-title{font-size:.88rem;font-weight:700;color:rgba(255,255,255,.5);}
+.panel-empty-sub{font-size:.72rem;color:rgba(255,255,255,.3);line-height:1.6;}
+.panel-quick-btns{display:flex;gap:.35rem;flex-wrap:wrap;justify-content:center;margin-top:.25rem;}
+.pq-btn{
+  background:rgba(0,200,150,.1);border:1px solid rgba(0,200,150,.25);
+  color:#4ade80;padding:.28rem .65rem;border-radius:50px;
+  font-size:.68rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;
+}
+.pq-btn:hover{background:rgba(0,200,150,.25);color:#fff;}
+
+/* PANEL CHAT (bottom strip) */
+.panel-chat-strip{
+  height:38px;border-top:1px solid rgba(255,255,255,.07);
+  display:flex;align-items:center;gap:.4rem;padding:0 .65rem;
+  background:rgba(0,0,0,.25);flex-shrink:0;
+}
+.pcs-msg{
+  font-size:.68rem;color:rgba(255,255,255,.5);flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.pcs-typing{
+  font-size:.62rem;color:#4ade80;font-weight:600;
+  animation:csTyping 1s infinite;flex-shrink:0;display:none;
+}
+@keyframes csTyping{0%,100%{opacity:.5}50%{opacity:1}}
+
+/* SQUAD SIDEBAR */
+#squad-sidebar{
+  width:240px;flex-shrink:0;
+  background:#111827;border-left:1px solid rgba(255,255,255,.08);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+#squad-sidebar-head{
+  padding:.75rem .9rem;border-bottom:1px solid rgba(255,255,255,.07);
+  display:flex;align-items:center;justify-content:space-between;
+}
+#squad-sidebar-head span{font-size:.8rem;font-weight:700;color:#e2e8f0;}
+
+/* VOTE TALLY */
+#vote-section{padding:.65rem .9rem;border-bottom:1px solid rgba(255,255,255,.07);}
+#vote-section h4{font-size:.72rem;color:rgba(255,255,255,.4);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem;}
+.vote-item{
+  display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;
+}
+.vi-emoji{font-size:1rem;flex-shrink:0;width:24px;text-align:center;}
+.vi-info{flex:1;min-width:0;}
+.vi-name{font-size:.7rem;color:#e2e8f0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.vi-bar-wrap{height:5px;background:rgba(255,255,255,.08);border-radius:3px;margin-top:.15rem;overflow:hidden;}
+.vi-bar{height:100%;background:linear-gradient(90deg,#F59E0B,#FCD34D);border-radius:3px;transition:width .5s ease;}
+.vi-count{font-size:.68rem;color:#F59E0B;font-weight:700;flex-shrink:0;}
+
+/* GROUP CHAT */
+#group-chat-section{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+#group-chat-head{
+  padding:.55rem .9rem;border-bottom:1px solid rgba(255,255,255,.07);
+  font-size:.72rem;color:rgba(255,255,255,.4);font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  display:flex;align-items:center;gap:.5rem;
+}
+#group-chat-head span{color:#4ade80;font-size:.6rem;animation:csTyping 1s infinite;}
+#group-msgs{
+  flex:1;overflow-y:auto;padding:.55rem .75rem;display:flex;flex-direction:column;gap:.4rem;
+}
+#group-msgs::-webkit-scrollbar{width:3px;}
+#group-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);}
+.gc-msg{
+  display:flex;gap:.4rem;animation:sqCardIn .2s ease;
+}
+.gc-msg.mine{flex-direction:row-reverse;}
+.gc-avatar{
+  width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;flex-shrink:0;align-self:flex-end;
+}
+.gc-bubble{
+  max-width:85%;padding:.4rem .65rem;border-radius:10px;
+  font-size:.72rem;line-height:1.5;word-break:break-word;
+}
+.gc-msg:not(.mine) .gc-bubble{
+  background:#1e2638;color:#e2e8f0;border:1px solid rgba(255,255,255,.07);
+  border-radius:10px 10px 10px 3px;
+}
+.gc-msg.mine .gc-bubble{
+  background:linear-gradient(135deg,#00C896,#00A07A);color:#fff;
+  border-radius:10px 10px 3px 10px;
+}
+.gc-msg.system .gc-bubble{
+  background:rgba(102,126,234,.15);color:#a5b4fc;
+  border:1px solid rgba(102,126,234,.2);border-radius:8px;text-align:center;
+  font-size:.68rem;margin:0 auto;max-width:100%;
+}
+#group-input-row{
+  display:flex;gap:.35rem;padding:.5rem .65rem;
+  border-top:1px solid rgba(255,255,255,.07);flex-shrink:0;
+}
+#group-input{
+  flex:1;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);
+  color:#e2e8f0;padding:.42rem .7rem;border-radius:8px;font-size:.75rem;
+  outline:none;font-family:inherit;transition:border-color .2s;
+}
+#group-input:focus{border-color:#00C896;}
+#group-input::placeholder{color:rgba(255,255,255,.28);}
+#group-send{
+  background:#00C896;border:none;color:#fff;
+  width:32px;height:32px;border-radius:8px;cursor:pointer;
+  font-size:.8rem;flex-shrink:0;transition:all .2s;
+}
+
+/* BASKET COMPARE BAR */
+#basket-compare-bar{
+  display:flex;gap:1px;border-top:1px solid rgba(255,255,255,.08);
+  background:rgba(0,0,0,.4);flex-shrink:0;height:44px;
+}
+.bcb-section{
+  flex:1;display:flex;align-items:center;justify-content:space-between;
+  padding:0 .75rem;font-size:.72rem;color:rgba(255,255,255,.5);
+}
+.bcb-section.me{border-right:1px solid rgba(255,255,255,.06);}
+.bcb-items{color:rgba(255,255,255,.7);font-weight:600;}
+.bcb-total{color:#00C896;font-weight:800;}
+.bcb-checkout{
+  background:linear-gradient(135deg,#00C896,#00A07A);border:none;
+  color:white;padding:.28rem .75rem;border-radius:7px;
+  font-size:.68rem;font-weight:700;cursor:pointer;font-family:inherit;
+}
+
+/* ENTRY SCREEN */
+#entry-screen{
+  position:fixed;inset:0;background:#0a0e17;z-index:200;
+  display:flex;align-items:center;justify-content:center;
+}
+#entry-card{
+  background:#111827;border:1px solid rgba(255,255,255,.1);
+  border-radius:24px;padding:2.5rem;width:90%;max-width:460px;
+  box-shadow:0 24px 64px rgba(0,0,0,.5);text-align:center;
+}
+#entry-logo{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:.5rem;}
+#entry-logo span{color:#00C896;}
+#entry-title{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:.5rem;}
+#entry-sub{font-size:.85rem;color:rgba(255,255,255,.45);margin-bottom:1.75rem;line-height:1.65;}
+.entry-input{
+  width:100%;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);
+  color:#e2e8f0;padding:.7rem 1rem;border-radius:10px;font-size:.9rem;
+  outline:none;font-family:inherit;margin-bottom:.75rem;transition:border-color .2s;
+}
+.entry-input:focus{border-color:#00C896;}
+.entry-input::placeholder{color:rgba(255,255,255,.3);}
+#entry-join-btn{
+  width:100%;padding:.85rem;margin-bottom:.75rem;
+  background:linear-gradient(135deg,#00C896,#00A07A);border:none;
+  color:#fff;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:all .2s;
+}
+#entry-join-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,200,150,.35);}
+#entry-create-btn{
+  width:100%;padding:.75rem;
+  background:rgba(102,126,234,.15);border:1.5px solid rgba(102,126,234,.3);
+  color:#a5b4fc;border-radius:12px;font-size:.88rem;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:all .2s;
+}
+.entry-squad-types{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:1.25rem;}
+.est{
+  background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);
+  border-radius:10px;padding:.65rem .4rem;text-align:center;
+  font-size:.7rem;color:rgba(255,255,255,.5);cursor:pointer;transition:all .2s;
+  font-weight:600;line-height:1.6;
+}
+.est.active{background:rgba(102,126,234,.15);border-color:#667eea;color:#a5b4fc;}
+
+/* VOICE PERMISSION TOAST */
+#voice-toast{
+  position:fixed;bottom:1rem;right:1rem;
+  background:#1e2638;border:1px solid rgba(79,195,247,.3);
+  border-radius:12px;padding:.75rem 1.1rem;z-index:300;
+  display:flex;align-items:center;gap:.6rem;font-size:.8rem;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+  transform:translateY(100px);opacity:0;transition:all .3s;
+}
+#voice-toast.show{transform:translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- ═══ ENTRY SCREEN ═══════════════════════════════════════ -->
+<div id="entry-screen">
+  <div id="entry-card">
+    <div id="entry-logo">Smart<span>Cash</span></div>
+    <div id="entry-title">👥 Squad Shopping</div>
+    <div id="entry-sub">Shop together in real-time. See each other's picks, vote on items, and chat — all in one split screen. No extra apps needed.</div>
+
+    <div id="create-section">
+      <div class="entry-squad-types">
+        <div class="est active" onclick="selectType('couple',this)">💑<br>Couple</div>
+        <div class="est" onclick="selectType('friends',this)">👯<br>Friends</div>
+        <div class="est" onclick="selectType('family',this)">👨‍👩‍👧<br>Family</div>
+        <div class="est" onclick="selectType('occasion',this)">🎉<br>Event</div>
+      </div>
+      <input class="entry-input" id="your-name-input" placeholder="Your name (e.g. Alex)" maxlength="20">
+      <button id="entry-create-btn" onclick="createSquad()">🚀 Create Squad & Get Link</button>
+    </div>
+
+    <div id="join-section" style="display:none">
+      <input class="entry-input" id="join-name-input" placeholder="Your name" maxlength="20">
+      <input class="entry-input" id="join-code-input" placeholder="Squad code (e.g. ABC123)" maxlength="10">
+      <button id="entry-join-btn" onclick="joinSquad()">Join Squad →</button>
+      <button style="background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:.8rem;font-family:inherit" onclick="toggleEntry()">← Create a new squad instead</button>
+    </div>
+
+    <div id="link-section" style="display:none">
+      <div style="background:rgba(0,200,150,.1);border:1.5px solid rgba(0,200,150,.3);border-radius:12px;padding:1rem;margin-bottom:1rem">
+        <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:.4rem">Share this link with your squad:</div>
+        <div style="display:flex;gap:.4rem">
+          <input id="share-link-input" readonly style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#4ade80;padding:.45rem .7rem;font-size:.75rem;outline:none;font-family:inherit">
+          <button onclick="copyShareLink()" style="background:rgba(0,200,150,.2);border:1px solid rgba(0,200,150,.3);color:#4ade80;padding:.45rem .85rem;border-radius:7px;cursor:pointer;font-size:.75rem;font-weight:700;font-family:inherit">Copy</button>
+        </div>
+      </div>
+      <button id="entry-join-btn" onclick="enterSquadRoom()">Enter Squad Room →</button>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:.6rem">Your squad member clicks the link and joins automatically</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SQUAD ROOM ══════════════════════════════════════════ -->
+<!-- TOP BAR -->
+<div id="squad-topbar" style="display:none">
+  <div id="squad-logo">Smart<span>Cash</span></div>
+  <div id="squad-name-pill">👥 Squad Shopping</div>
+  <div id="squad-code"></div>
+  <div id="member-pills"></div>
+  <div id="topbar-right">
+    <div id="voice-bar">
+      <div id="voice-bar-label">🎤 Voice Chat</div>
+      <div id="voice-members"></div>
+      <button id="mic-toggle-btn" onclick="toggleMic()">🎤 Mute</button>
+    </div>
+    <button id="invite-btn" onclick="copyShareLink()">+ Invite</button>
+    <button id="leave-btn" onclick="leaveSquad()">Leave</button>
+  </div>
+</div>
+
+<!-- MAIN SPLIT SCREEN -->
+<div id="squad-main" style="display:none"></div>
+
+<!-- BASKET COMPARE BAR -->
+<div id="basket-compare-bar" style="display:none"></div>
+
+<!-- GROUP CHAT SIDEBAR (always visible) -->
+<div id="squad-sidebar" style="display:none">
+  <div id="squad-sidebar-head">
+    <span>🗳️ Squad Activity</span>
+  </div>
+
+  <div id="vote-section">
+    <h4>Top Votes This Session</h4>
+    <div id="vote-tally"></div>
+  </div>
+
+  <div id="group-chat-section">
+    <div id="group-chat-head">
+      Group Chat <span id="typing-indicator" style="display:none">● typing…</span>
+    </div>
+    <div id="group-msgs"></div>
+    <div id="group-input-row">
+      <input id="group-input" placeholder="Message the squad…" onkeydown="if(event.key==='Enter')sendGroupMsg()">
+      <button id="group-send" onclick="sendGroupMsg()">→</button>
+    </div>
+  </div>
+</div>
+
+<!-- VOICE TOAST -->
+<div id="voice-toast">
+  <span>🎤</span>
+  <span id="voice-toast-msg">Allow microphone for voice chat</span>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   PRODUCTS
+═══════════════════════════════════════════════════════════ */
+const ALL_PRODUCTS = {
+  tshirts:[
+    {id:'t1',name:'Classic White Crew Tee',price:12.99,store:'Amazon',rating:4.3,img:'👕',cashback:4.5,badge:'Best Seller',storeColor:'#FF9900'},
+    {id:'t2',name:'Premium Cotton Polo',price:18.50,store:'eBay',rating:4.1,img:'👔',cashback:3.2,badge:'',storeColor:'#0064d2'},
+    {id:'t3',name:'Oversized Graphic Tee',price:22.00,store:'Flipkart',rating:4.5,img:'🖤',cashback:5.0,badge:'Hot 🔥',storeColor:'#2874F0'},
+    {id:'t4',name:'Slim Fit V-Neck Tee',price:9.99,store:'Amazon',rating:4.0,img:'👕',cashback:4.5,badge:'',storeColor:'#FF9900'},
+    {id:'t5',name:'Striped Breton Tee',price:24.99,store:'eBay',rating:4.6,img:'👕',cashback:3.2,badge:'Top Rated ⭐',storeColor:'#0064d2'},
+    {id:'t6',name:'Organic Cotton Basic',price:14.00,store:'Flipkart',rating:4.2,img:'🌿',cashback:5.0,badge:'Eco',storeColor:'#2874F0'},
+  ],
+  jeans:[
+    {id:'j1',name:'Slim Fit Dark Wash Jeans',price:39.99,store:'Amazon',rating:4.3,img:'👖',cashback:4.5,badge:'Best Seller',storeColor:'#FF9900'},
+    {id:'j2',name:'Straight Leg Classics',price:45.00,store:'eBay',rating:4.5,img:'👖',cashback:3.2,badge:'Top Rated ⭐',storeColor:'#0064d2'},
+    {id:'j3',name:'Skinny Stretch Jeans',price:32.00,store:'Flipkart',rating:4.1,img:'👖',cashback:5.0,badge:'',storeColor:'#2874F0'},
+    {id:'j4',name:'High Waist Mom Jeans',price:28.00,store:'Flipkart',rating:4.6,img:'👖',cashback:5.0,badge:'Hot 🔥',storeColor:'#2874F0'},
+  ],
+  dresses:[
+    {id:'d1',name:'Floral Wrap Midi Dress',price:34.99,store:'Amazon',rating:4.4,img:'👗',cashback:4.5,badge:'Best Seller',storeColor:'#FF9900'},
+    {id:'d2',name:'Bodycon Evening Dress',price:42.00,store:'eBay',rating:4.2,img:'🖤',cashback:3.2,badge:'',storeColor:'#0064d2'},
+    {id:'d3',name:'Summer Sundress Boho',price:22.99,store:'Flipkart',rating:4.5,img:'🌺',cashback:5.0,badge:'Trending 🔥',storeColor:'#2874F0'},
+    {id:'d4',name:'Linen Shirt Dress',price:38.00,store:'Amazon',rating:4.3,img:'👗',cashback:4.5,badge:'',storeColor:'#FF9900'},
+  ],
+  shoes:[
+    {id:'s1',name:'Nike Air Max 90',price:89.99,store:'Amazon',rating:4.7,img:'👟',cashback:4.5,badge:'Best Seller',storeColor:'#FF9900'},
+    {id:'s2',name:'Adidas Stan Smith',price:75.00,store:'eBay',rating:4.5,img:'⚪',cashback:3.2,badge:'Classic',storeColor:'#0064d2'},
+    {id:'s3',name:'Canvas Sneakers',price:29.99,store:'Flipkart',rating:4.2,img:'👟',cashback:5.0,badge:'Budget Pick',storeColor:'#2874F0'},
+  ],
+  headphones:[
+    {id:'h1',name:'Sony WH-1000XM5',price:279.00,store:'Amazon',rating:4.8,img:'🎧',cashback:4.5,badge:'Best Overall',storeColor:'#FF9900'},
+    {id:'h2',name:'AirPods Pro 2nd Gen',price:219.00,store:'eBay',rating:4.7,img:'🎵',cashback:3.2,badge:'Top Rated ⭐',storeColor:'#0064d2'},
+    {id:'h3',name:'Boat Rockerz 450',price:29.99,store:'Flipkart',rating:4.1,img:'🎶',cashback:5.0,badge:'Budget Pick',storeColor:'#2874F0'},
+  ],
+};
+
+/* ═══════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════ */
+const STATE = {
+  squadCode: '',
+  squadType: 'couple',
+  myName: '',
+  members: [],   // [{id, name, emoji, color, basket:[], votes:[], lastSearch:''}]
+  myId: 'me',
+  votes: {},     // productId -> count
+  micOn: true,
+  speakingSimTimer: null,
+};
+
+const MEMBER_EMOJIS = ['🦊','🐻','🐺','🦁','🐯','🐸'];
+const MEMBER_COLORS = ['#00C896','#667eea','#F59E0B','#EC4899','#8B5CF6','#06B6D4'];
+const SQUAD_TYPE_NAMES = {couple:'Partner',friends:'Best Friend',family:'Family',occasion:'Guest'};
+
+/* ═══════════════════════════════════════════════════════════
+   ENTRY FLOW
+═══════════════════════════════════════════════════════════ */
+function selectType(t, el) {
+  STATE.squadType = t;
+  document.querySelectorAll('.est').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function toggleEntry() {
+  const cs = document.getElementById('create-section');
+  const js = document.getElementById('join-section');
+  cs.style.display = cs.style.display === 'none' ? 'block' : 'none';
+  js.style.display = js.style.display === 'none' ? 'block' : 'none';
+}
+
+function createSquad() {
+  const name = document.getElementById('your-name-input').value.trim() || 'You';
+  STATE.myName = name;
+  STATE.squadCode = Math.random().toString(36).substr(2,6).toUpperCase();
+  STATE.myId = 'me';
+  STATE.members = [
+    {id:'me', name, emoji:MEMBER_EMOJIS[0], color:MEMBER_COLORS[0], basket:[], votes:[], lastSearch:'', searching:false}
+  ];
+  const link = `smartcash.co.uk/squad/${STATE.squadCode}`;
+  document.getElementById('share-link-input').value = link;
+  document.getElementById('create-section').style.display = 'none';
+  document.getElementById('link-section').style.display = 'block';
+}
+
+function copyShareLink() {
+  const val = document.getElementById('share-link-input')?.value || `smartcash.co.uk/squad/${STATE.squadCode}`;
+  navigator.clipboard?.writeText(val).catch(()=>{});
+  showToast('Link copied! Share it with your squad.');
+}
+
+function joinSquad() {
+  const name = document.getElementById('join-name-input').value.trim() || 'You';
+  STATE.myName = name;
+  STATE.squadCode = document.getElementById('join-code-input').value.trim().toUpperCase() || 'ABC123';
+  STATE.myId = 'me';
+  STATE.members = [
+    {id:'me', name, emoji:MEMBER_EMOJIS[1], color:MEMBER_COLORS[1], basket:[], votes:[], lastSearch:'', searching:false},
+    {id:'p1', name:'Alex', emoji:MEMBER_EMOJIS[0], color:MEMBER_COLORS[0], basket:[], votes:[], lastSearch:'', searching:false},
+  ];
+  enterSquadRoom();
+}
+
+function enterSquadRoom() {
+  document.getElementById('entry-screen').style.display = 'none';
+  document.getElementById('squad-topbar').style.display = 'flex';
+  document.getElementById('squad-main').style.display = 'flex';
+  document.getElementById('basket-compare-bar').style.display = 'flex';
+  document.getElementById('squad-sidebar').style.display = 'flex';
+  document.getElementById('squad-code').textContent = `Code: ${STATE.squadCode}`;
+
+  buildSplitScreen();
+  requestVoicePermission();
+  simulateSquadActivity();
+  addSystemMsg(`Squad started! ${STATE.members.map(m=>m.name).join(' & ')} are here.`);
+  updateVoteTally();
+
+  // Simulate partner joining after 2s if only 1 member
+  if (STATE.members.length === 1) {
+    setTimeout(() => {
+      const partnerName = SQUAD_TYPE_NAMES[STATE.squadType] || 'Friend';
+      STATE.members.push({
+        id:'p1', name:partnerName, emoji:MEMBER_EMOJIS[1],
+        color:MEMBER_COLORS[1], basket:[], votes:[], lastSearch:'', searching:false
+      });
+      buildSplitScreen();
+      addSystemMsg(`${partnerName} joined the squad! 🎉`);
+      addGroupMsg('p1', partnerName, `Hey! Ready to shop! 😊`);
+      simulateSquadActivity();
+    }, 2000);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SPLIT SCREEN BUILD
+═══════════════════════════════════════════════════════════ */
+function buildSplitScreen() {
+  const main = document.getElementById('squad-main');
+  main.innerHTML = '';
+
+  STATE.members.forEach((member, idx) => {
+    const isMe = member.id === STATE.myId;
+    const panel = document.createElement('div');
+    panel.className = `member-panel ${isMe?'is-me':idx===1?'is-other':'is-other2'}`;
+    panel.id = `panel-${member.id}`;
+    panel.innerHTML = `
+      <div class="panel-header">
+        <div class="panel-avatar" style="background:${member.color}20;border:1.5px solid ${member.color}40">${member.emoji}</div>
+        <div>
+          <div class="panel-member-name">${member.name}${isMe?' (You)':''}</div>
+        </div>
+        <div class="panel-online-dot"></div>
+        <div class="panel-header-actions">
+          <button class="panel-action-btn" onclick="shareBasket('${member.id}')">📤 Share basket</button>
+        </div>
+      </div>
+      <div class="panel-search-wrap">
+        <input class="panel-search" id="search-${member.id}" placeholder='Search: "t-shirts under £25"…'
+          ${isMe?`onkeydown="if(event.key==='Enter')searchPanel('${member.id}')"`:''} 
+          ${!isMe?'readonly':''}>
+        ${isMe?`<button class="panel-search-btn" onclick="searchPanel('${member.id}')">Search</button>`:''}
+      </div>
+      <div class="panel-content" id="content-${member.id}">
+        <div class="panel-empty">
+          <div class="panel-empty-icon">${member.emoji}</div>
+          <div class="panel-empty-title">${isMe?'What are you looking for?':`Waiting for ${member.name}…`}</div>
+          <div class="panel-empty-sub">${isMe?'Search above or tap a suggestion':'Their picks will appear here in real-time'}</div>
+          ${isMe?`<div class="panel-quick-btns">
+            <button class="pq-btn" onclick="quickSearch('${member.id}','t-shirts')">👕 T-shirts</button>
+            <button class="pq-btn" onclick="quickSearch('${member.id}','jeans')">👖 Jeans</button>
+            <button class="pq-btn" onclick="quickSearch('${member.id}','dresses')">👗 Dresses</button>
+            <button class="pq-btn" onclick="quickSearch('${member.id}','shoes')">👟 Shoes</button>
+          </div>`:''}
+        </div>
+      </div>
+      <div class="panel-chat-strip">
+        <div class="pcs-msg" id="pcs-${member.id}">${isMe?'Your picks show here':'Watching their picks…'}</div>
+        <div class="pcs-typing" id="typing-${member.id}">typing…</div>
+      </div>`;
+    main.appendChild(panel);
+  });
+
+  // update basket bar
+  buildBasketBar();
+  // update member pills in topbar
+  buildMemberPills();
+}
+
+function buildMemberPills() {
+  document.getElementById('member-pills').innerHTML = STATE.members.map(m=>`
+    <div class="squad-member-pill">
+      <div class="smp-dot" style="background:${m.color}"></div>
+      ${m.name}${m.id===STATE.myId?' (You)':''}
+    </div>`).join('');
+  document.getElementById('voice-members').innerHTML = STATE.members.map(m=>`
+    <div class="voice-member">
+      ${m.emoji}
+      <div class="vm-wave" id="wave-${m.id}">
+        ${[1,2,3].map(()=>`<div class="vm-bar"></div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function buildBasketBar() {
+  const bar = document.getElementById('basket-compare-bar');
+  bar.innerHTML = STATE.members.map((m,i)=>{
+    const tot = m.basket.reduce((s,p)=>s+p.price,0);
+    const n = m.basket.length;
+    const isLast = i===STATE.members.length-1;
+    return `
+      <div class="bcb-section${m.id===STATE.myId?' me':''}">
+        <span>${m.emoji} ${m.name}: <span class="bcb-items">${n} item${n!==1?'s':''}</span></span>
+        <span class="bcb-total">£${tot.toFixed(2)}</span>
+        ${m.id===STATE.myId?`<button class="bcb-checkout" onclick="checkoutMine()">Checkout →</button>`:''}
+      </div>
+      ${!isLast?'':''}`;
+  }).join('<div style="width:1px;background:rgba(255,255,255,.06)"></div>');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SEARCH + RENDER
+═══════════════════════════════════════════════════════════ */
+function quickSearch(memberId, cat) {
+  document.getElementById(`search-${memberId}`).value = cat;
+  searchPanel(memberId);
+}
+
+function searchPanel(memberId) {
+  const inp = document.getElementById(`search-${memberId}`);
+  const query = inp.value.trim().toLowerCase();
+  if (!query) return;
+  const member = STATE.members.find(m=>m.id===memberId);
+  if (!member) return;
+  member.lastSearch = query;
+
+  // show typing
+  const typingEl = document.getElementById(`typing-${memberId}`);
+  if (typingEl) { typingEl.style.display='block'; }
+  const pcs = document.getElementById(`pcs-${memberId}`);
+  if (pcs) pcs.textContent = `Searching "${query}"…`;
+
+  setTimeout(() => {
+    if (typingEl) typingEl.style.display='none';
+    // find matching category
+    let cat = null;
+    if (/tshirt|tee|t-shirt|t shirt/.test(query)) cat='tshirts';
+    else if (/jean|denim/.test(query)) cat='jeans';
+    else if (/dress|skirt/.test(query)) cat='dresses';
+    else if (/shoe|trainer|sneaker/.test(query)) cat='shoes';
+    else if (/headphone|earphone|airpod/.test(query)) cat='headphones';
+
+    let maxP = null;
+    const u = query.match(/(?:under|below|less than|max)\s*£?\s*(\d+)/);
+    if (u) maxP = parseFloat(u[1]);
+
+    let prods = cat ? [...(ALL_PRODUCTS[cat]||[])] : Object.values(ALL_PRODUCTS).flat().sort(()=>Math.random()-.5).slice(0,8);
+    if (maxP) prods = prods.filter(p=>p.price<=maxP);
+    if (!prods.length) prods = cat ? [...(ALL_PRODUCTS[cat]||[])] : [];
+
+    renderPanelProducts(memberId, prods);
+    if (pcs) pcs.textContent = `${prods.length} results for "${query}"`;
+
+    // notify squad if other
+    if (memberId !== STATE.myId) {
+      addSystemMsg(`${member.name} is looking at ${query}! 👀`);
+    }
+  }, 600 + Math.random()*400);
+}
+
+function renderPanelProducts(memberId, prods) {
+  const content = document.getElementById(`content-${memberId}`);
+  if (!content) return;
+  const member = STATE.members.find(m=>m.id===memberId);
+  const isMe = memberId === STATE.myId;
+  content.innerHTML = '';
+
+  prods.forEach((p, i) => {
+    const inBasket = member?.basket.some(b=>b.id===p.id);
+    const voteCount = STATE.votes[p.id] || 0;
+    const card = document.createElement('div');
+    card.className = `sq-card${inBasket?' in-basket':''}`;
+    card.dataset.pid = p.id;
+    card.style.animationDelay = (i*0.04)+'s';
+    card.innerHTML = `
+      ${p.badge?`<div class="sq-badge">${p.badge}</div>`:''}
+      ${voteCount>0?`<div class="vote-count">🗳️${voteCount}</div>`:''}
+      <div class="sq-card-img">
+        <span>${p.img}</span>
+        <div class="sq-store-tag" style="background:${p.storeColor}">${p.store}</div>
+      </div>
+      <div class="sq-card-body">
+        <div class="sq-card-name">${p.name}</div>
+        <div class="sq-card-price">£${p.price.toFixed(2)}</div>
+        <div class="sq-card-cb">💰 ${p.cashback}% cashback</div>
+        <div class="sq-card-btns">
+          ${isMe?`<button class="sq-add-btn${inBasket?' done':''}" onclick="addToMyBasket(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+            ${inBasket?'✓ Added':'+ Add'}
+          </button>`:'<div style="flex:1"></div>'}
+          <button class="sq-vote-btn${voteCount>0?' voted':''}" onclick="voteForItem(${JSON.stringify(p).replace(/"/g,'&quot;')},this)" title="Vote for this item">
+            ${voteCount>0?'🗳️':'👍'}
+          </button>
+        </div>
+      </div>`;
+    content.appendChild(card);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BASKET + VOTE
+═══════════════════════════════════════════════════════════ */
+function addToMyBasket(p) {
+  const me = STATE.members.find(m=>m.id===STATE.myId);
+  if (!me || me.basket.some(b=>b.id===p.id)) return;
+  me.basket.push(p);
+  buildBasketBar();
+  // sync button
+  document.querySelectorAll(`[data-pid="${p.id}"]`).forEach(card=>{
+    const btn = card.querySelector('.sq-add-btn');
+    if (btn && card.closest(`#panel-${STATE.myId}`)) {
+      btn.textContent='✓ Added';btn.classList.add('done');
+      card.classList.add('in-basket');
+    }
+  });
+  // notify squad
+  addGroupMsg('me', STATE.members.find(m=>m.id===STATE.myId)?.name||'You', `Added ${p.img} ${p.name} to my basket!`);
+  // partner reacts
+  const others = STATE.members.filter(m=>m.id!==STATE.myId);
+  if (others.length) {
+    setTimeout(()=>{
+      const reactions = [`Love that choice! 😍`, `Nice pick! Might get it too 👀`, `Ooh good one! Is it good value?`, `Add it! You'll love it 💯`];
+      const r = reactions[Math.floor(Math.random()*reactions.length)];
+      addGroupMsg(others[0].id, others[0].name, r);
+    }, 1200 + Math.random()*800);
+  }
+}
+
+function voteForItem(p, btn) {
+  STATE.votes[p.id] = (STATE.votes[p.id]||0) + 1;
+  btn.classList.add('voted');
+  btn.textContent = '🗳️';
+  // update all vote counts on this item
+  document.querySelectorAll(`[data-pid="${p.id}"]`).forEach(card=>{
+    let vc = card.querySelector('.vote-count');
+    if (!vc) {
+      vc = document.createElement('div');
+      vc.className = 'vote-count';
+      card.querySelector('.sq-card-img').appendChild(vc);
+    }
+    vc.textContent = `🗳️${STATE.votes[p.id]}`;
+    card.classList.add('voted');
+  });
+  updateVoteTally();
+  const me = STATE.members.find(m=>m.id===STATE.myId);
+  addGroupMsg('me', me?.name||'You', `Voted for ${p.img} ${p.name}! 🗳️`);
+  // partner votes too sometimes
+  const others = STATE.members.filter(m=>m.id!==STATE.myId);
+  if (others.length && Math.random()>.4) {
+    setTimeout(()=>{
+      STATE.votes[p.id] = (STATE.votes[p.id]||0)+1;
+      document.querySelectorAll(`[data-pid="${p.id}"] .vote-count`).forEach(el=>el.textContent=`🗳️${STATE.votes[p.id]}`);
+      updateVoteTally();
+      addGroupMsg(others[0].id, others[0].name, `I voted for that too! 👍`);
+    }, 1500+Math.random()*1000);
+  }
+}
+
+function shareBasket(memberId) {
+  const member = STATE.members.find(m=>m.id===memberId);
+  if (!member || !member.basket.length) {
+    addSystemMsg('Nothing in basket to share yet!'); return;
+  }
+  const names = member.basket.map(p=>p.img+' '+p.name).join(', ');
+  addGroupMsg(memberId, member.name, `Here's my basket: ${names} 🛍️`);
+}
+
+function updateVoteTally() {
+  const sorted = Object.entries(STATE.votes).sort((a,b)=>b[1]-a[1]).slice(0,4);
+  if (!sorted.length) { document.getElementById('vote-tally').innerHTML='<div style="font-size:.72rem;color:rgba(255,255,255,.3);padding:.25rem 0">No votes yet — tap 👍 on any item!</div>'; return; }
+  // find products
+  const allProds = Object.values(ALL_PRODUCTS).flat();
+  document.getElementById('vote-tally').innerHTML = sorted.map(([id,count])=>{
+    const p = allProds.find(x=>x.id===id);
+    if (!p) return '';
+    const pct = Math.min(100, count*33);
+    return `<div class="vote-item">
+      <div class="vi-emoji">${p.img}</div>
+      <div class="vi-info">
+        <div class="vi-name">${p.name}</div>
+        <div class="vi-bar-wrap"><div class="vi-bar" style="width:${pct}%"></div></div>
+      </div>
+      <div class="vi-count">${count} vote${count!==1?'s':''}</div>
+    </div>`;
+  }).join('');
+}
+
+function checkoutMine() {
+  const me = STATE.members.find(m=>m.id===STATE.myId);
+  if (!me || !me.basket.length) { addSystemMsg('Your basket is empty!'); return; }
+  const stores = [...new Set(me.basket.map(p=>p.store))];
+  const urls = {Amazon:'https://amazon.co.uk',eBay:'https://ebay.co.uk',Flipkart:'https://flipkart.com'};
+  addGroupMsg('me', me.name, `Checking out! ${me.basket.length} items from ${stores.join(' & ')} 🛒`);
+  stores.forEach((s,i)=>setTimeout(()=>window.open(urls[s]||'#','_blank'),i*700));
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GROUP CHAT
+═══════════════════════════════════════════════════════════ */
+function addGroupMsg(memberId, name, text) {
+  const msgs = document.getElementById('group-msgs');
+  if (!msgs) return;
+  const isMe = memberId === STATE.myId;
+  const member = STATE.members.find(m=>m.id===memberId)||{emoji:'🤖',color:'#667eea'};
+  const d = document.createElement('div');
+  d.className = `gc-msg${isMe?' mine':''}`;
+  d.innerHTML = `
+    <div class="gc-avatar" style="background:${member.color}20;border:1px solid ${member.color}30">${member.emoji}</div>
+    <div>
+      ${!isMe?`<div style="font-size:.6rem;color:rgba(255,255,255,.35);margin-bottom:.1rem">${name}</div>`:''}
+      <div class="gc-bubble">${text}</div>
+    </div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addSystemMsg(text) {
+  const msgs = document.getElementById('group-msgs');
+  if (!msgs) return;
+  const d = document.createElement('div');
+  d.className = 'gc-msg system';
+  d.innerHTML = `<div class="gc-bubble">${text}</div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function sendGroupMsg() {
+  const inp = document.getElementById('group-input');
+  const msg = inp.value.trim(); if (!msg) return;
+  inp.value = '';
+  const me = STATE.members.find(m=>m.id===STATE.myId);
+  addGroupMsg('me', me?.name||'You', msg);
+  // auto-reply from partner
+  const others = STATE.members.filter(m=>m.id!==STATE.myId);
+  if (others.length && Math.random()>.3) {
+    const ti = document.getElementById('typing-indicator');
+    if (ti) ti.style.display='inline';
+    setTimeout(()=>{
+      if (ti) ti.style.display='none';
+      const replies=[`Yes! 😊`,'Great idea!','Hmm let me check...','Love it! 💕','What do you think about the price?','Should we get matching ones? 😄'];
+      addGroupMsg(others[0].id, others[0].name, replies[Math.floor(Math.random()*replies.length)]);
+    }, 1000+Math.random()*1500);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   VOICE CHAT (WebRTC simulation + real mic)
+═══════════════════════════════════════════════════════════ */
+let myStream = null;
+let micMuted = false;
+let voiceAnimTimers = {};
+
+function requestVoicePermission() {
+  if (!navigator.mediaDevices?.getUserMedia) return;
+  navigator.mediaDevices.getUserMedia({audio:true,video:false})
+    .then(stream => {
+      myStream = stream;
+      showToast('🎤 Voice chat active! Your squad can hear you.');
+      // animate my wave bars based on audio level
+      animateMyVoice(stream);
+    })
+    .catch(() => {
+      showToast('⚠️ Allow microphone for voice chat with your squad.');
+    });
+}
+
+function animateMyVoice(stream) {
+  const ctx = new (window.AudioContext||window.webkitAudioContext)();
+  const src = ctx.createMediaStreamSource(stream);
+  const analyser = ctx.createAnalyser();
+  analyser.fftSize = 256;
+  src.connect(analyser);
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  const wrapEl = document.getElementById(`wave-me`);
+  function tick() {
+    analyser.getByteFrequencyData(data);
+    const avg = data.slice(0,10).reduce((s,v)=>s+v,0)/10;
+    const bars = wrapEl?.querySelectorAll('.vm-bar');
+    if (bars) bars.forEach((b,i)=>{
+      const h = Math.max(2, Math.min(14, avg/8 + Math.random()*4));
+      b.style.height = (!micMuted ? h : 2) + 'px';
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+function simulateOtherVoice() {
+  // animate other members' voice bars randomly
+  STATE.members.filter(m=>m.id!==STATE.myId).forEach(m=>{
+    const wrap = document.getElementById(`wave-${m.id}`);
+    if (!wrap) return;
+    let talking = false;
+    setInterval(()=>{
+      if (!talking && Math.random()>.95) { talking=true; setTimeout(()=>talking=false, 1500+Math.random()*3000); }
+      const bars = wrap.querySelectorAll('.vm-bar');
+      bars.forEach(b=>{
+        b.style.height = (talking ? 3+Math.random()*10 : 2)+'px';
+      });
+    }, 120);
+  });
+}
+
+function toggleMic() {
+  micMuted = !micMuted;
+  if (myStream) myStream.getAudioTracks().forEach(t=>t.enabled=!micMuted);
+  const btn = document.getElementById('mic-toggle-btn');
+  btn.textContent = micMuted ? '🔇 Unmute' : '🎤 Mute';
+  btn.classList.toggle('muted', micMuted);
+  showToast(micMuted ? '🔇 Microphone muted' : '🎤 Microphone on — squad can hear you');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SIMULATE SQUAD ACTIVITY
+═══════════════════════════════════════════════════════════ */
+function simulateSquadActivity() {
+  simulateOtherVoice();
+  const others = STATE.members.filter(m=>m.id!==STATE.myId);
+  if (!others.length) return;
+
+  const cats = Object.keys(ALL_PRODUCTS);
+  // partner starts searching after 3-5s
+  setTimeout(()=>{
+    const partner = others[0];
+    const cat = cats[Math.floor(Math.random()*cats.length)];
+    const typingEl = document.getElementById(`typing-${partner.id}`);
+    if (typingEl) typingEl.style.display='block';
+    const pcs = document.getElementById(`pcs-${partner.id}`);
+    if (pcs) pcs.textContent=`Searching ${cat}…`;
+    addSystemMsg(`${partner.name} is searching for ${cat}…`);
+    setTimeout(()=>{
+      if (typingEl) typingEl.style.display='none';
+      const prods = [...(ALL_PRODUCTS[cat]||[])];
+      renderPanelProducts(partner.id, prods);
+      if (pcs) pcs.textContent=`${prods.length} results for ${cat}`;
+      addGroupMsg(partner.id, partner.name, `Check out these ${cat}! Any you like? 👀`);
+      // partner adds to basket after 5s
+      setTimeout(()=>{
+        if (prods.length) {
+          const p = prods[Math.floor(Math.random()*Math.min(prods.length,3))];
+          partner.basket.push(p);
+          buildBasketBar();
+          addGroupMsg(partner.id, partner.name, `Added ${p.img} ${p.name} — only £${p.price.toFixed(2)}!`);
+        }
+      }, 5000+Math.random()*3000);
+    }, 1200+Math.random()*600);
+  }, 3000+Math.random()*2000);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════════════════ */
+function showToast(msg) {
+  const t = document.getElementById('voice-toast');
+  document.getElementById('voice-toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+function leaveSquad() {
+  if (confirm('Leave the squad session?')) window.location.href='app.html';
+}
+</script>
+</body>
+</html>
