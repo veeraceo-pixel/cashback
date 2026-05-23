@@ -1,47 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>About Us - DealCash</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; }
-        .header { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 1rem 2rem; }
-        .nav-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #FF6B6B, #FF8E53); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
-        .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4rem 2rem; text-align: center; }
-        .container { max-width: 900px; margin: 3rem auto; padding: 0 2rem; }
-        h1 { font-size: 3rem; margin-bottom: 1rem; }
-        h2 { font-size: 2rem; margin: 2rem 0 1rem; color: #333; }
-        p { margin-bottom: 1rem; color: #666; font-size: 1.1rem; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About SmartCash — UK's Smartest Cashback Platform</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+body { display:flex; flex-direction:column; min-height:100vh; }
+.page-hero { background:linear-gradient(135deg,#FF5C00 0%,#ff7c30 100%); padding:4rem 2rem 3.5rem; text-align:center; color:#fff; }
+.page-hero h1 { font-size:clamp(2rem,4vw,3rem); font-weight:800; letter-spacing:-1.5px; margin-bottom:.75rem; }
+.page-hero p { font-size:1rem; color:rgba(255,255,255,.8); max-width:540px; margin:0 auto; line-height:1.75; }
+.sec { max-width:1100px; margin:0 auto; padding:3.5rem 2rem; }
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; }
+.two-col img { border-radius:18px; width:100%; }
+.stat-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin:3rem 0; }
+.stat-card { background:#fff; border:1.5px solid var(--border); border-radius:14px; padding:1.75rem; text-align:center; box-shadow:var(--shadow-sm); }
+.stat-card .num { font-size:2.25rem; font-weight:800; color:var(--brand); line-height:1; margin-bottom:.35rem; }
+.stat-card .lbl { font-size:.82rem; color:var(--muted); }
+.team-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-top:2rem; }
+.team-card { background:#fff; border:1.5px solid var(--border); border-radius:14px; padding:1.5rem; text-align:center; box-shadow:var(--shadow-sm); }
+.team-ava { width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg,var(--brand),var(--brand-dark)); display:flex; align-items:center; justify-content:center; font-size:1.75rem; margin:0 auto .85rem; }
+.team-name { font-weight:700; font-size:.95rem; color:var(--text); margin-bottom:.2rem; }
+.team-role { font-size:.8rem; color:var(--muted); }
+.values-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:1.5rem; }
+.value-card { background:#fff; border:1.5px solid var(--border); border-radius:14px; padding:1.4rem; box-shadow:var(--shadow-sm); }
+.value-icon { font-size:1.75rem; margin-bottom:.65rem; }
+.value-card h3 { font-size:.92rem; font-weight:700; color:var(--text); margin-bottom:.35rem; }
+.value-card p { font-size:.82rem; color:var(--muted); line-height:1.6; }
+@media(max-width:768px){ .two-col,.stat-cards,.team-grid,.values-grid { grid-template-columns:1fr 1fr; gap:1.5rem; } .stat-cards { grid-template-columns:1fr 1fr; } }
+@media(max-width:480px){ .team-grid,.values-grid { grid-template-columns:1fr; } }
+</style>
 </head>
 <body>
-    <header class="header">
-        <nav class="nav-container">
-            <a href="index.html" class="logo">DealCash</a>
-        </nav>
-    </header>
-    <div class="hero">
-        <h1>About DealCash</h1>
-        <p style="font-size: 1.3rem; opacity: 0.9;">Helping you earn money while you shop</p>
+<header class="hdr"><nav class="nav">
+  <a href="app.html" class="logo">Smart<span class="g">Cash</span></a>
+  <div class="nav-links"><a href="app.html">Home</a><a href="stores.html">Stores</a><a href="price-tracker.html">Price Tracker</a><a href="dashboard.html">Dashboard</a></div>
+  <div class="nav-r"><button class="btn-p" onclick="location.href='app.html'">Join Free →</button></div>
+</nav></header>
+
+<div class="page-hero">
+  <h1>Built for UK Shoppers.<br>Powered by AI.</h1>
+  <p>SmartCash is the UK's most advanced cashback platform — combining real cashback with Claude AI intelligence, price prediction, and 24-hour payouts.</p>
+</div>
+
+<div class="sec">
+  <div class="stat-cards">
+    <div class="stat-card"><div class="num">50K+</div><div class="lbl">Active Members</div></div>
+    <div class="stat-card"><div class="num">£2.4M</div><div class="lbl">Total Paid Out</div></div>
+    <div class="stat-card"><div class="num">500+</div><div class="lbl">Partner Stores</div></div>
+    <div class="stat-card"><div class="num">£10</div><div class="lbl">Min Withdrawal</div></div>
+  </div>
+
+  <div class="two-col" style="margin-bottom:3.5rem">
+    <div>
+      <div class="sec-tag">Our Story</div>
+      <h2 class="sec-title">We Built SmartCash<br>Because We Were Tired of<br>Leaving Money on the Table.</h2>
+      <p class="sec-sub" style="margin-bottom:1rem">Every time we shopped online, we were paying full price when we didn't have to. Existing cashback sites were slow, complicated, and paid out only when they felt like it.</p>
+      <p style="color:var(--muted);font-size:.92rem;line-height:1.75">So we built SmartCash — combining automatic cashback tracking with Claude AI intelligence, real-time price history, and the UK's fastest 24-hour payout. We wanted something we'd actually use ourselves.</p>
     </div>
-    <div class="container">
-        <h2>Our Mission</h2>
-        <p>DealCash was created to help everyday shoppers earn cashback on purchases they're already making. Why pay full price when you can get money back?</p>
-        
-        <h2>How We Started</h2>
-        <p>Founded in 2024, DealCash brings together thousands of stores offering cashback rewards. We partner with retailers to share commission with our users, making online shopping more rewarding.</p>
-        
-        <h2>What Makes Us Different</h2>
-        <p>• Higher cashback rates than competitors<br>
-        • Fast payouts (within 7 days)<br>
-        • No hidden fees or charges<br>
-        • Transparent tracking<br>
-        • 24/7 customer support</p>
-        
-        <h2>Join Our Community</h2>
-        <p>Over 10,000 savvy shoppers are already earning with DealCash. Start saving today!</p>
+    <div style="background:linear-gradient(135deg,#fff9f7,#fff5f0);border:1.5px solid rgba(255,92,0,.15);border-radius:18px;padding:2.5rem;text-align:center">
+      <div style="font-size:4rem;margin-bottom:1rem">🚀</div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:.5rem">Founded 2024</div>
+      <div style="font-size:.88rem;color:var(--muted);line-height:1.7">Started as a small side project by UK shoppers frustrated with slow cashback. Now serving 50,000+ members across the UK.</div>
     </div>
-</body>
-</html>
+  </div>
+
+  <div class="sec-tag">Our Values</div>
+  <h2 class="sec-title" style="margin-bottom:1.25rem">What We Stand For</h2>
+  <div class="values-grid">
+    <div class="value-card"><div class="value-icon">⚡</div><h3>Speed First</h3><p>24-hour payouts, not 30-day waits. £10 minimum, not £25. We respect your time and money.</p></div>
+    <div class="value-card"><div class="value-icon">🤖</div><h3>Genuine Intelligence</h3><p>Our AI gives real answers, not keyword results. Powered by Claude — the most capable AI available.</p></div>
+    <div class="value-card"><div class="value-icon">🔒</div><h3>Radical Transparency</h3><p>Clear cashback rates. No hidden terms. No commission deducted without notice. What you see is what you get.</p></div>
+    <div class="value-card"><div class="value-icon">💷</div><h3>Real Value</h3><p>We only partner with stores where we can offer meaningful cashback — not 0.1% token amounts.</p></div>
+    <div class="value-card"><div class="value-icon">🇬🇧</div><h3>UK-Focused</h3><p>Built for UK shoppers. UK stores. UK payouts. UK customer support. No generic global platform.</p></div>
+    <div class="value-card"><div class="value-icon">🤝</div><h3>Fair for Everyone</h3><p>Members earn a genuine share of every commission. We take our cut only after you get yours.</p></div>
+  </div>
+
+  <div style="margin-top:3.5rem">
+    <div class="sec-tag">Our Team</div>
+    <h2 class="sec-title" style="margin-bottom:1.25rem">The People Behind SmartCash</h2>
+    <div class="team-grid">
+      <div class="team-card"><div class="team-ava">👨‍💻</div><div class="team-name">Alex Rahman</div><div class="team-role">Co-Founder & CEO</div></div>
+      <div class="team-card"><div class="team-ava">👩‍💼</div><div class="team-name">Priya Mehta</div><div class="team-role">Co-Founder & COO</div></div>
+      <div class="team-card"><div class="team-ava">🧑‍🔬</div><div class="team-name">James O'Brien</div><div class="team-role">Head of AI & Engineering</div></div>
+    </div>
+  </div>
+
+  <div style="margin-top:3.5rem;background:linear-gradient(135deg,var(--brand),var(--brand-dark));border-radius:18px;padding:3rem;text-align:center;color:#fff">
+    <h2 style="font-size:1.75rem;font-weight:800;letter-spacing:-.5px;margin-bottom:.75rem">Ready to Start Earning?</h2>
+    <p style="color:rgba(255,255,255,.8);font-size:.95rem;margin-bottom:1.75rem">Join 50,000+ UK shoppers. Free to join. Instant cashback. 24-hour payouts.</p>
+    <button onclick="location.href='app.html'" style="background:#fff;color:var(--brand);border:none;padding:.9rem 2.25rem;border-radius:50px;font-weight:800;font-size:.95rem;cursor:pointer;font-family:inherit">Create Free Account →</button>
+  </div>
+</div>
+
+<footer class="footer"><div class="footer-inner">
+  <div class="footer-brand"><span class="logo" style="color:#fff">Smart<span class="g">Cash</span></span><p>UK's smartest cashback platform.</p></div>
+  <div class="footer-col"><h4>Platform</h4><a href="stores.html">Stores</a><a href="price-tracker.html">Price Tracker</a><a href="dashboard.html">Dashboard</a></div>
+  <div class="footer-col"><h4>Company</h4><a href="about.html">About Us</a><a href="contact.html">Contact</a><a href="help.html">Help</a></div>
+  <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a></div>
+</div><div class="footer-bottom"><span>© 2026 SmartCash. All rights reserved.</span><span>Made with ♥ in the UK</span></div></footer>
+</body></html>
