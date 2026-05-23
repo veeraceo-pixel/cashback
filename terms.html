@@ -5,6 +5,27 @@
 <title>Terms & Conditions — SmartCash</title>
 <link rel="stylesheet" href="theme.css">
 <style>
+/* ── CATEGORY SIDEBAR ── */
+.cat-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:350;}
+.cat-overlay.open{display:block;}
+.cat-sidebar{position:fixed;top:64px;left:-360px;bottom:0;width:320px;background:#fff;z-index:380;box-shadow:4px 0 24px rgba(0,0,0,.12);transition:left .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden;}
+.cat-sidebar.open{left:0;}
+.cat-sidebar-head{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cat-sidebar-head h3{font-size:.97rem;font-weight:800;color:var(--text);}
+.cat-close{width:27px;height:27px;border-radius:50%;background:#f3f4f6;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.88rem;color:#6b7280;transition:all .2s;}
+.cat-close:hover{background:#fee2e2;color:#e04e00;}
+.cat-menu{flex:1;overflow-y:auto;}
+.cat-menu::-webkit-scrollbar{width:3px;}
+.cat-menu::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:2px;}
+.cat-divider{padding:.6rem 1.25rem .25rem;font-size:.65rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#9ca3af;border-top:1px solid #f3f4f6;margin-top:.2rem;}
+.cat-divider:first-child{border-top:none;margin-top:0;}
+.cat-row{display:flex;align-items:center;gap:.85rem;padding:.8rem 1.25rem;cursor:pointer;transition:background .15s;border-bottom:1px solid #f9fafb;}
+.cat-row:hover{background:#fff6f3;}
+.cat-row:hover .cat-row-label{color:#e04e00;}
+.cat-row-icon{font-size:1.15rem;width:24px;text-align:center;flex-shrink:0;line-height:1;}
+.cat-row-label{font-size:.87rem;font-weight:600;color:#111827;flex:1;transition:color .15s;}
+.cat-row-rate{font-size:.7rem;font-weight:700;color:#00a07a;background:rgba(0,200,150,.1);padding:.1rem .4rem;border-radius:50px;flex-shrink:0;}
+
 body{display:flex;flex-direction:column;min-height:100vh;}
 .page-hero{background:#fff;border-bottom:1px solid var(--border);padding:2.5rem 2rem;}
 .page-hero-inner{max-width:800px;margin:0 auto;}
@@ -18,6 +39,7 @@ body{display:flex;flex-direction:column;min-height:100vh;}
 .legal-card li{font-size:.88rem;color:var(--muted);line-height:1.65;}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 <!-- CAT OVERLAY -->
@@ -26,28 +48,29 @@ body{display:flex;flex-direction:column;min-height:100vh;}
 <div class="cat-sidebar" id="catSidebar">
   <div class="cat-sidebar-head">
     <h3>Category</h3>
-    <button class="cat-close" onclick="closeCats()">&#10005;</button>
+    <button class="cat-close" onclick="closeCats()">✕</button>
   </div>
   <div class="cat-menu">
-    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">&#127978;</span><span class="cat-row-label">Most Popular Retailers</span></div>
-    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">&#128193;</span><span class="cat-row-label">Retailers by Category</span></div>
-    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">&#128278;</span><span class="cat-row-label">Top Product Deals</span></div>
+    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">🏪</span><span class="cat-row-label">Most Popular Retailers</span></div>
+    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">📂</span><span class="cat-row-label">Retailers by Category</span></div>
+    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">🔖</span><span class="cat-row-label">Top Product Deals</span></div>
     <div class="cat-divider">Shop by Type</div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">&#128241;</span><span class="cat-row-label">Mobiles</span><span class="cat-row-rate">4.5%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">&#127911;</span><span class="cat-row-label">Headphones</span><span class="cat-row-rate">4.5%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">&#128187;</span><span class="cat-row-label">Laptops</span><span class="cat-row-rate">2.5%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=fashion';closeCats()"><span class="cat-row-icon">&#128084;</span><span class="cat-row-label">Men Fashion</span><span class="cat-row-rate">6%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=fashion';closeCats()"><span class="cat-row-icon">&#128141;</span><span class="cat-row-label">Women Fashion</span><span class="cat-row-rate">6%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=beauty';closeCats()"><span class="cat-row-icon">&#128132;</span><span class="cat-row-label">Beauty &amp; Grooming</span><span class="cat-row-rate">4%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=travel';closeCats()"><span class="cat-row-icon">&#9992;&#65039;</span><span class="cat-row-label">Flights &amp; Hotels</span><span class="cat-row-rate">5%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=home';closeCats()"><span class="cat-row-icon">&#127968;</span><span class="cat-row-label">Home &amp; Kitchen</span><span class="cat-row-rate">3%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=sports';closeCats()"><span class="cat-row-icon">&#9917;</span><span class="cat-row-label">Sports &amp; Outdoors</span><span class="cat-row-rate">3.5%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=health';closeCats()"><span class="cat-row-icon">&#128138;</span><span class="cat-row-label">Health &amp; Pharmacy</span><span class="cat-row-rate">4%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=grocery';closeCats()"><span class="cat-row-icon">&#128722;</span><span class="cat-row-label">Grocery &amp; Food</span><span class="cat-row-rate">2%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">📱</span><span class="cat-row-label">Mobiles</span><span class="cat-row-rate">4.5%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">🎧</span><span class="cat-row-label">Headphones</span><span class="cat-row-rate">4.5%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">💻</span><span class="cat-row-label">Laptops</span><span class="cat-row-rate">2.5%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=fashion';closeCats()"><span class="cat-row-icon">👔</span><span class="cat-row-label">Men Fashion</span><span class="cat-row-rate">6%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=fashion';closeCats()"><span class="cat-row-icon">👗</span><span class="cat-row-label">Women Fashion</span><span class="cat-row-rate">6%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=beauty';closeCats()"><span class="cat-row-icon">💄</span><span class="cat-row-label">Beauty & Grooming</span><span class="cat-row-rate">4%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=travel';closeCats()"><span class="cat-row-icon">✈️</span><span class="cat-row-label">Flights & Hotels</span><span class="cat-row-rate">5%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=home';closeCats()"><span class="cat-row-icon">🏡</span><span class="cat-row-label">Home & Kitchen</span><span class="cat-row-rate">3%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=sports';closeCats()"><span class="cat-row-icon">⚽</span><span class="cat-row-label">Sports & Outdoors</span><span class="cat-row-rate">3.5%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=health';closeCats()"><span class="cat-row-icon">💊</span><span class="cat-row-label">Health & Pharmacy</span><span class="cat-row-rate">4%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=grocery';closeCats()"><span class="cat-row-icon">🛒</span><span class="cat-row-label">Grocery & Food</span><span class="cat-row-rate">2%</span></div>
     <div class="cat-divider" style="border-top:1px solid var(--border)"></div>
-    <div class="cat-row" onclick="location.href='stores.html';closeCats()" style="justify-content:center"><span class="cat-row-label" style="color:var(--brand);font-weight:700;text-align:center">View All Partner Stores &#8594;</span></div>
+    <div class="cat-row" onclick="location.href='stores.html';closeCats()" style="justify-content:center"><span class="cat-row-label" style="color:var(--brand);font-weight:700">View All Partner Stores →</span></div>
   </div>
 </div>
+
 <header class="hdr">
   <nav class="nav">
     <div style="display:flex;align-items:center;gap:.7rem;flex-shrink:0">
@@ -57,17 +80,18 @@ body{display:flex;flex-direction:column;min-height:100vh;}
       <a href="app.html" class="logo">Smart<span class="g">Cash</span></a>
     </div>
     <div class="nav-links">
-      <a href="app.html" >Home</a>
-      <a href="stores.html" >Stores</a>
-      <a href="price-tracker.html" >Price Tracker</a>
-      <a href="virtual-assistant.html" >Try-On</a>
-      <a href="dashboard.html" >Dashboard</a>
+      <a href="app.html">Home</a>
+      <a href="stores.html">Stores</a>
+      <a href="price-tracker.html">Price Tracker</a>
+      <a href="virtual-assistant.html">Try-On</a>
+      <a href="dashboard.html">Dashboard</a>
     </div>
     <div class="nav-r">
-      <button class="btn-p" onclick="location.href='app.html'">Join Free &rarr;</button>
+      <button class="btn-p" onclick="location.href='app.html'">Join Free →</button>
     </div>
   </nav>
 </header>
+
 
 <div class="page-hero"><div class="page-hero-inner">
   <h1>Terms & Conditions</h1>
@@ -93,11 +117,24 @@ body{display:flex;flex-direction:column;min-height:100vh;}
     <div class="footer-col"><h4>Company</h4><a href="about.html">About Us</a><a href="contact.html">Contact</a><a href="how-it-works.html">How It Works</a><a href="help.html">Help Centre</a></div>
     <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms &amp; Conditions</a><a href="privacy.html">Privacy Policy</a></div>
   </div>
-  <div class="footer-bottom"><span>&copy; 2026 SmartCash. All rights reserved.</span><span>Made with &hearts; in the UK</span></div>
+  <div class="footer-bottom"><span>© 2026 SmartCash. All rights reserved.</span><span>Made with ♥ in the UK</span></div>
 </footer>
 <script>
 function openCats(){document.getElementById('catSidebar').classList.add('open');document.getElementById('catOverlay').classList.add('open');}
 function closeCats(){document.getElementById('catSidebar').classList.remove('open');document.getElementById('catOverlay').classList.remove('open');}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCats();});
 </script>
+
+<script>
+function openCats(){
+  document.getElementById('catSidebar').classList.add('open');
+  document.getElementById('catOverlay').classList.add('open');
+}
+function closeCats(){
+  document.getElementById('catSidebar').classList.remove('open');
+  document.getElementById('catOverlay').classList.remove('open');
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCats();});
+</script>
+
 </body></html>
