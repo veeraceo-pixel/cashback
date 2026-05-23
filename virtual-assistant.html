@@ -81,10 +81,10 @@ body { display:flex; flex-direction:column; min-height:100vh; background:#f5f7fa
 /* Photo preview */
 .photo-preview-wrap {
   position:relative; border-radius:14px; overflow:hidden;
-  background:#000; display:none;
+  background:#f8fafc; display:none;
 }
 .photo-preview-wrap img {
-  width:100%; max-height:280px; object-fit:contain; display:block;
+  width:100%; max-height:280px; object-fit:cover; display:block;
 }
 .photo-overlay {
   position:absolute; top:.6rem; right:.6rem;
@@ -966,7 +966,8 @@ async function drawTryOnCanvas(analysis) {
 
   // Size canvas to photo aspect ratio, max 480px tall
   const maxH = 460;
-  const scale = Math.min(maxH / img.height, 1);
+  const maxW = canvas.parentElement.clientWidth || 600;
+		const scale = Math.min(maxH / img.height, maxW / img.width, 1);
   canvas.width = Math.round(img.width * scale);
   canvas.height = Math.round(img.height * scale);
 
