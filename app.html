@@ -9,91 +9,77 @@
 <script src="config.js"></script>
 <style>
 
-/* ══ CATEGORIES SIDEBAR (CashKaro style) ══════════════════ */
+/* ══ CATEGORIES SIDEBAR — flat rows, no sub-panels (CashKaro style) ══ */
 .cat-overlay {
   display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,.45); z-index:600;
-  backdrop-filter:blur(2px);
+  background:rgba(0,0,0,.48); z-index:600;
 }
 .cat-overlay.open { display:block; }
+
 .cat-sidebar {
-  position:fixed; top:0; left:-420px; bottom:0;
-  width:380px; background:#fff; z-index:700;
-  box-shadow:4px 0 30px rgba(0,0,0,.15);
-  transition:left .32s cubic-bezier(.4,0,.2,1);
-  display:flex; flex-direction:column;
-  overflow:hidden;
+  position:fixed; top:0; left:-400px; bottom:0;
+  width:360px; background:#fff; z-index:700;
+  box-shadow:6px 0 32px rgba(0,0,0,.14);
+  transition:left .3s cubic-bezier(.4,0,.2,1);
+  display:flex; flex-direction:column; overflow:hidden;
 }
 .cat-sidebar.open { left:0; }
+
 .cat-sidebar-head {
   display:flex; align-items:center; justify-content:space-between;
-  padding:1.25rem 1.5rem;
-  border-bottom:1px solid var(--border);
-  flex-shrink:0;
+  padding:1.15rem 1.4rem 1.1rem;
+  border-bottom:1px solid var(--border); flex-shrink:0;
 }
-.cat-sidebar-head h3 { font-size:1.05rem; font-weight:800; color:var(--text); }
+.cat-sidebar-head h3 { font-size:1.05rem; font-weight:800; color:var(--text); letter-spacing:-.2px; }
 .cat-close {
-  width:32px; height:32px; border-radius:50%;
+  width:30px; height:30px; border-radius:50%;
   background:var(--surface2); border:none; cursor:pointer;
   display:flex; align-items:center; justify-content:center;
-  font-size:1rem; color:var(--muted); transition:all .2s;
+  font-size:.95rem; color:var(--muted); transition:all .2s;
 }
-.cat-close:hover { background:var(--brand-light); color:var(--brand); }
+.cat-close:hover { background:#fee2e2; color:var(--brand); }
 
-/* main menu level */
+/* Scrollable list */
 .cat-menu { flex:1; overflow-y:auto; }
-.cat-menu::-webkit-scrollbar { width:4px; }
+.cat-menu::-webkit-scrollbar { width:3px; }
 .cat-menu::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
 
-.cat-section-label {
-  font-size:.7rem; font-weight:700; color:var(--muted-light);
-  text-transform:uppercase; letter-spacing:.6px;
-  padding:.85rem 1.5rem .4rem;
+/* Section divider label */
+.cat-divider {
+  padding:.7rem 1.4rem .3rem;
+  font-size:.68rem; font-weight:700; letter-spacing:.6px;
+  text-transform:uppercase; color:var(--muted-light);
+  border-top:1px solid var(--border-light);
+  margin-top:.25rem;
 }
+.cat-divider:first-child { border-top:none; margin-top:0; }
+
+/* Flat horizontal row — icon + label, no arrows, no sub-panels */
 .cat-row {
-  display:flex; align-items:center; gap:1rem;
-  padding:.95rem 1.5rem;
+  display:flex; align-items:center; gap:.95rem;
+  padding:.88rem 1.4rem;
   cursor:pointer; transition:background .15s;
   border-bottom:1px solid var(--border-light);
-  position:relative;
+  text-decoration:none;
 }
-.cat-row:hover { background:var(--surface2); }
-.cat-row.has-sub:hover { color:var(--brand); }
-.cat-row-icon {
-  width:36px; height:36px; border-radius:10px;
-  background:var(--surface2); border:1px solid var(--border);
-  display:flex; align-items:center; justify-content:center;
-  font-size:1.1rem; flex-shrink:0; transition:all .2s;
-}
-.cat-row:hover .cat-row-icon { background:var(--brand-light); border-color:var(--brand); }
-.cat-row-label { font-size:.92rem; font-weight:600; color:var(--text); flex:1; }
-.cat-row-arrow { color:var(--muted-light); font-size:.85rem; }
+.cat-row:last-child { border-bottom:none; }
+.cat-row:hover { background:#fff6f3; }
+.cat-row:hover .cat-row-label { color:var(--brand); }
 
-/* sub-panel slides in */
-.cat-sub {
-  position:absolute; top:0; left:100%;
-  width:100%; height:100%;
-  background:#fff; transition:left .25s;
-  overflow-y:auto; z-index:10;
+.cat-row-icon {
+  font-size:1.25rem;
+  width:30px; text-align:center; flex-shrink:0;
+  line-height:1;
 }
-.cat-sub.open { left:0; }
-.cat-sub-head {
-  display:flex; align-items:center; gap:.75rem;
-  padding:1.1rem 1.25rem; border-bottom:1px solid var(--border);
-  cursor:pointer; position:sticky; top:0; background:#fff; z-index:1;
+.cat-row-label {
+  font-size:.9rem; font-weight:600; color:var(--text);
+  flex:1; transition:color .15s;
 }
-.cat-sub-head:hover { background:var(--surface2); }
-.cat-sub-head span { font-size:.9rem; font-weight:700; color:var(--text); }
-.cat-sub-item {
-  display:flex; align-items:center; gap:.9rem;
-  padding:.85rem 1.5rem; cursor:pointer;
-  border-bottom:1px solid var(--border-light);
-  transition:background .15s;
+.cat-row-rate {
+  font-size:.75rem; font-weight:700; color:var(--green);
+  background:var(--green-light); padding:.12rem .45rem;
+  border-radius:50px; flex-shrink:0;
 }
-.cat-sub-item:hover { background:var(--surface2); }
-.cat-sub-item-icon { font-size:1.1rem; width:28px; text-align:center; flex-shrink:0; }
-.cat-sub-item-label { font-size:.88rem; font-weight:500; color:var(--text); }
-.cat-sub-item-count { font-size:.75rem; color:var(--muted); margin-left:auto; }
 
 /* ══ NAV ════════════════════════════════════════════════════ */
 .announce-bar {
@@ -234,16 +220,7 @@
 .ai-input-row input { flex:1; padding:.48rem .85rem; border:1.5px solid var(--border); border-radius:50px; font-size:.8rem; outline:none; font-family:inherit; }
 .ai-input-row button { background:linear-gradient(135deg,#6C63FF,#4f46e5); color:#fff; border:none; padding:.48rem .95rem; border-radius:50px; cursor:pointer; font-size:.8rem; font-weight:600; font-family:inherit; }
 
-/* ══ LOYALTY ══════════════════════════════════════════════════ */
-.levels-row { display:flex; gap:.7rem; overflow-x:auto; padding-bottom:.4rem; }
-.levels-row::-webkit-scrollbar { display:none; }
-.level-card { flex-shrink:0; background:#fff; border:1.5px solid var(--border); border-radius:13px; padding:1.1rem; text-align:center; min-width:148px; box-shadow:var(--shadow-sm); transition:all .2s; }
-.level-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); }
-.lv-icon { font-size:1.65rem; margin-bottom:.4rem; }
-.lv-name { font-weight:800; font-size:.87rem; color:var(--text); margin-bottom:.1rem; }
-.lv-xp { font-size:.68rem; color:var(--muted); margin-bottom:.6rem; }
-.lv-bonus { font-size:1.25rem; font-weight:800; color:var(--green); }
-.lv-bonus-lbl { font-size:.65rem; color:var(--muted); }
+
 
 /* ══ CTA ═══════════════════════════════════════════════════════ */
 .cta-banner { background:linear-gradient(135deg,var(--brand),var(--brand-dark)); border-radius:18px; padding:3.25rem; text-align:center; color:#fff; position:relative; overflow:hidden; }
@@ -281,132 +258,94 @@
 <!-- CATEGORIES SIDEBAR OVERLAY -->
 <div class="cat-overlay" id="catOverlay" onclick="closeCats()"></div>
 
-<!-- CATEGORIES SIDEBAR -->
+<!-- CATEGORIES SIDEBAR — flat horizontal rows, CashKaro style -->
 <div class="cat-sidebar" id="catSidebar">
   <div class="cat-sidebar-head">
     <h3>Category</h3>
     <button class="cat-close" onclick="closeCats()">✕</button>
   </div>
-  <div class="cat-menu" id="catMenu">
+  <div class="cat-menu">
 
-    <!-- Top-level sections -->
-    <div class="cat-section-label">Browse</div>
-
-    <div class="cat-row has-sub" onclick="openSub('sub-popular')">
-      <div class="cat-row-icon">🏪</div>
+    <div class="cat-row" onclick="location.href='stores.html';closeCats()">
+      <span class="cat-row-icon">🏪</span>
       <span class="cat-row-label">Most Popular Retailers</span>
-      <span class="cat-row-arrow">›</span>
     </div>
-
-    <div class="cat-row has-sub" onclick="openSub('sub-category')">
-      <div class="cat-row-icon">📂</div>
+    <div class="cat-row" onclick="filterAndGo('all')">
+      <span class="cat-row-icon">📂</span>
       <span class="cat-row-label">Retailers by Category</span>
-      <span class="cat-row-arrow">›</span>
     </div>
-
-    <div class="cat-row has-sub" onclick="openSub('sub-deals')">
-      <div class="cat-row-icon">🔖</div>
+    <div class="cat-row" onclick="filterAndGo('all')">
+      <span class="cat-row-icon">🔖</span>
       <span class="cat-row-label">Top Product Deals</span>
-      <span class="cat-row-arrow">›</span>
     </div>
 
-    <div class="cat-section-label">Shop by Type</div>
+    <div class="cat-divider">Shop by Type</div>
 
     <div class="cat-row" onclick="filterAndGo('electronics')">
-      <div class="cat-row-icon">📱</div>
-      <span class="cat-row-label">Mobiles & Electronics</span>
+      <span class="cat-row-icon">📱</span>
+      <span class="cat-row-label">Mobiles</span>
+      <span class="cat-row-rate">4.5%</span>
     </div>
     <div class="cat-row" onclick="filterAndGo('electronics')">
-      <div class="cat-row-icon">🎧</div>
-      <span class="cat-row-label">Headphones & Audio</span>
+      <span class="cat-row-icon">🎧</span>
+      <span class="cat-row-label">Headphones</span>
+      <span class="cat-row-rate">4.5%</span>
     </div>
     <div class="cat-row" onclick="filterAndGo('electronics')">
-      <div class="cat-row-icon">💻</div>
-      <span class="cat-row-label">Laptops & Computers</span>
+      <span class="cat-row-icon">💻</span>
+      <span class="cat-row-label">Laptops</span>
+      <span class="cat-row-rate">2.5%</span>
     </div>
     <div class="cat-row" onclick="filterAndGo('fashion')">
-      <div class="cat-row-icon">👔</div>
+      <span class="cat-row-icon">👔</span>
       <span class="cat-row-label">Men Fashion</span>
+      <span class="cat-row-rate">6%</span>
     </div>
     <div class="cat-row" onclick="filterAndGo('fashion')">
-      <div class="cat-row-icon">👗</div>
+      <span class="cat-row-icon">👗</span>
       <span class="cat-row-label">Women Fashion</span>
+      <span class="cat-row-rate">6%</span>
     </div>
     <div class="cat-row" onclick="filterAndGo('beauty')">
-      <div class="cat-row-icon">💄</div>
+      <span class="cat-row-icon">💄</span>
       <span class="cat-row-label">Beauty & Grooming</span>
-    </div>
-    <div class="cat-row" onclick="filterAndGo('travel')">
-      <div class="cat-row-icon">✈️</div>
-      <span class="cat-row-label">Flights & Hotels</span>
-    </div>
-    <div class="cat-row" onclick="filterAndGo('home')">
-      <div class="cat-row-icon">🏡</div>
-      <span class="cat-row-label">Home & Kitchen</span>
+      <span class="cat-row-rate">4%</span>
     </div>
     <div class="cat-row" onclick="filterAndGo('sports')">
-      <div class="cat-row-icon">⚽</div>
+      <span class="cat-row-icon">👟</span>
+      <span class="cat-row-label">Shoes & Trainers</span>
+      <span class="cat-row-rate">3.5%</span>
+    </div>
+    <div class="cat-row" onclick="filterAndGo('travel')">
+      <span class="cat-row-icon">✈️</span>
+      <span class="cat-row-label">Flights & Hotels</span>
+      <span class="cat-row-rate">5%</span>
+    </div>
+    <div class="cat-row" onclick="filterAndGo('home')">
+      <span class="cat-row-icon">🏡</span>
+      <span class="cat-row-label">Home & Kitchen</span>
+      <span class="cat-row-rate">3%</span>
+    </div>
+    <div class="cat-row" onclick="filterAndGo('sports')">
+      <span class="cat-row-icon">⚽</span>
       <span class="cat-row-label">Sports & Outdoors</span>
+      <span class="cat-row-rate">3.5%</span>
     </div>
     <div class="cat-row" onclick="filterAndGo('health')">
-      <div class="cat-row-icon">💊</div>
+      <span class="cat-row-icon">💊</span>
       <span class="cat-row-label">Health & Pharmacy</span>
+      <span class="cat-row-rate">4%</span>
     </div>
     <div class="cat-row" onclick="filterAndGo('grocery')">
-      <div class="cat-row-icon">🛒</div>
+      <span class="cat-row-icon">🛒</span>
       <span class="cat-row-label">Grocery & Food</span>
+      <span class="cat-row-rate">2%</span>
     </div>
-  </div>
 
-  <!-- Sub-panel: Most Popular -->
-  <div class="cat-sub" id="sub-popular">
-    <div class="cat-sub-head" onclick="closeSub('sub-popular')">
-      <span style="color:var(--muted);font-size:1rem">‹</span>
-      <span>Most Popular Retailers</span>
+    <div class="cat-divider" style="border-top:1px solid var(--border)"></div>
+    <div class="cat-row" onclick="location.href='stores.html';closeCats()" style="justify-content:center">
+      <span class="cat-row-label" style="color:var(--brand);font-weight:700;text-align:center">View All Partner Stores →</span>
     </div>
-    <div class="cat-sub-item" onclick="trackAndClose('amazon')"><span class="cat-sub-item-icon">📦</span><span class="cat-sub-item-label">Amazon UK</span><span class="cat-sub-item-count">4.5% cashback</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('asos')"><span class="cat-sub-item-icon">👗</span><span class="cat-sub-item-label">ASOS</span><span class="cat-sub-item-count">6% cashback</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('boots')"><span class="cat-sub-item-icon">💄</span><span class="cat-sub-item-label">Boots</span><span class="cat-sub-item-count">4% cashback</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('booking')"><span class="cat-sub-item-icon">🏨</span><span class="cat-sub-item-label">Booking.com</span><span class="cat-sub-item-count">5% cashback</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('nike')"><span class="cat-sub-item-icon">👟</span><span class="cat-sub-item-label">Nike</span><span class="cat-sub-item-count">3.5% cashback</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('next')"><span class="cat-sub-item-icon">👔</span><span class="cat-sub-item-label">NEXT</span><span class="cat-sub-item-count">4% cashback</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('adidas')"><span class="cat-sub-item-icon">👟</span><span class="cat-sub-item-label">Adidas</span><span class="cat-sub-item-count">5% cashback</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('johnlewis')"><span class="cat-sub-item-icon">🏡</span><span class="cat-sub-item-label">John Lewis</span><span class="cat-sub-item-count">3% cashback</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('expedia')"><span class="cat-sub-item-icon">✈️</span><span class="cat-sub-item-label">Expedia</span><span class="cat-sub-item-count">4.5% cashback</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('currys')"><span class="cat-sub-item-icon">📺</span><span class="cat-sub-item-label">Currys</span><span class="cat-sub-item-count">2.5% cashback</span></div>
-    <div class="cat-sub-item" onclick="location.href='stores.html';closeCats()"><span class="cat-sub-item-icon">→</span><span class="cat-sub-item-label" style="color:var(--brand);font-weight:700">View All Stores</span></div>
-  </div>
-
-  <!-- Sub-panel: By Category -->
-  <div class="cat-sub" id="sub-category">
-    <div class="cat-sub-head" onclick="closeSub('sub-category')">
-      <span style="color:var(--muted);font-size:1rem">‹</span>
-      <span>Retailers by Category</span>
-    </div>
-    <div class="cat-sub-item" onclick="filterAndGo('fashion')"><span class="cat-sub-item-icon">👗</span><span class="cat-sub-item-label">Fashion</span></div>
-    <div class="cat-sub-item" onclick="filterAndGo('electronics')"><span class="cat-sub-item-icon">💻</span><span class="cat-sub-item-label">Electronics</span></div>
-    <div class="cat-sub-item" onclick="filterAndGo('travel')"><span class="cat-sub-item-icon">✈️</span><span class="cat-sub-item-label">Travel</span></div>
-    <div class="cat-sub-item" onclick="filterAndGo('beauty')"><span class="cat-sub-item-icon">💄</span><span class="cat-sub-item-label">Beauty</span></div>
-    <div class="cat-sub-item" onclick="filterAndGo('home')"><span class="cat-sub-item-icon">🏡</span><span class="cat-sub-item-label">Home & Garden</span></div>
-    <div class="cat-sub-item" onclick="filterAndGo('sports')"><span class="cat-sub-item-icon">⚽</span><span class="cat-sub-item-label">Sports</span></div>
-    <div class="cat-sub-item" onclick="filterAndGo('grocery')"><span class="cat-sub-item-icon">🛒</span><span class="cat-sub-item-label">Grocery</span></div>
-    <div class="cat-sub-item" onclick="filterAndGo('health')"><span class="cat-sub-item-icon">💊</span><span class="cat-sub-item-label">Health & Pharmacy</span></div>
-  </div>
-
-  <!-- Sub-panel: Top Deals -->
-  <div class="cat-sub" id="sub-deals">
-    <div class="cat-sub-head" onclick="closeSub('sub-deals')">
-      <span style="color:var(--muted);font-size:1rem">‹</span>
-      <span>Top Product Deals</span>
-    </div>
-    <div class="cat-sub-item" onclick="trackAndClose('amazon')"><span class="cat-sub-item-icon">🎧</span><span class="cat-sub-item-label">Headphones & Earbuds</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('currys')"><span class="cat-sub-item-icon">💻</span><span class="cat-sub-item-label">Laptops</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('amazon')"><span class="cat-sub-item-icon">📱</span><span class="cat-sub-item-label">Smartphones</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('asos')"><span class="cat-sub-item-icon">👠</span><span class="cat-sub-item-label">Women's Shoes</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('nike')"><span class="cat-sub-item-icon">👟</span><span class="cat-sub-item-label">Men's Trainers</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('boots')"><span class="cat-sub-item-icon">🧴</span><span class="cat-sub-item-label">Skincare</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('booking')"><span class="cat-sub-item-icon">🏖️</span><span class="cat-sub-item-label">Summer Holidays</span></div>
-    <div class="cat-sub-item" onclick="trackAndClose('johnlewis')"><span class="cat-sub-item-icon">🛋️</span><span class="cat-sub-item-label">Home Furniture</span></div>
   </div>
 </div>
 
@@ -589,21 +528,6 @@
   </div>
 </div>
 
-<!-- LOYALTY -->
-<div style="background:#fff;border-top:1px solid var(--border)">
-  <div class="sec-wrap">
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1.1rem;flex-wrap:wrap;gap:.65rem">
-      <div><div class="sec-tag">Loyalty System</div><h2 class="sec-title" style="margin:0">Level Up. Earn More.</h2></div>
-    </div>
-    <div class="levels-row">
-      <div class="level-card"><div class="lv-icon">🥉</div><div class="lv-name">Bronze</div><div class="lv-xp">0–500 XP</div><div class="lv-bonus" style="color:var(--muted)">Base</div><div class="lv-bonus-lbl">rates apply</div></div>
-      <div class="level-card" style="border-color:#d1d5db"><div class="lv-icon">🥈</div><div class="lv-name">Silver</div><div class="lv-xp">500–2,000 XP</div><div class="lv-bonus">+0.5%</div><div class="lv-bonus-lbl">bonus cashback</div></div>
-      <div class="level-card" style="border-color:rgba(245,158,11,.4);background:linear-gradient(135deg,#fffbeb,white)"><div class="lv-icon">🥇</div><div class="lv-name">Gold</div><div class="lv-xp">2,000–5,000 XP</div><div class="lv-bonus">+1%</div><div class="lv-bonus-lbl">bonus cashback</div></div>
-      <div class="level-card" style="border-color:rgba(108,99,255,.35);background:linear-gradient(135deg,#f5f3ff,white)"><div class="lv-icon">💎</div><div class="lv-name">Platinum</div><div class="lv-xp">5,000–10,000 XP</div><div class="lv-bonus">+1.5%</div><div class="lv-bonus-lbl">bonus cashback</div></div>
-      <div class="level-card" style="border-color:rgba(255,92,0,.3);background:linear-gradient(135deg,#fff7f5,white)"><div class="lv-icon">👑</div><div class="lv-name">Diamond</div><div class="lv-xp">10,000+ XP</div><div class="lv-bonus">+2%</div><div class="lv-bonus-lbl">bonus cashback</div></div>
-    </div>
-  </div>
-</div>
 
 <!-- CTA -->
 <div style="background:#f5f6f8">
@@ -712,8 +636,6 @@ function trackClick(id) {
 /* ── CATEGORIES SIDEBAR ── */
 function openCats()  { document.getElementById('catSidebar').classList.add('open'); document.getElementById('catOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeCats() { document.getElementById('catSidebar').classList.remove('open'); document.getElementById('catOverlay').classList.remove('open'); document.body.style.overflow=''; document.querySelectorAll('.cat-sub').forEach(s=>s.classList.remove('open')); }
-function openSub(id) { document.getElementById(id).classList.add('open'); }
-function closeSub(id) { document.getElementById(id).classList.remove('open'); }
 function trackAndClose(id) { closeCats(); trackClick(id); }
 function filterAndGo(cat) {
   closeCats();
