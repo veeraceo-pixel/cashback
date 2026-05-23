@@ -91,18 +91,52 @@
 </head>
 <body>
 
+<!-- CAT OVERLAY -->
+<div class="cat-overlay" id="catOverlay" onclick="closeCats()"></div>
+<!-- CAT SIDEBAR -->
+<div class="cat-sidebar" id="catSidebar">
+  <div class="cat-sidebar-head">
+    <h3>Category</h3>
+    <button class="cat-close" onclick="closeCats()">&#10005;</button>
+  </div>
+  <div class="cat-menu">
+    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">&#127978;</span><span class="cat-row-label">Most Popular Retailers</span></div>
+    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">&#128193;</span><span class="cat-row-label">Retailers by Category</span></div>
+    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">&#128278;</span><span class="cat-row-label">Top Product Deals</span></div>
+    <div class="cat-divider">Shop by Type</div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">&#128241;</span><span class="cat-row-label">Mobiles</span><span class="cat-row-rate">4.5%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">&#127911;</span><span class="cat-row-label">Headphones</span><span class="cat-row-rate">4.5%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">&#128187;</span><span class="cat-row-label">Laptops</span><span class="cat-row-rate">2.5%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=fashion';closeCats()"><span class="cat-row-icon">&#128084;</span><span class="cat-row-label">Men Fashion</span><span class="cat-row-rate">6%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=fashion';closeCats()"><span class="cat-row-icon">&#128141;</span><span class="cat-row-label">Women Fashion</span><span class="cat-row-rate">6%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=beauty';closeCats()"><span class="cat-row-icon">&#128132;</span><span class="cat-row-label">Beauty &amp; Grooming</span><span class="cat-row-rate">4%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=travel';closeCats()"><span class="cat-row-icon">&#9992;&#65039;</span><span class="cat-row-label">Flights &amp; Hotels</span><span class="cat-row-rate">5%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=home';closeCats()"><span class="cat-row-icon">&#127968;</span><span class="cat-row-label">Home &amp; Kitchen</span><span class="cat-row-rate">3%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=sports';closeCats()"><span class="cat-row-icon">&#9917;</span><span class="cat-row-label">Sports &amp; Outdoors</span><span class="cat-row-rate">3.5%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=health';closeCats()"><span class="cat-row-icon">&#128138;</span><span class="cat-row-label">Health &amp; Pharmacy</span><span class="cat-row-rate">4%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=grocery';closeCats()"><span class="cat-row-icon">&#128722;</span><span class="cat-row-label">Grocery &amp; Food</span><span class="cat-row-rate">2%</span></div>
+    <div class="cat-divider" style="border-top:1px solid var(--border)"></div>
+    <div class="cat-row" onclick="location.href='stores.html';closeCats()" style="justify-content:center"><span class="cat-row-label" style="color:var(--brand);font-weight:700;text-align:center">View All Partner Stores &#8594;</span></div>
+  </div>
+</div>
 <header class="hdr">
   <nav class="nav">
-    <a href="app.html" class="logo">Smart<span class="g">Cash</span></a>
-    <div class="nav-links">
-      <a href="app.html">Home</a>
-      <a href="stores.html" class="active">Stores</a>
-      <a href="how-it-works.html">How It Works</a>
-      <a href="price-tracker.html">Price Tracker</a>
-      <a href="virtual-assistant.html">🛍️ Try-On</a>
-      <a href="dashboard.html">Dashboard</a>
+    <div style="display:flex;align-items:center;gap:.7rem;flex-shrink:0">
+      <button class="nav-hamburger" onclick="openCats()" aria-label="Categories">
+        <span></span><span></span><span></span>
+      </button>
+      <a href="app.html" class="logo">Smart<span class="g">Cash</span></a>
     </div>
-    <div class="nav-r"><button class="btn-p" onclick="window.location.href='dashboard.html'">My Account</button></div>
+    <div class="nav-links">
+      <a href="app.html" >Home</a>
+      <a href="stores.html" class="active">Stores</a>
+      <a href="price-tracker.html" >Price Tracker</a>
+      <a href="virtual-assistant.html" >Try-On</a>
+      <a href="dashboard.html" >Dashboard</a>
+    </div>
+    <div class="nav-r">
+      <button class="btn-p" onclick="location.href='app.html'">Join Free &rarr;</button>
+    </div>
   </nav>
 </header>
 
@@ -308,5 +342,10 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 renderStores(filtered);
 </script>
 <script src="aria.js"></script>
+<script>
+function openCats(){document.getElementById('catSidebar').classList.add('open');document.getElementById('catOverlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeCats(){document.getElementById('catSidebar').classList.remove('open');document.getElementById('catOverlay').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCats();});
+</script>
 </body>
 </html>

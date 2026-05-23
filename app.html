@@ -252,19 +252,11 @@
   .cta-banner { padding:2.5rem 1.5rem; }
 }
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<!-- CATEGORIES SIDEBAR OVERLAY -->
-<div class="cat-overlay" id="catOverlay" onclick="closeCats()"></div>
-
-<!-- CATEGORIES SIDEBAR — flat horizontal rows, CashKaro style -->
-<div class="cat-sidebar" id="catSidebar">
-  <div class="cat-sidebar-head">
-    <h3>Category</h3>
-    <button class="cat-close" onclick="closeCats()">✕</button>
-  </div>
-  <div class="cat-menu">
+<div class="cat-menu">
 
     <div class="cat-row" onclick="location.href='stores.html';closeCats()">
       <span class="cat-row-icon">🏪</span>
@@ -350,30 +342,56 @@
 </div>
 
 <!-- HEADER -->
+<!-- CAT OVERLAY -->
+<div class="cat-overlay" id="catOverlay" onclick="closeCats()"></div>
+<!-- CAT SIDEBAR -->
+<div class="cat-sidebar" id="catSidebar">
+  <div class="cat-sidebar-head">
+    <h3>Category</h3>
+    <button class="cat-close" onclick="closeCats()">&#10005;</button>
+  </div>
+  <div class="cat-menu">
+    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">&#127978;</span><span class="cat-row-label">Most Popular Retailers</span></div>
+    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">&#128193;</span><span class="cat-row-label">Retailers by Category</span></div>
+    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">&#128278;</span><span class="cat-row-label">Top Product Deals</span></div>
+    <div class="cat-divider">Shop by Type</div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">&#128241;</span><span class="cat-row-label">Mobiles</span><span class="cat-row-rate">4.5%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">&#127911;</span><span class="cat-row-label">Headphones</span><span class="cat-row-rate">4.5%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">&#128187;</span><span class="cat-row-label">Laptops</span><span class="cat-row-rate">2.5%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=fashion';closeCats()"><span class="cat-row-icon">&#128084;</span><span class="cat-row-label">Men Fashion</span><span class="cat-row-rate">6%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=fashion';closeCats()"><span class="cat-row-icon">&#128141;</span><span class="cat-row-label">Women Fashion</span><span class="cat-row-rate">6%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=beauty';closeCats()"><span class="cat-row-icon">&#128132;</span><span class="cat-row-label">Beauty &amp; Grooming</span><span class="cat-row-rate">4%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=travel';closeCats()"><span class="cat-row-icon">&#9992;&#65039;</span><span class="cat-row-label">Flights &amp; Hotels</span><span class="cat-row-rate">5%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=home';closeCats()"><span class="cat-row-icon">&#127968;</span><span class="cat-row-label">Home &amp; Kitchen</span><span class="cat-row-rate">3%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=sports';closeCats()"><span class="cat-row-icon">&#9917;</span><span class="cat-row-label">Sports &amp; Outdoors</span><span class="cat-row-rate">3.5%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=health';closeCats()"><span class="cat-row-icon">&#128138;</span><span class="cat-row-label">Health &amp; Pharmacy</span><span class="cat-row-rate">4%</span></div>
+    <div class="cat-row" onclick="location.href='stores.html?cat=grocery';closeCats()"><span class="cat-row-icon">&#128722;</span><span class="cat-row-label">Grocery &amp; Food</span><span class="cat-row-rate">2%</span></div>
+    <div class="cat-divider" style="border-top:1px solid var(--border)"></div>
+    <div class="cat-row" onclick="location.href='stores.html';closeCats()" style="justify-content:center"><span class="cat-row-label" style="color:var(--brand);font-weight:700;text-align:center">View All Partner Stores &#8594;</span></div>
+  </div>
+</div>
 <header class="hdr">
   <nav class="nav">
-    <div style="display:flex;align-items:center;gap:.75rem">
-      <button onclick="openCats()" style="background:none;border:none;cursor:pointer;padding:.3rem;display:flex;flex-direction:column;gap:4px;flex-shrink:0" aria-label="Categories">
-        <span style="display:block;width:20px;height:2px;background:var(--text);border-radius:2px"></span>
-        <span style="display:block;width:20px;height:2px;background:var(--text);border-radius:2px"></span>
-        <span style="display:block;width:20px;height:2px;background:var(--text);border-radius:2px"></span>
+    <div style="display:flex;align-items:center;gap:.7rem;flex-shrink:0">
+      <button class="nav-hamburger" onclick="openCats()" aria-label="Categories">
+        <span></span><span></span><span></span>
       </button>
       <a href="app.html" class="logo">Smart<span class="g">Cash</span></a>
     </div>
     <div class="nav-search">
-      <span class="nav-search-icon">🔍</span>
-      <input type="text" placeholder="Search for any store or brand…" oninput="handleSearch(this.value)">
+      <span class="nav-search-icon">&#128269;</span>
+      <input type="text" placeholder="Search for any store or brand&hellip;" oninput="if(typeof handleSearch==='function')handleSearch(this.value)">
     </div>
     <div class="nav-links">
       <a href="app.html" class="active">Home</a>
-      <a href="stores.html">Stores</a>
-      <a href="price-tracker.html">Price Tracker</a>
-      <a href="virtual-assistant.html">Try-On</a>
-      <a href="dashboard.html">Dashboard</a>
+      <a href="stores.html" >Stores</a>
+      <a href="price-tracker.html" >Price Tracker</a>
+      <a href="virtual-assistant.html" >Try-On</a>
+      <a href="dashboard.html" >Dashboard</a>
     </div>
-    <div class="nav-r" id="nav-r">
+    <div class="nav-r">
       <button class="btn-g" onclick="openModal('login')">Login</button>
-      <button class="btn-p" onclick="openModal('signup')">Join Free →</button>
+      <button class="btn-p" onclick="openModal('signup')">Join Free &rarr;</button>
     </div>
   </nav>
 </header>
@@ -549,9 +567,9 @@
     <div class="footer-brand"><span class="logo" style="color:#fff">Smart<span class="g">Cash</span></span><p>UK cashback platform. Earn real money back on everyday purchases through our partner stores.</p></div>
     <div class="footer-col"><h4>Platform</h4><a href="stores.html">All Stores</a><a href="price-tracker.html">Price Tracker</a><a href="dashboard.html">Dashboard</a><a href="virtual-assistant.html">Virtual Try-On</a></div>
     <div class="footer-col"><h4>Company</h4><a href="about.html">About Us</a><a href="contact.html">Contact</a><a href="how-it-works.html">How It Works</a><a href="help.html">Help Centre</a></div>
-    <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms & Conditions</a><a href="privacy.html">Privacy Policy</a><a href="#">Cookie Policy</a></div>
+    <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms &amp; Conditions</a><a href="privacy.html">Privacy Policy</a></div>
   </div>
-  <div class="footer-bottom"><span>© 2026 SmartCash. All rights reserved. Registered in England.</span><span>Made with ♥ in the UK</span></div>
+  <div class="footer-bottom"><span>&copy; 2026 SmartCash. All rights reserved.</span><span>Made with &hearts; in the UK</span></div>
 </footer>
 
 <!-- AUTH MODAL -->
