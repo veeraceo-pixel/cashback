@@ -541,8 +541,8 @@ if(location.hash==='#ai'){setTimeout(()=>showSection('ai',document.querySelector
 </script>
 <script src="aria.js"></script>
 <script>
-function openCats(){document.getElementById('catSidebar').classList.add('open');document.getElementById('catOverlay').classList.add('open');document.body.style.overflow='hidden';}
-function closeCats(){document.getElementById('catSidebar').classList.remove('open');document.getElementById('catOverlay').classList.remove('open');document.body.style.overflow='';}
+function openCats(){document.getElementById('catSidebar').classList.add('open');document.getElementById('catOverlay').classList.add('open');}
+function closeCats(){document.getElementById('catSidebar').classList.remove('open');document.getElementById('catOverlay').classList.remove('open');}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCats();});
 </script>
 </body>
