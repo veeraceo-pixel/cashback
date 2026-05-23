@@ -2,12 +2,50 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+  <meta name="description" content="Earn real cashback at 500+ UK stores. Free to join. Withdraw from £10. AI-powered price tracking.">
+  <meta property="og:title" content="SmartCash — UK Cashback & Coupons">
+  <meta property="og:description" content="Earn real cashback at 500+ UK stores. Free to join. Withdraw from £10. AI-powered price tracking.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cashback-eight.vercel.app">
+  <meta property="og:image" content="https://cashback-eight.vercel.app/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SmartCash — UK Cashback & Coupons">
+  <meta name="twitter:description" content="Earn real cashback at 500+ UK stores. Free to join. Withdraw from £10. AI-powered price tracking.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SmartCash — UK Cashback & Coupons Site</title>
 <link rel="stylesheet" href="theme.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <style>
+/* ── CATEGORY SIDEBAR ── */
+.cat-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:350;}
+.cat-overlay.open{display:block;}
+.cat-sidebar{position:fixed;top:64px;left:-360px;bottom:0;width:320px;background:#fff;z-index:380;
+  box-shadow:4px 0 24px rgba(0,0,0,.12);transition:left .3s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;overflow:hidden;}
+.cat-sidebar.open{left:0;}
+.cat-sidebar-head{display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.25rem;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cat-sidebar-head h3{font-size:.97rem;font-weight:800;color:var(--text);}
+.cat-close{width:27px;height:27px;border-radius:50%;background:#f3f4f6;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:.88rem;color:#6b7280;transition:all .2s;}
+.cat-close:hover{background:#fee2e2;color:#e04e00;}
+.cat-menu{flex:1;overflow-y:auto;}
+.cat-menu::-webkit-scrollbar{width:3px;}
+.cat-menu::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:2px;}
+.cat-divider{padding:.6rem 1.25rem .25rem;font-size:.65rem;font-weight:700;letter-spacing:.6px;
+  text-transform:uppercase;color:#9ca3af;border-top:1px solid #f3f4f6;margin-top:.2rem;}
+.cat-divider:first-child{border-top:none;margin-top:0;}
+.cat-row{display:flex;align-items:center;gap:.85rem;padding:.8rem 1.25rem;cursor:pointer;
+  transition:background .15s;border-bottom:1px solid #f9fafb;}
+.cat-row:hover{background:#fff6f3;}
+.cat-row:hover .cat-row-label{color:#e04e00;}
+.cat-row-icon{font-size:1.15rem;width:24px;text-align:center;flex-shrink:0;line-height:1;}
+.cat-row-label{font-size:.87rem;font-weight:600;color:#111827;flex:1;transition:color .15s;}
+.cat-row-rate{font-size:.7rem;font-weight:700;color:#00a07a;background:rgba(0,200,150,.1);
+  padding:.1rem .4rem;border-radius:50px;flex-shrink:0;}
+
 /* ── CATEGORY SIDEBAR ── */
 .cat-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:350;}
 .cat-overlay.open{display:block;}
@@ -190,8 +228,7 @@
 .auth-switch a { color:var(--brand); font-weight:600; cursor:pointer; }
 
 /* ══ RESPONSIVE ════════════════════════════════════════════════ */
-@media(max-width:960px){
-  .hero-inner { grid-template-columns:1fr; } .app-preview { display:none; }
+
   .how-inner { grid-template-columns:1fr 1fr; } .how-step:nth-child(2)::after { display:none; }
   .why-grid { grid-template-columns:1fr 1fr; } .ai-section { grid-template-columns:1fr; }
   .amazon-banner { flex-direction:column; text-align:center; } .ab-rate { margin-left:0; }
@@ -202,8 +239,19 @@
   .why-grid { grid-template-columns:1fr; } .stores-grid { grid-template-columns:1fr 1fr; }
   .cta-banner { padding:2.5rem 1.5rem; }
 }
+
+/* Fix: app-preview always visible on desktop */
+@media(min-width:961px){
+  .app-preview { display:block !important; }
+  .hero-inner { grid-template-columns:1fr 440px; }
+}
+@media(max-width:960px){
+  .hero-inner { grid-template-columns:1fr; }
+  .app-preview { display:none; }
+}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -213,47 +261,49 @@
 <div class="cat-sidebar" id="catSidebar">
   <div class="cat-sidebar-head">
     <h3>Category</h3>
-    <button class="cat-close" onclick="closeCats()">✕</button>
+    <button class="cat-close" onclick="closeCats()" aria-label="Close categories">✕</button>
   </div>
   <div class="cat-menu">
-    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">🏪</span><span class="cat-row-label">Most Popular Retailers</span></div>
-    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">📂</span><span class="cat-row-label">Retailers by Category</span></div>
-    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">🔖</span><span class="cat-row-label">Top Product Deals</span></div>
+    <div class="cat-row" onclick="location.href='/stores';closeCats()"><span class="cat-row-icon">🏪</span><span class="cat-row-label">Most Popular Retailers</span></div>
+    <div class="cat-row" onclick="location.href='/stores';closeCats()"><span class="cat-row-icon">📂</span><span class="cat-row-label">Retailers by Category</span></div>
+    <div class="cat-row" onclick="location.href='/stores';closeCats()"><span class="cat-row-icon">🔖</span><span class="cat-row-label">Top Product Deals</span></div>
     <div class="cat-divider">Shop by Type</div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">📱</span><span class="cat-row-label">Mobiles</span><span class="cat-row-rate">4.5%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">🎧</span><span class="cat-row-label">Headphones</span><span class="cat-row-rate">4.5%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">💻</span><span class="cat-row-label">Laptops</span><span class="cat-row-rate">2.5%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=fashion';closeCats()"><span class="cat-row-icon">👔</span><span class="cat-row-label">Men Fashion</span><span class="cat-row-rate">6%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=fashion';closeCats()"><span class="cat-row-icon">👗</span><span class="cat-row-label">Women Fashion</span><span class="cat-row-rate">6%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=beauty';closeCats()"><span class="cat-row-icon">💄</span><span class="cat-row-label">Beauty & Grooming</span><span class="cat-row-rate">4%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=travel';closeCats()"><span class="cat-row-icon">✈️</span><span class="cat-row-label">Flights & Hotels</span><span class="cat-row-rate">5%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=home';closeCats()"><span class="cat-row-icon">🏡</span><span class="cat-row-label">Home & Kitchen</span><span class="cat-row-rate">3%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=sports';closeCats()"><span class="cat-row-icon">⚽</span><span class="cat-row-label">Sports & Outdoors</span><span class="cat-row-rate">3.5%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=health';closeCats()"><span class="cat-row-icon">💊</span><span class="cat-row-label">Health & Pharmacy</span><span class="cat-row-rate">4%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=grocery';closeCats()"><span class="cat-row-icon">🛒</span><span class="cat-row-label">Grocery & Food</span><span class="cat-row-rate">2%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=electronics';closeCats()"><span class="cat-row-icon">📱</span><span class="cat-row-label">Mobiles</span><span class="cat-row-rate">up to 4.5%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=electronics';closeCats()"><span class="cat-row-icon">🎧</span><span class="cat-row-label">Headphones</span><span class="cat-row-rate">up to 4.5%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=electronics';closeCats()"><span class="cat-row-icon">💻</span><span class="cat-row-label">Laptops</span><span class="cat-row-rate">up to 2.5%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=fashion';closeCats()"><span class="cat-row-icon">👔</span><span class="cat-row-label">Men Fashion</span><span class="cat-row-rate">up to 6%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=fashion';closeCats()"><span class="cat-row-icon">👗</span><span class="cat-row-label">Women Fashion</span><span class="cat-row-rate">up to 6%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=beauty';closeCats()"><span class="cat-row-icon">💄</span><span class="cat-row-label">Beauty &amp; Grooming</span><span class="cat-row-rate">up to 4%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=travel';closeCats()"><span class="cat-row-icon">✈️</span><span class="cat-row-label">Flights &amp; Hotels</span><span class="cat-row-rate">up to 5%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=home';closeCats()"><span class="cat-row-icon">🏡</span><span class="cat-row-label">Home &amp; Kitchen</span><span class="cat-row-rate">up to 3%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=sports';closeCats()"><span class="cat-row-icon">⚽</span><span class="cat-row-label">Sports &amp; Outdoors</span><span class="cat-row-rate">up to 5%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=health';closeCats()"><span class="cat-row-icon">💊</span><span class="cat-row-label">Health &amp; Pharmacy</span><span class="cat-row-rate">up to 4%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=grocery';closeCats()"><span class="cat-row-icon">🛒</span><span class="cat-row-label">Grocery &amp; Food</span><span class="cat-row-rate">up to 2%</span></div>
     <div class="cat-divider" style="border-top:1px solid var(--border)"></div>
-    <div class="cat-row" onclick="location.href='stores.html';closeCats()" style="justify-content:center"><span class="cat-row-label" style="color:var(--brand);font-weight:700">View All Partner Stores →</span></div>
+    <div class="cat-row" onclick="location.href='/stores';closeCats()" style="justify-content:center"><span class="cat-row-label" style="color:var(--brand);font-weight:700">View All Partner Stores →</span></div>
   </div>
 </div>
 
 <header class="hdr">
   <nav class="nav">
     <div style="display:flex;align-items:center;gap:.7rem;flex-shrink:0">
-      <button class="nav-hamburger" onclick="openCats()" aria-label="Categories">
+      <button class="nav-hamburger" onclick="openCats()" aria-label="Open category menu">
         <span></span><span></span><span></span>
       </button>
-      <a href="app.html" class="logo">Smart<span class="g">Cash</span></a>
+      <a href="/" class="logo">Smart<span class="g">Cash</span></a>
     </div>
     <div class="nav-search">
       <span class="nav-search-icon">🔍</span>
-      <input type="text" placeholder="Search for any store or brand…" oninput="if(typeof handleSearch==='function')handleSearch(this.value)">
+      <input type="text" id="navSearch" aria-label="Search stores and brands"
+        placeholder="Search for any store or brand…"
+        oninput="if(typeof handleSearch==='function')handleSearch(this.value)">
     </div>
     <div class="nav-links">
-      <a href="app.html" class="active">Home</a>
-      <a href="stores.html">Stores</a>
-      <a href="price-tracker.html">Price Tracker</a>
-      <a href="virtual-assistant.html">Try-On</a>
-      <a href="dashboard.html">Dashboard</a>
+      <a href="/" class="active">Home</a>
+      <a href="/stores">Stores</a>
+      <a href="/price-tracker">Price Tracker</a>
+      <a href="/try-on">Try-On</a>
+      <a href="/dashboard">Dashboard</a>
     </div>
     <div class="nav-r">
       <button class="btn-g" onclick="openModal('login')">Login</button>
@@ -261,6 +311,7 @@
     </div>
   </nav>
 </header>
+
 
 
 <!-- ANNOUNCEMENT BAR — no fake promises -->
@@ -345,7 +396,7 @@
 
     <div class="sec-hd">
       <h2 id="stores-heading">Partner Stores</h2>
-      <a href="stores.html">View all stores →</a>
+      <a href="/stores">View all stores →</a>
     </div>
     <div class="filter-tabs">
       <button class="ftab active" onclick="filterStores('all',this)">🏪 All</button>
@@ -422,7 +473,7 @@
       <p>Sign up, click through to any partner store, shop as normal — and earn a percentage back as real cashback. No subscriptions, no minimum spend.</p>
       <div class="cta-btns">
         <button class="cta-btn-p" onclick="openModal('signup')">Create Free Account →</button>
-        <button class="cta-btn-g" onclick="location.href='stores.html'">Browse Partner Stores</button>
+        <button class="cta-btn-g" onclick="location.href='/stores'">Browse Partner Stores</button>
       </div>
     </div>
   </div>
@@ -431,12 +482,31 @@
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
-    <div class="footer-brand"><span class="logo" style="color:#fff">Smart<span class="g">Cash</span></span><p>UK cashback platform. Earn real money back on everyday purchases through our partner stores.</p></div>
-    <div class="footer-col"><h4>Platform</h4><a href="stores.html">All Stores</a><a href="price-tracker.html">Price Tracker</a><a href="dashboard.html">Dashboard</a><a href="virtual-assistant.html">Virtual Try-On</a></div>
-    <div class="footer-col"><h4>Company</h4><a href="about.html">About Us</a><a href="contact.html">Contact</a><a href="how-it-works.html">How It Works</a><a href="help.html">Help Centre</a></div>
-    <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms &amp; Conditions</a><a href="privacy.html">Privacy Policy</a></div>
+    <div class="footer-brand">
+      <a href="/" class="logo" style="color:#fff">Smart<span class="g">Cash</span></a>
+      <p>UK cashback platform. Earn real money back on everyday purchases through our partner stores.</p>
+    </div>
+    <div class="footer-col"><h4>Platform</h4>
+      <a href="/stores">All Stores</a>
+      <a href="/price-tracker">Price Tracker</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/try-on">Virtual Try-On</a>
+    </div>
+    <div class="footer-col"><h4>Company</h4>
+      <a href="/about">About Us</a>
+      <a href="/contact">Contact</a>
+      <a href="/how-it-works">How It Works</a>
+      <a href="/help">Help Centre</a>
+    </div>
+    <div class="footer-col"><h4>Legal</h4>
+      <a href="/terms">Terms &amp; Conditions</a>
+      <a href="/privacy">Privacy Policy</a>
+    </div>
   </div>
-  <div class="footer-bottom"><span>© 2026 SmartCash. All rights reserved.</span><span>Made with ♥ in the UK</span></div>
+  <div class="footer-bottom">
+    <span>© 2026 SmartCash. All rights reserved. Registered in England.</span>
+    <span>Made with ♥ in the UK</span>
+  </div>
 </footer>
 
 <!-- AUTH MODAL -->
@@ -447,9 +517,16 @@
       <div id="modalError" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:.75rem 1rem;font-size:.84rem;color:#b91c1c;margin-bottom:1rem"></div>
       <div id="modalSuccess" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:.75rem 1rem;font-size:.84rem;color:#15803d;margin-bottom:1rem"></div>
       <div class="auth-form">
-        <div id="nameField"><label class="form-label">Full Name</label><input class="form-input" type="text" id="authName" placeholder="Your full name"></div>
-        <div><label class="form-label">Email Address</label><input class="form-input" type="email" id="authEmail" placeholder="you@example.com"></div>
-        <div><label class="form-label">Password</label><input class="form-input" type="password" id="authPassword" placeholder="Min. 6 characters"></div>
+        <div id="nameField"><label class="form-label">Full Name</label><input class="form-input" type="text" id="authName" placeholder="Your full name" aria-label="Full name"></div>
+        <div><label class="form-label">Email Address</label><input class="form-input" type="email" id="authEmail" placeholder="you@example.com" aria-label="Email address"></div>
+        <div><label class="form-label">Password</label><input class="form-input" type="password" id="authPassword" placeholder="Min. 6 characters" aria-label="Password"></div>
+        <div id="tcRow" style="display:none;align-items:flex-start;gap:.6rem;margin-top:-.25rem">
+          <input type="checkbox" id="tcCheck" style="margin-top:3px;accent-color:var(--brand);cursor:pointer;flex-shrink:0">
+          <label for="tcCheck" style="font-size:.8rem;color:var(--muted);line-height:1.5;cursor:pointer">
+            I agree to the <a href="/terms" style="color:var(--brand);font-weight:600">Terms &amp; Conditions</a>
+            and <a href="/privacy" style="color:var(--brand);font-weight:600">Privacy Policy</a>
+          </label>
+        </div>
         <button class="btn-p" id="authSubmit" onclick="submitAuth()" style="padding:.78rem;font-size:.93rem;border-radius:10px;width:100%">Create Account</button>
       </div>
       <div class="auth-switch" id="authSwitch">Already have an account? <a onclick="toggleAuthMode()">Login</a></div>
@@ -464,19 +541,56 @@
 const AMAZON_TAG = (typeof AMAZON_CONFIG!=='undefined'&&AMAZON_CONFIG.associateId) ? AMAZON_CONFIG.associateId : 'veeraseo-21';
 
 const STORES = [
-  { id:'amazon',    name:'Amazon UK',   sub:'Millions of products', offer:'Free delivery on Prime', cashback:4.5, cat:'electronics', emoji:'📦', logo:'https://logo.clearbit.com/amazon.co.uk', hot:true,   url:`https://www.amazon.co.uk/?tag=${AMAZON_TAG}` },
-  { id:'asos',      name:'ASOS',        sub:'Fashion & accessories', offer:'Free delivery & returns', cashback:6.0, cat:'fashion',     emoji:'👗', logo:'https://logo.clearbit.com/asos.com',       hot:true,   url:'https://www.awin1.com/cread.php?awinmid=4081&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.asos.com%2F' },
-  { id:'boots',     name:'Boots',       sub:'Beauty & pharmacy',     offer:'Advantage Card compatible', cashback:4.0, cat:'beauty',  emoji:'💄', logo:'https://logo.clearbit.com/boots.com',      hot:true,   url:'https://www.awin1.com/cread.php?awinmid=3602&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.boots.com%2F' },
-  { id:'booking',   name:'Booking.com', sub:'Hotels worldwide',      offer:'Best price guarantee',    cashback:5.0, cat:'travel',     emoji:'🏨', logo:'https://logo.clearbit.com/booking.com',             url:'https://www.awin1.com/cread.php?awinmid=6776&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.booking.com%2F' },
-  { id:'nike',      name:'Nike',        sub:'Sportswear & trainers', offer:'Free delivery £50+',      cashback:3.5, cat:'sports',     emoji:'👟', logo:'https://logo.clearbit.com/nike.com',       isNew:true, url:'https://www.awin1.com/cread.php?awinmid=2080&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.nike.com%2Fgb%2F' },
-  { id:'currys',    name:'Currys',      sub:'Electronics & appliances', offer:'Price match guarantee', cashback:2.5, cat:'electronics', emoji:'📺', logo:'https://logo.clearbit.com/currys.co.uk',           url:'https://www.awin1.com/cread.php?awinmid=1599&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.currys.co.uk%2F' },
-  { id:'johnlewis', name:'John Lewis',  sub:'Department store',      offer:'Never knowingly undersold', cashback:3.0, cat:'home',    emoji:'🏡', logo:'https://logo.clearbit.com/johnlewis.com',           url:'https://www.awin1.com/cread.php?awinmid=1203&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.johnlewis.com%2F' },
-  { id:'expedia',   name:'Expedia',     sub:'Flights & holidays',    offer:'Bundle & save',           cashback:4.5, cat:'travel',     emoji:'✈️', logo:'https://logo.clearbit.com/expedia.co.uk',           url:'https://www.awin1.com/cread.php?awinmid=2114&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.expedia.co.uk%2F' },
-  { id:'next',      name:'NEXT',        sub:'Clothing & home',       offer:'Next day delivery',       cashback:4.0, cat:'fashion',    emoji:'👔', logo:'https://logo.clearbit.com/next.co.uk',             url:'https://www.awin1.com/cread.php?awinmid=3441&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.next.co.uk%2F' },
-  { id:'ms',        name:'M&S',         sub:'Clothing, food & home', offer:'Sparks Card compatible',  cashback:3.5, cat:'fashion',    emoji:'🛍️', logo:'https://logo.clearbit.com/marksandspencer.com',     url:'https://www.awin1.com/cread.php?awinmid=4931&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.marksandspencer.com%2F' },
-  { id:'adidas',    name:'Adidas',      sub:'Official Adidas UK',    offer:'Members event on',        cashback:5.0, cat:'sports',     emoji:'👟', logo:'https://logo.clearbit.com/adidas.co.uk',   hot:true,   url:'https://www.awin1.com/cread.php?awinmid=14654&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.adidas.co.uk%2F' },
-  { id:'argos',     name:'Argos',       sub:'Home & garden',         offer:'Same-day delivery',       cashback:2.0, cat:'home',       emoji:'🛒', logo:'https://logo.clearbit.com/argos.co.uk',             url:'https://www.awin1.com/cread.php?awinmid=1623&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.argos.co.uk%2F' },
-];
+  // Cashback rates: verify exact rates after AWIN/Amazon approval — these are approximate
+  { id:'amazon',    name:'Amazon UK',   sub:'Millions of products', offer:'Free delivery on Prime',
+    cashback:4.5, cat:'electronics', emoji:'📦',
+    logo:'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
+    hot:true, url:`https://www.amazon.co.uk/?tag=${AMAZON_TAG}` },
+  { id:'asos',      name:'ASOS',        sub:'Fashion & accessories', offer:'Free delivery & returns',
+    cashback:6.0, cat:'fashion',     emoji:'👗',
+    logo:'https://upload.wikimedia.org/wikipedia/commons/8/8a/ASOS_Logo.svg',
+    hot:true, url:'https://www.awin1.com/cread.php?awinmid=4081&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.asos.com%2F' },
+  { id:'boots',     name:'Boots',       sub:'Beauty & pharmacy',     offer:'Advantage Card compatible',
+    cashback:4.0, cat:'beauty',      emoji:'💄',
+    logo:'https://upload.wikimedia.org/wikipedia/en/b/b0/Boots_Logo.svg',
+    hot:true, url:'https://www.awin1.com/cread.php?awinmid=3602&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.boots.com%2F' },
+  { id:'booking',   name:'Booking.com', sub:'Hotels worldwide',      offer:'Best price guarantee',
+    cashback:5.0, cat:'travel',      emoji:'🏨',
+    logo:'https://upload.wikimedia.org/wikipedia/commons/b/be/Booking.com_logo.svg',
+    url:'https://www.awin1.com/cread.php?awinmid=6776&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.booking.com%2F' },
+  { id:'nike',      name:'Nike',        sub:'Sportswear & trainers', offer:'Free delivery on orders £50+',
+    cashback:3.5, cat:'sports',      emoji:'👟',
+    logo:'https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg',
+    isNew:true, url:'https://www.awin1.com/cread.php?awinmid=2080&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.nike.com%2Fgb%2F' },
+  { id:'currys',    name:'Currys',      sub:'Electronics & appliances', offer:'Price match guarantee',
+    cashback:2.5, cat:'electronics', emoji:'📺',
+    logo:'https://upload.wikimedia.org/wikipedia/en/3/3d/Currys_Logo.svg',
+    url:'https://www.awin1.com/cread.php?awinmid=1599&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.currys.co.uk%2F' },
+  { id:'johnlewis', name:'John Lewis',  sub:'Department store',      offer:'Quality & service guaranteed',
+    cashback:3.0, cat:'home',        emoji:'🛍️',
+    logo:'https://upload.wikimedia.org/wikipedia/en/9/95/John_Lewis_%26_Partners_logo.svg',
+    url:'https://www.awin1.com/cread.php?awinmid=1203&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.johnlewis.com%2F' },
+  { id:'expedia',   name:'Expedia',     sub:'Flights & holidays',    offer:'Bundle flights & hotels',
+    cashback:5.0, cat:'travel',      emoji:'✈️',
+    logo:'https://upload.wikimedia.org/wikipedia/commons/8/84/Expedia_logo_2012.svg',
+    url:'https://www.awin1.com/cread.php?awinmid=2114&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.expedia.co.uk%2F' },
+  { id:'next',      name:'NEXT',        sub:'Clothing & home',       offer:'Next day delivery available',
+    cashback:4.0, cat:'fashion',     emoji:'🛍️',
+    logo:'https://upload.wikimedia.org/wikipedia/en/a/a1/Next_logo.svg',
+    url:'https://www.awin1.com/cread.php?awinmid=3441&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.next.co.uk%2F' },
+  { id:'ms',        name:'M&S',         sub:'Clothing, food & home', offer:'Sparks Card points compatible',
+    cashback:3.5, cat:'fashion',     emoji:'🛒',
+    logo:'https://upload.wikimedia.org/wikipedia/commons/4/47/Marks_and_Spencer_logo.svg',
+    url:'https://www.awin1.com/cread.php?awinmid=4931&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.marksandspencer.com%2F' },
+  { id:'adidas',    name:'Adidas',      sub:'Official Adidas UK store', offer:'Sale on now — up to 50% off',
+    cashback:5.0, cat:'sports',      emoji:'👟',
+    logo:'https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg',
+    hot:true, url:'https://www.awin1.com/cread.php?awinmid=14654&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.adidas.co.uk%2F' },
+  { id:'argos',     name:'Argos',       sub:'Home, garden & tech',   offer:'Same-day delivery available',
+    cashback:2.0, cat:'home',        emoji:'🏠',
+    logo:'https://upload.wikimedia.org/wikipedia/en/a/a5/Argos_logo.svg',
+    url:'https://www.awin1.com/cread.php?awinmid=1623&awinaffid=YOUR_AWIN_ID&p=https%3A%2F%2Fwww.argos.co.uk%2F' },
+]
 
 function renderStores(stores) {
   const g = document.getElementById('stores-grid');
@@ -486,8 +600,11 @@ function renderStores(stores) {
       ${s.hot   ? '<div class="sc-hot">🔥 Hot</div>' : ''}
       ${s.isNew ? '<div class="sc-new">New</div>'    : ''}
       <div class="sc-logo-wrap">
-        <img src="${s.logo}" alt="${s.name}" loading="lazy" onload="this.style.opacity=1" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="opacity:0;transition:opacity .3s">
-        <div style="display:none;width:40px;height:40px;align-items:center;justify-content:center;font-size:1.4rem">${s.emoji}</div>
+        <img src="${s.logo}" alt="${s.name}" loading="lazy"
+          onload="this.style.opacity=1;this.nextElementSibling.style.display='none'"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+          style="opacity:0;transition:opacity .35s;width:42px;height:42px;object-fit:contain">
+        <div style="display:flex;width:42px;height:42px;align-items:center;justify-content:center;font-size:1.6rem">${s.emoji}</div>
       </div>
       <div class="sc-name">${s.name}</div>
       <div class="sc-sub">${s.sub}</div>
@@ -514,8 +631,9 @@ function handleSearch(q) {
 
 function trackClick(id) {
   const s = STORES.find(x=>x.id===id); if(!s) return;
-  showToast('Opening '+s.name+' — your cashback will be tracked automatically.');
-  setTimeout(() => window.open(s.url,'_blank'), 700);
+  showToast('Opening '+s.name+' — cashback tracked! 💰');
+  // Open affiliate link immediately in new tab
+  window.open(s.url,'_blank','noopener,noreferrer');
 }
 
 /* ── CATEGORIES SIDEBAR ── */
@@ -537,6 +655,7 @@ function openModal(mode) {
   document.getElementById('modalTitle').textContent=mode==='login'?'Login to SmartCash':'Create Free Account';
   document.getElementById('authSubmit').textContent=mode==='login'?'Login':'Create Account';
   document.getElementById('nameField').style.display=mode==='signup'?'block':'none';
+  document.getElementById('tcRow').style.display=mode==='signup'?'flex':'none';
   document.getElementById('authSwitch').innerHTML=mode==='login'?"Don't have an account? <a onclick='toggleAuthMode()'>Sign Up Free</a>":"Already have an account? <a onclick='toggleAuthMode()'>Login</a>";
   document.getElementById('modalError').style.display='none';
   document.getElementById('modalSuccess').style.display='none';
@@ -549,6 +668,9 @@ async function submitAuth() {
   const errEl=document.getElementById('modalError'), sucEl=document.getElementById('modalSuccess');
   errEl.style.display='none'; sucEl.style.display='none';
   if(!email||!password){errEl.textContent='Please fill in all fields.';errEl.style.display='block';return;}
+  if(authMode==='signup'&&!document.getElementById('tcCheck').checked){
+    errEl.textContent='Please accept the Terms & Conditions to continue.';errEl.style.display='block';return;
+  }
   document.getElementById('authSubmit').textContent='Please wait…';
   document.getElementById('authSubmit').disabled=true;
   if(typeof SUPABASE_CONFIG!=='undefined'&&SUPABASE_CONFIG.url&&!SUPABASE_CONFIG.url.includes('YOUR_')){
@@ -561,12 +683,12 @@ async function submitAuth() {
       }else{
         const{error}=await sb.auth.signInWithPassword({email,password});
         if(error){errEl.textContent=error.message;errEl.style.display='block';}
-        else{sucEl.textContent='Logged in! Redirecting…';sucEl.style.display='block';setTimeout(()=>location.href='dashboard.html',900);}
+        else{sucEl.textContent='Logged in! Redirecting…';sucEl.style.display='block';setTimeout(()=>location.href='/dashboard',900);}
       }
     }catch(e){errEl.textContent=e.message;errEl.style.display='block';}
   }else{
     sucEl.textContent='Configure Supabase in config.js to enable real accounts.'; sucEl.style.display='block';
-    setTimeout(()=>location.href='dashboard.html',1400);
+    setTimeout(()=>location.href='/dashboard',1400);
   }
   document.getElementById('authSubmit').textContent=authMode==='login'?'Login':'Create Account';
   document.getElementById('authSubmit').disabled=false;
@@ -582,7 +704,9 @@ function showToast(msg) {
 document.addEventListener('keydown', e => { if(e.key==='Escape'){closeModal();closeCats();} });
 renderStores(STORES);
 </script>
-<script src="aria.js"></script>
+
+
+
 
 <script>
 function openCats(){
@@ -595,6 +719,5 @@ function closeCats(){
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCats();});
 </script>
-
 </body>
 </html>

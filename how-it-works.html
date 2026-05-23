@@ -2,11 +2,49 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+  <meta name="description" content="Learn how SmartCash cashback works in 4 simple steps.">
+  <meta property="og:title" content="How It Works — SmartCash">
+  <meta property="og:description" content="Learn how SmartCash cashback works in 4 simple steps.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cashback-eight.vercel.app">
+  <meta property="og:image" content="https://cashback-eight.vercel.app/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="How It Works — SmartCash">
+  <meta name="twitter:description" content="Learn how SmartCash cashback works in 4 simple steps.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>How It Works — SmartCash</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="theme.css">
 <style>
+/* ── CATEGORY SIDEBAR ── */
+.cat-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:350;}
+.cat-overlay.open{display:block;}
+.cat-sidebar{position:fixed;top:64px;left:-360px;bottom:0;width:320px;background:#fff;z-index:380;
+  box-shadow:4px 0 24px rgba(0,0,0,.12);transition:left .3s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;overflow:hidden;}
+.cat-sidebar.open{left:0;}
+.cat-sidebar-head{display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.25rem;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cat-sidebar-head h3{font-size:.97rem;font-weight:800;color:var(--text);}
+.cat-close{width:27px;height:27px;border-radius:50%;background:#f3f4f6;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:.88rem;color:#6b7280;transition:all .2s;}
+.cat-close:hover{background:#fee2e2;color:#e04e00;}
+.cat-menu{flex:1;overflow-y:auto;}
+.cat-menu::-webkit-scrollbar{width:3px;}
+.cat-menu::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:2px;}
+.cat-divider{padding:.6rem 1.25rem .25rem;font-size:.65rem;font-weight:700;letter-spacing:.6px;
+  text-transform:uppercase;color:#9ca3af;border-top:1px solid #f3f4f6;margin-top:.2rem;}
+.cat-divider:first-child{border-top:none;margin-top:0;}
+.cat-row{display:flex;align-items:center;gap:.85rem;padding:.8rem 1.25rem;cursor:pointer;
+  transition:background .15s;border-bottom:1px solid #f9fafb;}
+.cat-row:hover{background:#fff6f3;}
+.cat-row:hover .cat-row-label{color:#e04e00;}
+.cat-row-icon{font-size:1.15rem;width:24px;text-align:center;flex-shrink:0;line-height:1;}
+.cat-row-label{font-size:.87rem;font-weight:600;color:#111827;flex:1;transition:color .15s;}
+.cat-row-rate{font-size:.7rem;font-weight:700;color:#00a07a;background:rgba(0,200,150,.1);
+  padding:.1rem .4rem;border-radius:50px;flex-shrink:0;}
+
 /* ── CATEGORY SIDEBAR ── */
 .cat-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:350;}
 .cat-overlay.open{display:block;}
@@ -138,6 +176,7 @@
 @media(max-width:900px){.steps-grid{grid-template-columns:1fr 1fr;}.step:nth-child(2){border-right:none;}.step:nth-child(1),.step:nth-child(2){border-bottom:1px solid var(--border);}.step-arrow{display:none;}.amz-sec{grid-template-columns:1fr;}.features-grid{grid-template-columns:1fr 1fr;}}
 @media(max-width:600px){.steps-grid{grid-template-columns:1fr;}.step{border-right:none;border-bottom:1px solid var(--border);}.features-grid{grid-template-columns:1fr;}.sec{padding:2.5rem 1.25rem;}}
 </style>
+
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -147,49 +186,56 @@
 <div class="cat-sidebar" id="catSidebar">
   <div class="cat-sidebar-head">
     <h3>Category</h3>
-    <button class="cat-close" onclick="closeCats()">✕</button>
+    <button class="cat-close" onclick="closeCats()" aria-label="Close categories">✕</button>
   </div>
   <div class="cat-menu">
-    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">🏪</span><span class="cat-row-label">Most Popular Retailers</span></div>
-    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">📂</span><span class="cat-row-label">Retailers by Category</span></div>
-    <div class="cat-row" onclick="location.href='stores.html';closeCats()"><span class="cat-row-icon">🔖</span><span class="cat-row-label">Top Product Deals</span></div>
+    <div class="cat-row" onclick="location.href='/stores';closeCats()"><span class="cat-row-icon">🏪</span><span class="cat-row-label">Most Popular Retailers</span></div>
+    <div class="cat-row" onclick="location.href='/stores';closeCats()"><span class="cat-row-icon">📂</span><span class="cat-row-label">Retailers by Category</span></div>
+    <div class="cat-row" onclick="location.href='/stores';closeCats()"><span class="cat-row-icon">🔖</span><span class="cat-row-label">Top Product Deals</span></div>
     <div class="cat-divider">Shop by Type</div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">📱</span><span class="cat-row-label">Mobiles</span><span class="cat-row-rate">4.5%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">🎧</span><span class="cat-row-label">Headphones</span><span class="cat-row-rate">4.5%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=electronics';closeCats()"><span class="cat-row-icon">💻</span><span class="cat-row-label">Laptops</span><span class="cat-row-rate">2.5%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=fashion';closeCats()"><span class="cat-row-icon">👔</span><span class="cat-row-label">Men Fashion</span><span class="cat-row-rate">6%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=fashion';closeCats()"><span class="cat-row-icon">👗</span><span class="cat-row-label">Women Fashion</span><span class="cat-row-rate">6%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=beauty';closeCats()"><span class="cat-row-icon">💄</span><span class="cat-row-label">Beauty & Grooming</span><span class="cat-row-rate">4%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=travel';closeCats()"><span class="cat-row-icon">✈️</span><span class="cat-row-label">Flights & Hotels</span><span class="cat-row-rate">5%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=home';closeCats()"><span class="cat-row-icon">🏡</span><span class="cat-row-label">Home & Kitchen</span><span class="cat-row-rate">3%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=sports';closeCats()"><span class="cat-row-icon">⚽</span><span class="cat-row-label">Sports & Outdoors</span><span class="cat-row-rate">3.5%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=health';closeCats()"><span class="cat-row-icon">💊</span><span class="cat-row-label">Health & Pharmacy</span><span class="cat-row-rate">4%</span></div>
-    <div class="cat-row" onclick="location.href='stores.html?cat=grocery';closeCats()"><span class="cat-row-icon">🛒</span><span class="cat-row-label">Grocery & Food</span><span class="cat-row-rate">2%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=electronics';closeCats()"><span class="cat-row-icon">📱</span><span class="cat-row-label">Mobiles</span><span class="cat-row-rate">up to 4.5%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=electronics';closeCats()"><span class="cat-row-icon">🎧</span><span class="cat-row-label">Headphones</span><span class="cat-row-rate">up to 4.5%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=electronics';closeCats()"><span class="cat-row-icon">💻</span><span class="cat-row-label">Laptops</span><span class="cat-row-rate">up to 2.5%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=fashion';closeCats()"><span class="cat-row-icon">👔</span><span class="cat-row-label">Men Fashion</span><span class="cat-row-rate">up to 6%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=fashion';closeCats()"><span class="cat-row-icon">👗</span><span class="cat-row-label">Women Fashion</span><span class="cat-row-rate">up to 6%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=beauty';closeCats()"><span class="cat-row-icon">💄</span><span class="cat-row-label">Beauty &amp; Grooming</span><span class="cat-row-rate">up to 4%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=travel';closeCats()"><span class="cat-row-icon">✈️</span><span class="cat-row-label">Flights &amp; Hotels</span><span class="cat-row-rate">up to 5%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=home';closeCats()"><span class="cat-row-icon">🏡</span><span class="cat-row-label">Home &amp; Kitchen</span><span class="cat-row-rate">up to 3%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=sports';closeCats()"><span class="cat-row-icon">⚽</span><span class="cat-row-label">Sports &amp; Outdoors</span><span class="cat-row-rate">up to 5%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=health';closeCats()"><span class="cat-row-icon">💊</span><span class="cat-row-label">Health &amp; Pharmacy</span><span class="cat-row-rate">up to 4%</span></div>
+    <div class="cat-row" onclick="location.href='/stores?cat=grocery';closeCats()"><span class="cat-row-icon">🛒</span><span class="cat-row-label">Grocery &amp; Food</span><span class="cat-row-rate">up to 2%</span></div>
     <div class="cat-divider" style="border-top:1px solid var(--border)"></div>
-    <div class="cat-row" onclick="location.href='stores.html';closeCats()" style="justify-content:center"><span class="cat-row-label" style="color:var(--brand);font-weight:700">View All Partner Stores →</span></div>
+    <div class="cat-row" onclick="location.href='/stores';closeCats()" style="justify-content:center"><span class="cat-row-label" style="color:var(--brand);font-weight:700">View All Partner Stores →</span></div>
   </div>
 </div>
 
 <header class="hdr">
   <nav class="nav">
     <div style="display:flex;align-items:center;gap:.7rem;flex-shrink:0">
-      <button class="nav-hamburger" onclick="openCats()" aria-label="Categories">
+      <button class="nav-hamburger" onclick="openCats()" aria-label="Open category menu">
         <span></span><span></span><span></span>
       </button>
-      <a href="app.html" class="logo">Smart<span class="g">Cash</span></a>
+      <a href="/" class="logo">Smart<span class="g">Cash</span></a>
+    </div>
+    <div class="nav-search">
+      <span class="nav-search-icon">🔍</span>
+      <input type="text" aria-label="Search stores and brands"
+        placeholder="Search stores…"
+        oninput="if(typeof handleSearch==='function')handleSearch(this.value)">
     </div>
     <div class="nav-links">
-      <a href="app.html">Home</a>
-      <a href="stores.html">Stores</a>
-      <a href="price-tracker.html">Price Tracker</a>
-      <a href="virtual-assistant.html">Try-On</a>
-      <a href="dashboard.html">Dashboard</a>
+      <a href="/">Home</a>
+      <a href="/stores">Stores</a>
+      <a href="/price-tracker">Price Tracker</a>
+      <a href="/try-on">Try-On</a>
+      <a href="/dashboard">Dashboard</a>
     </div>
     <div class="nav-r">
-      <button class="btn-p" onclick="location.href='app.html'">Join Free →</button>
+      <a href="/" class="btn-p">Join Free →</a>
     </div>
   </nav>
 </header>
+
 
 
 <div class="page-hero">
@@ -197,7 +243,7 @@
   <h1>Earn Cashback on<br>Every <span>Single</span> Purchase</h1>
   <p>SmartCash is the UK's smartest cashback platform. Shop as you normally would — we automatically track and pay you back in real money.</p>
   <div class="cta-row">
-    <button class="btn-hp" onclick="window.location.href='dashboard.html'">Start Earning Free →</button>
+    <button class="btn-hp" onclick="window.location.href='/dashboard'">Start Earning Free →</button>
     <button class="btn-hs" onclick="document.getElementById('steps').scrollIntoView({behavior:'smooth'})">See How It Works</button>
   </div>
 </div>
@@ -305,30 +351,47 @@
     <h2 class="sec-title">Ready to Start Earning?</h2>
     <p class="sec-sub" style="margin:0 auto 2rem">Join thousands of UK shoppers. Free to join, instant cashback tracking, first withdrawal from just £10.</p>
     <div class="cta-row">
-      <button class="btn-hp" onclick="window.location.href='dashboard.html'">Create Free Account →</button>
-      <button class="btn-hs" onclick="window.location.href='stores.html'">Browse Stores</button>
+      <button class="btn-hp" onclick="window.location.href='/dashboard'">Create Free Account →</button>
+      <button class="btn-hs" onclick="window.location.href='/stores'">Browse Stores</button>
     </div>
   </div>
 </div>
 
 <footer class="footer">
   <div class="footer-inner">
-    <div class="footer-brand"><span class="logo" style="color:#fff">Smart<span class="g">Cash</span></span><p>UK cashback platform. Earn real money back on everyday purchases through our partner stores.</p></div>
-    <div class="footer-col"><h4>Platform</h4><a href="stores.html">All Stores</a><a href="price-tracker.html">Price Tracker</a><a href="dashboard.html">Dashboard</a><a href="virtual-assistant.html">Virtual Try-On</a></div>
-    <div class="footer-col"><h4>Company</h4><a href="about.html">About Us</a><a href="contact.html">Contact</a><a href="how-it-works.html">How It Works</a><a href="help.html">Help Centre</a></div>
-    <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms &amp; Conditions</a><a href="privacy.html">Privacy Policy</a></div>
+    <div class="footer-brand">
+      <a href="/" class="logo" style="color:#fff">Smart<span class="g">Cash</span></a>
+      <p>UK cashback platform. Earn real money back on everyday purchases through our partner stores.</p>
+    </div>
+    <div class="footer-col"><h4>Platform</h4>
+      <a href="/stores">All Stores</a>
+      <a href="/price-tracker">Price Tracker</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/try-on">Virtual Try-On</a>
+    </div>
+    <div class="footer-col"><h4>Company</h4>
+      <a href="/about">About Us</a>
+      <a href="/contact">Contact</a>
+      <a href="/how-it-works">How It Works</a>
+      <a href="/help">Help Centre</a>
+    </div>
+    <div class="footer-col"><h4>Legal</h4>
+      <a href="/terms">Terms &amp; Conditions</a>
+      <a href="/privacy">Privacy Policy</a>
+    </div>
   </div>
-  <div class="footer-bottom"><span>© 2026 SmartCash. All rights reserved.</span><span>Made with ♥ in the UK</span></div>
+  <div class="footer-bottom">
+    <span>© 2026 SmartCash. All rights reserved. Registered in England.</span>
+    <span>Made with ♥ in the UK</span>
+  </div>
 </footer>
 
 <script>
 function toggleFaq(el){el.parentElement.classList.toggle('open');}
 </script>
-<script>
-function openCats(){document.getElementById('catSidebar').classList.add('open');document.getElementById('catOverlay').classList.add('open');}
-function closeCats(){document.getElementById('catSidebar').classList.remove('open');document.getElementById('catOverlay').classList.remove('open');}
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCats();});
-</script>
+
+
+
 
 <script>
 function openCats(){
@@ -341,6 +404,5 @@ function closeCats(){
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCats();});
 </script>
-
 </body>
 </html>
