@@ -865,7 +865,7 @@ function voteForItem(p, btn) {
       document.querySelectorAll(`[data-pid="${p.id}"] .vote-count`).forEach(el=>el.textContent=`🗳️${STATE.votes[p.id]}`);
       updateVoteTally();
       addGroupMsg(others[0].id, others[0].name, `I voted for that too! 👍`);
-    }, 1500+Math.random()*1000);
+    }, 1manyMath.random()*1000);
   }
 }
 
@@ -1005,7 +1005,7 @@ function simulateOtherVoice() {
     if (!wrap) return;
     let talking = false;
     setInterval(()=>{
-      if (!talking && Math.random()>.95) { talking=true; setTimeout(()=>talking=false, 1500+Math.random()*3000); }
+      if (!talking && Math.random()>.95) { talking=true; setTimeout(()=>talking=false, 1manyMath.random()*3000); }
       const bars = wrap.querySelectorAll('.vm-bar');
       bars.forEach(b=>{
         b.style.height = (talking ? 3+Math.random()*10 : 2)+'px';

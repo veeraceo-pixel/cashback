@@ -3,489 +3,428 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartCash — UK's Best Cashback & Coupons Site</title>
+<title>SmartCash — UK Cashback & Coupons Site</title>
 <link rel="stylesheet" href="theme.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <style>
 
-/* ══ ANNOUNCEMENT BAR ══════════════════════════════════════ */
+/* ══ CATEGORIES SIDEBAR (CashKaro style) ══════════════════ */
+.cat-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.45); z-index:600;
+  backdrop-filter:blur(2px);
+}
+.cat-overlay.open { display:block; }
+.cat-sidebar {
+  position:fixed; top:0; left:-420px; bottom:0;
+  width:380px; background:#fff; z-index:700;
+  box-shadow:4px 0 30px rgba(0,0,0,.15);
+  transition:left .32s cubic-bezier(.4,0,.2,1);
+  display:flex; flex-direction:column;
+  overflow:hidden;
+}
+.cat-sidebar.open { left:0; }
+.cat-sidebar-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1.25rem 1.5rem;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.cat-sidebar-head h3 { font-size:1.05rem; font-weight:800; color:var(--text); }
+.cat-close {
+  width:32px; height:32px; border-radius:50%;
+  background:var(--surface2); border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1rem; color:var(--muted); transition:all .2s;
+}
+.cat-close:hover { background:var(--brand-light); color:var(--brand); }
+
+/* main menu level */
+.cat-menu { flex:1; overflow-y:auto; }
+.cat-menu::-webkit-scrollbar { width:4px; }
+.cat-menu::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+.cat-section-label {
+  font-size:.7rem; font-weight:700; color:var(--muted-light);
+  text-transform:uppercase; letter-spacing:.6px;
+  padding:.85rem 1.5rem .4rem;
+}
+.cat-row {
+  display:flex; align-items:center; gap:1rem;
+  padding:.95rem 1.5rem;
+  cursor:pointer; transition:background .15s;
+  border-bottom:1px solid var(--border-light);
+  position:relative;
+}
+.cat-row:hover { background:var(--surface2); }
+.cat-row.has-sub:hover { color:var(--brand); }
+.cat-row-icon {
+  width:36px; height:36px; border-radius:10px;
+  background:var(--surface2); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.1rem; flex-shrink:0; transition:all .2s;
+}
+.cat-row:hover .cat-row-icon { background:var(--brand-light); border-color:var(--brand); }
+.cat-row-label { font-size:.92rem; font-weight:600; color:var(--text); flex:1; }
+.cat-row-arrow { color:var(--muted-light); font-size:.85rem; }
+
+/* sub-panel slides in */
+.cat-sub {
+  position:absolute; top:0; left:100%;
+  width:100%; height:100%;
+  background:#fff; transition:left .25s;
+  overflow-y:auto; z-index:10;
+}
+.cat-sub.open { left:0; }
+.cat-sub-head {
+  display:flex; align-items:center; gap:.75rem;
+  padding:1.1rem 1.25rem; border-bottom:1px solid var(--border);
+  cursor:pointer; position:sticky; top:0; background:#fff; z-index:1;
+}
+.cat-sub-head:hover { background:var(--surface2); }
+.cat-sub-head span { font-size:.9rem; font-weight:700; color:var(--text); }
+.cat-sub-item {
+  display:flex; align-items:center; gap:.9rem;
+  padding:.85rem 1.5rem; cursor:pointer;
+  border-bottom:1px solid var(--border-light);
+  transition:background .15s;
+}
+.cat-sub-item:hover { background:var(--surface2); }
+.cat-sub-item-icon { font-size:1.1rem; width:28px; text-align:center; flex-shrink:0; }
+.cat-sub-item-label { font-size:.88rem; font-weight:500; color:var(--text); }
+.cat-sub-item-count { font-size:.75rem; color:var(--muted); margin-left:auto; }
+
+/* ══ NAV ════════════════════════════════════════════════════ */
 .announce-bar {
-  background: linear-gradient(90deg, #FF5C00, #ff7c30);
-  color: #fff;
-  text-align: center;
-  padding: .5rem 1rem;
-  font-size: .82rem;
-  font-weight: 600;
-  letter-spacing: .1px;
+  background:#1a202c; color:rgba(255,255,255,.75);
+  text-align:center; padding:.5rem 1rem;
+  font-size:.8rem; font-weight:500;
 }
-.announce-bar a { color: #ffe0cc; text-decoration: underline; margin-left:.4rem; }
+.announce-bar strong { color:#fff; }
 
-/* ══ HERO BANNER CAROUSEL (CashKaro style) ═════════════════ */
-.hero-carousel {
-  background: #fff;
-  border-bottom: 1px solid var(--border);
-  overflow: hidden;
-  position: relative;
+/* ══ HERO ════════════════════════════════════════════════════ */
+.hero {
+  background:#fff; border-bottom:1px solid var(--border);
+  padding:3rem 2rem 2.75rem;
 }
-.carousel-track {
-  display: flex;
-  transition: transform .45s cubic-bezier(.4,0,.2,1);
-  will-change: transform;
+.hero-inner {
+  max-width:1400px; margin:0 auto;
+  display:grid; grid-template-columns:1fr 440px;
+  gap:3.5rem; align-items:center;
 }
-.carousel-slide {
-  flex-shrink: 0;
-  width: 100%;
-  height: 280px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  cursor: pointer;
+.hero-eyebrow {
+  display:inline-flex; align-items:center; gap:.5rem;
+  background:#fff5f0; border:1.5px solid rgba(255,92,0,.2);
+  color:var(--brand); padding:.28rem .85rem; border-radius:50px;
+  font-size:.76rem; font-weight:700; margin-bottom:1.1rem;
 }
+.hero-dot { width:7px; height:7px; background:var(--brand); border-radius:50%; animation:blink 2s infinite; }
+.hero h1 {
+  font-size:clamp(1.9rem,4vw,3rem); font-weight:800;
+  line-height:1.1; letter-spacing:-1.5px; color:var(--text); margin-bottom:.85rem;
+}
+.hero h1 .r { color:var(--brand); }
+.hero h1 .g { color:var(--green); }
+.hero-sub { color:var(--muted); font-size:.95rem; line-height:1.75; margin-bottom:1.75rem; max-width:460px; }
+.hero-btns { display:flex; gap:.75rem; flex-wrap:wrap; margin-bottom:1.75rem; }
+.btn-hero-p {
+  background:var(--brand); color:#fff; border:none;
+  padding:.85rem 2rem; border-radius:10px; font-weight:700;
+  font-size:.93rem; cursor:pointer; transition:all .25s; font-family:inherit;
+}
+.btn-hero-p:hover { background:var(--brand-dark); transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,92,0,.3); }
+.btn-hero-s {
+  background:#fff; color:var(--text); border:2px solid var(--border);
+  padding:.85rem 1.75rem; border-radius:10px; font-weight:700;
+  font-size:.93rem; cursor:pointer; transition:all .25s; font-family:inherit;
+}
+.btn-hero-s:hover { border-color:var(--green); color:var(--green); }
+.hero-note { font-size:.78rem; color:var(--muted-light); display:flex; align-items:center; gap:.4rem; }
+.hero-note .dot { width:5px; height:5px; border-radius:50%; background:var(--green); }
 
-/* Slide 1 — Amazon orange */
-.slide-amazon {
-  background: linear-gradient(120deg, #232f3e 0%, #37475a 55%, #ff9900 100%);
-}
-/* Slide 2 — ASOS purple */
-.slide-asos {
-  background: linear-gradient(120deg, #1a1a2e 0%, #16213e 55%, #667eea 100%);
-}
-/* Slide 3 — BOOTS pink */
-.slide-boots {
-  background: linear-gradient(120deg, #00395d 0%, #005a8e 55%, #0099cc 100%);
-}
-/* Slide 4 — Travel green */
-.slide-travel {
-  background: linear-gradient(120deg, #064e3b 0%, #065f46 55%, #059669 100%);
-}
+/* MOCKUP */
+.app-preview { background:#fff; border:1.5px solid var(--border); border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,.12); overflow:hidden; }
+.ap-bar { background:#f8fafc; border-bottom:1px solid var(--border); padding:.6rem 1rem; display:flex; align-items:center; gap:.4rem; }
+.ap-dot { width:8px; height:8px; border-radius:50%; }
+.ap-url { font-size:.67rem; color:var(--muted); font-family:monospace; margin-left:.3rem; }
+.ap-body { padding:1rem; }
+.ap-bal { background:linear-gradient(135deg,var(--brand),var(--brand-dark)); border-radius:12px; padding:1rem 1.1rem; margin-bottom:.8rem; color:#fff; }
+.ap-bal-lbl { font-size:.68rem; opacity:.75; margin-bottom:.1rem; }
+.ap-bal-amt { font-size:1.85rem; font-weight:800; letter-spacing:-.5px; }
+.ap-bal-sub { font-size:.67rem; opacity:.65; margin-top:.1rem; }
+.ap-rows { display:flex; flex-direction:column; gap:.45rem; }
+.ap-row { display:flex; align-items:center; gap:.65rem; background:var(--surface2); border-radius:9px; padding:.55rem .7rem; border:1px solid var(--border); }
+.ap-icon { width:30px; height:30px; border-radius:7px; background:#fff; display:flex; align-items:center; justify-content:center; font-size:.9rem; border:1px solid var(--border); flex-shrink:0; }
+.ap-store { font-size:.8rem; font-weight:700; color:var(--text); }
+.ap-detail { font-size:.66rem; color:var(--muted); }
+.ap-cb { font-size:.88rem; font-weight:800; color:var(--green); margin-left:auto; }
+.ap-tag { font-size:.6rem; padding:.1rem .4rem; border-radius:50px; margin-left:.3rem; font-weight:700; }
+.ap-conf { background:var(--green-light); color:var(--green-dark); }
+.ap-pend { background:var(--gold-light); color:#b45309; }
 
-.slide-content {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 3rem;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 2rem;
-  height: 100%;
-}
-.slide-text { z-index: 1; }
-.slide-eyebrow {
-  font-size: .78rem; font-weight: 700; letter-spacing: .5px;
-  text-transform: uppercase; opacity: .8; margin-bottom: .5rem;
-  color: #fff;
-}
-.slide-title {
-  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
-  font-weight: 800;
-  color: #fff;
-  line-height: 1.1;
-  letter-spacing: -1px;
-  margin-bottom: .65rem;
-}
-.slide-sub {
-  font-size: .9rem;
-  color: rgba(255,255,255,.75);
-  margin-bottom: 1.25rem;
-  line-height: 1.6;
-}
-.slide-btn {
-  display: inline-flex; align-items: center; gap: .5rem;
-  padding: .7rem 1.6rem; border-radius: 50px;
-  font-weight: 700; font-size: .9rem; border: none;
-  cursor: pointer; transition: all .2s; font-family: inherit;
-}
-.slide-btn.orange { background: #FF9900; color: #fff; }
-.slide-btn.orange:hover { background: #e68900; transform: translateY(-1px); }
-.slide-btn.white  { background: #fff; color: var(--brand); }
-.slide-btn.white:hover { background: #f0f0f0; transform: translateY(-1px); }
-.slide-btn.teal   { background: #fff; color: #059669; }
-.slide-btn.teal:hover { background: #f0fff8; }
+/* ══ HOW IT WORKS ═══════════════════════════════════════════ */
+.how-strip { background:#fff; border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:2.5rem 2rem; }
+.how-inner { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr); gap:0; }
+.how-step { text-align:center; padding:1.1rem 1.35rem; position:relative; }
+.how-step:not(:last-child)::after { content:'→'; position:absolute; right:-10px; top:42px; color:var(--brand); font-size:1rem; font-weight:800; }
+.how-num { width:44px; height:44px; background:var(--brand); color:#fff; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1rem; margin:0 auto .8rem; }
+.how-step h3 { font-size:.88rem; font-weight:700; margin-bottom:.28rem; color:var(--text); }
+.how-step p { font-size:.78rem; color:var(--muted); line-height:1.5; }
 
-/* cashback pill on slide */
-.slide-cb-pill {
-  display: inline-flex; align-items: center; gap: .4rem;
-  background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
-  color: #fff; padding: .3rem .85rem; border-radius: 50px;
-  font-size: .78rem; font-weight: 700; margin-bottom: .75rem;
-  backdrop-filter: blur(4px);
-}
-.slide-cb-pill .dot { width:7px; height:7px; background:#4ade80; border-radius:50%; }
+/* ══ STORES SECTION ══════════════════════════════════════════ */
+.sec-wrap { max-width:1400px; margin:0 auto; padding:2rem; }
+.sec-hd { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+.sec-hd h2 { font-size:1.05rem; font-weight:800; color:var(--text); }
+.sec-hd a { font-size:.83rem; color:var(--brand); font-weight:600; }
+.filter-tabs { display:flex; gap:.4rem; overflow-x:auto; padding-bottom:.4rem; margin-bottom:1rem; }
+.filter-tabs::-webkit-scrollbar { display:none; }
+.ftab { flex-shrink:0; padding:.35rem .85rem; border-radius:50px; font-size:.79rem; font-weight:600; border:1.5px solid var(--border); background:#fff; color:var(--muted); cursor:pointer; transition:all .2s; font-family:inherit; white-space:nowrap; }
+.ftab.active { background:var(--brand); border-color:var(--brand); color:#fff; }
+.ftab:hover:not(.active) { border-color:var(--brand); color:var(--brand); }
+.stores-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:.85rem; }
+.store-card { background:#fff; border:1.5px solid var(--border); border-radius:14px; padding:1.1rem; cursor:pointer; transition:all .22s; position:relative; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; }
+.store-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:var(--brand); }
+.sc-hot { position:absolute; top:.7rem; right:.7rem; background:var(--brand); color:#fff; font-size:.59rem; font-weight:800; padding:.1rem .42rem; border-radius:50px; }
+.sc-new { position:absolute; top:.7rem; right:.7rem; background:var(--green); color:#fff; font-size:.59rem; font-weight:800; padding:.1rem .42rem; border-radius:50px; }
+.sc-logo-wrap { width:48px; height:48px; border-radius:11px; background:var(--surface2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:.7rem; }
+.sc-logo-wrap img { width:40px; height:40px; object-fit:contain; transition:opacity .3s; }
+.sc-name { font-size:.88rem; font-weight:700; color:var(--text); margin-bottom:.1rem; }
+.sc-sub { font-size:.7rem; color:var(--muted); margin-bottom:.65rem; line-height:1.4; }
+.sc-cb-num { font-size:1.4rem; font-weight:800; color:var(--green); line-height:1; }
+.sc-cb-lbl { font-size:.7rem; color:var(--muted); margin-bottom:.2rem; }
+.sc-offer { font-size:.7rem; color:var(--brand); font-weight:600; margin-bottom:.75rem; }
+.btn-shop-now { width:100%; padding:.52rem; border:none; border-radius:8px; background:var(--brand); color:#fff; font-weight:700; font-size:.8rem; cursor:pointer; transition:all .2s; font-family:inherit; margin-top:auto; }
+.btn-shop-now:hover { background:var(--brand-dark); }
 
-/* right side big rate */
-.slide-rate-block { text-align: center; z-index:1; flex-shrink:0; }
-.slide-rate-num {
-  font-size: clamp(4rem, 8vw, 6rem);
-  font-weight: 800;
-  color: #fff;
-  line-height: 1;
-  letter-spacing: -3px;
-}
-.slide-rate-pct { font-size: 2rem; font-weight: 800; }
-.slide-rate-lbl { font-size: .82rem; color: rgba(255,255,255,.65); margin-top: .25rem; }
+/* ══ AMAZON BANNER ═══════════════════════════════════════════ */
+.amazon-banner { background:linear-gradient(120deg,#232f3e,#37475a 70%,#ff9900); border-radius:14px; padding:1.75rem 2rem; display:flex; align-items:center; gap:1.75rem; margin-bottom:1.5rem; cursor:pointer; transition:transform .2s; }
+.amazon-banner:hover { transform:translateY(-2px); }
+.ab-text h3 { font-size:1rem; font-weight:800; color:#fff; margin-bottom:.25rem; }
+.ab-text p { font-size:.83rem; color:rgba(255,255,255,.65); line-height:1.55; max-width:460px; }
+.ab-rate { flex-shrink:0; text-align:center; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); border-radius:11px; padding:.85rem 1.25rem; margin-left:auto; }
+.ab-rate-num { font-size:2.2rem; font-weight:800; color:#FF9900; line-height:1; }
+.ab-rate-lbl { font-size:.68rem; color:rgba(255,255,255,.6); margin-top:.15rem; }
+.ab-btn { flex-shrink:0; background:#FF9900; color:#fff; border:none; padding:.65rem 1.35rem; border-radius:50px; font-weight:700; font-size:.87rem; cursor:pointer; font-family:inherit; transition:all .2s; white-space:nowrap; }
+.ab-btn:hover { background:#e68900; }
 
-/* carousel controls */
-.carousel-prev, .carousel-next {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  width: 38px; height: 38px;
-  background: rgba(255,255,255,.18); backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,.25);
-  border-radius: 50%; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  color: #fff; font-size: 1.1rem; font-weight: 700;
-  z-index: 10; transition: background .2s; border: none;
-}
-.carousel-prev { left: 1rem; }
-.carousel-next { right: 1rem; }
-.carousel-prev:hover, .carousel-next:hover { background: rgba(255,255,255,.32); }
+/* ══ WHY SMARTCASH ════════════════════════════════════════════ */
+.why-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+.why-card { background:#fff; padding:1.5rem 1.65rem; transition:background .2s; }
+.why-card:hover { background:#fff9f7; }
+.why-icon { font-size:1.65rem; margin-bottom:.65rem; display:block; }
+.why-card h3 { font-size:.9rem; font-weight:700; margin-bottom:.32rem; color:var(--text); }
+.why-card p { color:var(--muted); font-size:.81rem; line-height:1.6; }
+.why-excl { display:inline-flex; background:var(--brand-light); color:var(--brand); padding:.12rem .48rem; border-radius:50px; font-size:.65rem; font-weight:700; margin-top:.6rem; }
 
-.carousel-dots {
-  position: absolute; bottom: .85rem; left: 50%; transform: translateX(-50%);
-  display: flex; gap: .4rem; z-index: 10;
-}
-.cdot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: rgba(255,255,255,.4); cursor: pointer; transition: all .25s;
-}
-.cdot.active { background: #fff; width: 22px; border-radius: 4px; }
+/* ══ AI DEMO ══════════════════════════════════════════════════ */
+.ai-section { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; align-items:center; }
+.ai-chat-demo { background:#fff; border:1.5px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:var(--shadow-lg); }
+.ai-chat-hd { background:linear-gradient(135deg,#6C63FF,#4f46e5); padding:.9rem 1.2rem; display:flex; align-items:center; gap:.65rem; }
+.ai-ava { width:30px; height:30px; background:rgba(255,255,255,.2); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:.95rem; }
+.ai-chat-hd h4 { color:#fff; font-size:.88rem; font-weight:700; }
+.ai-chat-hd p { color:rgba(255,255,255,.7); font-size:.68rem; }
+.ai-msgs { padding:.85rem; display:flex; flex-direction:column; gap:.6rem; }
+.ai-msg { display:flex; gap:.4rem; }
+.ai-msg.user { flex-direction:row-reverse; }
+.ai-bubble { max-width:80%; padding:.55rem .82rem; border-radius:11px; font-size:.8rem; line-height:1.5; }
+.ai-msg:not(.user) .ai-bubble { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
+.ai-msg.user .ai-bubble { background:linear-gradient(135deg,#6C63FF,#4f46e5); color:#fff; }
+.ai-input-row { padding:.6rem; border-top:1px solid var(--border); display:flex; gap:.4rem; }
+.ai-input-row input { flex:1; padding:.48rem .85rem; border:1.5px solid var(--border); border-radius:50px; font-size:.8rem; outline:none; font-family:inherit; }
+.ai-input-row button { background:linear-gradient(135deg,#6C63FF,#4f46e5); color:#fff; border:none; padding:.48rem .95rem; border-radius:50px; cursor:pointer; font-size:.8rem; font-weight:600; font-family:inherit; }
 
-/* ══ STATS BAR ═════════════════════════════════════════════ */
-.stats-bar {
-  background: #fff;
-  border-bottom: 1px solid var(--border);
-  padding: .85rem 2rem;
-}
-.stats-bar-inner {
-  max-width: 1400px; margin: 0 auto;
-  display: flex; gap: 2.5rem; align-items: center; flex-wrap: wrap;
-}
-.stat-item { display: flex; align-items: center; gap: .55rem; }
-.stat-icon { font-size: 1.1rem; }
-.stat-val { font-size: .88rem; font-weight: 800; color: var(--text); }
-.stat-val span { color: var(--brand); }
-.stat-lbl { font-size: .78rem; color: var(--muted); }
-.stat-divider { width: 1px; height: 20px; background: var(--border); }
-
-/* ══ TOP CATEGORIES ════════════════════════════════════════ */
-.cat-sec {
-  background: #fff;
-  border-bottom: 1px solid var(--border);
-  padding: 1.5rem 2rem;
-}
-.cat-sec-inner { max-width: 1400px; margin: 0 auto; }
-.cat-sec h2 { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 1rem; }
-
-.cat-scroll {
-  display: flex; gap: 1rem;
-  overflow-x: auto; padding-bottom: .25rem;
-}
-.cat-scroll::-webkit-scrollbar { display: none; }
-
-.cat-item {
-  flex-shrink: 0;
-  display: flex; flex-direction: column; align-items: center; gap: .5rem;
-  cursor: pointer; transition: all .2s;
-}
-.cat-item:hover .cat-circle { border-color: var(--brand); transform: translateY(-2px); box-shadow: 0 4px 14px rgba(255,92,0,.2); }
-.cat-item:hover .cat-lbl { color: var(--brand); }
-
-.cat-circle {
-  width: 70px; height: 70px;
-  border-radius: 50%;
-  border: 2px solid var(--border);
-  background: var(--surface2);
-  overflow: hidden;
-  transition: all .25s;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2rem;
-}
-.cat-circle img {
-  width: 100%; height: 100%; object-fit: cover;
-}
-.cat-lbl {
-  font-size: .72rem; font-weight: 600; color: var(--muted);
-  white-space: nowrap; transition: color .2s; text-align: center;
-}
-
-/* ══ SECTION WRAPPER ═══════════════════════════════════════ */
-.sec-wrap { max-width: 1400px; margin: 0 auto; padding: 2rem 2rem; }
-
-/* ══ STORE CARDS ════════════════════════════════════════════ */
-.sec-hd {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 1rem;
-}
-.sec-hd h2 { font-size: 1.1rem; font-weight: 800; color: var(--text); }
-.sec-hd a { font-size: .83rem; color: var(--brand); font-weight: 600; }
-.sec-hd a:hover { text-decoration: underline; }
-
-.filter-tabs {
-  display: flex; gap: .45rem;
-  overflow-x: auto; padding-bottom: .4rem; margin-bottom: 1rem;
-}
-.filter-tabs::-webkit-scrollbar { display: none; }
-.ftab {
-  flex-shrink: 0;
-  padding: .38rem .9rem; border-radius: 50px;
-  font-size: .8rem; font-weight: 600;
-  border: 1.5px solid var(--border);
-  background: #fff; color: var(--muted);
-  cursor: pointer; transition: all .2s; font-family: inherit;
-  white-space: nowrap;
-}
-.ftab.active { background: var(--brand); border-color: var(--brand); color: #fff; }
-.ftab:hover:not(.active) { border-color: var(--brand); color: var(--brand); }
-
-/* Grid */
-.stores-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
-  gap: .85rem;
-}
-.store-card {
-  background: #fff;
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
-  padding: 1.1rem;
-  cursor: pointer;
-  transition: all .22s;
-  position: relative;
-  box-shadow: var(--shadow-sm);
-  display: flex; flex-direction: column;
-}
-.store-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--brand);
-}
-/* store tag top-right */
-.sc-hot { position:absolute; top:.75rem; right:.75rem; background:var(--brand); color:#fff; font-size:.6rem; font-weight:800; padding:.12rem .45rem; border-radius:50px; letter-spacing:.3px; }
-.sc-new { position:absolute; top:.75rem; right:.75rem; background:var(--green); color:#fff; font-size:.6rem; font-weight:800; padding:.12rem .45rem; border-radius:50px; }
-
-.sc-logo-wrap {
-  width: 50px; height: 50px;
-  border-radius: 12px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
-  margin-bottom: .75rem;
-}
-.sc-logo-wrap img { width: 42px; height: 42px; object-fit: contain; transition: opacity .3s; }
-
-.sc-name { font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: .1rem; }
-.sc-sub  { font-size: .72rem; color: var(--muted); margin-bottom: .7rem; line-height: 1.4; }
-.sc-cb-row { display: flex; align-items: baseline; gap: .3rem; margin-bottom: .2rem; }
-.sc-cb-num { font-size: 1.45rem; font-weight: 800; color: var(--green); line-height: 1; }
-.sc-cb-lbl { font-size: .72rem; color: var(--muted); }
-.sc-offer { font-size: .72rem; color: var(--brand); font-weight: 600; margin-bottom: .85rem; }
-
-.btn-shop-now {
-  width: 100%; padding: .55rem;
-  border: none; border-radius: 8px;
-  background: var(--brand); color: #fff;
-  font-weight: 700; font-size: .82rem;
-  cursor: pointer; transition: all .2s;
-  font-family: inherit; margin-top: auto;
-}
-.btn-shop-now:hover { background: var(--brand-dark); }
-
-/* ══ FEATURED AMAZON BANNER ════════════════════════════════ */
-.amazon-banner {
-  background: linear-gradient(120deg, #232f3e, #37475a 70%, #ff9900);
-  border-radius: 16px;
-  padding: 2rem 2.5rem;
-  display: flex; align-items: center; gap: 2rem;
-  margin-bottom: 1.75rem;
-  cursor: pointer;
-  transition: transform .2s;
-  overflow: hidden;
-  position: relative;
-}
-.amazon-banner:hover { transform: translateY(-2px); }
-.amazon-banner::before {
-  content: '📦';
-  position: absolute; right: 2.5rem; top: 50%;
-  transform: translateY(-50%);
-  font-size: 7rem; opacity: .08;
-  pointer-events: none;
-}
-.ab-text h3 { font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: .3rem; }
-.ab-text p  { font-size: .87rem; color: rgba(255,255,255,.7); line-height: 1.6; max-width: 480px; }
-.ab-rate {
-  flex-shrink: 0;
-  text-align: center;
-  background: rgba(255,255,255,.12);
-  border: 1px solid rgba(255,255,255,.2);
-  border-radius: 14px;
-  padding: 1rem 1.5rem;
-  margin-left: auto;
-}
-.ab-rate-num { font-size: 2.5rem; font-weight: 800; color: #FF9900; line-height: 1; }
-.ab-rate-lbl { font-size: .72rem; color: rgba(255,255,255,.65); margin-top: .2rem; }
-.ab-btn {
-  flex-shrink: 0;
-  background: #FF9900; color: #fff; border: none;
-  padding: .7rem 1.5rem; border-radius: 50px;
-  font-weight: 700; font-size: .9rem; cursor: pointer;
-  font-family: inherit; transition: all .2s; white-space: nowrap;
-}
-.ab-btn:hover { background: #e68900; transform: translateY(-1px); }
-
-/* ══ WHY SMARTCASH ═════════════════════════════════════════ */
-.why-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
-}
-.why-card {
-  background: #fff; padding: 1.6rem 1.75rem; transition: background .2s;
-}
-.why-card:hover { background: #fffaf7; }
-.why-icon { font-size: 1.75rem; margin-bottom: .7rem; display: block; }
-.why-card h3 { font-size: .93rem; font-weight: 700; margin-bottom: .35rem; color: var(--text); }
-.why-card p  { color: var(--muted); font-size: .82rem; line-height: 1.6; }
-.why-excl {
-  display: inline-flex; align-items: center;
-  background: var(--brand-light); color: var(--brand);
-  padding: .15rem .5rem; border-radius: 50px;
-  font-size: .67rem; font-weight: 700; margin-top: .65rem;
-}
-
-/* ══ AI CHAT DEMO ═══════════════════════════════════════════ */
-.ai-section {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center;
-}
-.ai-chat-demo {
-  background: #fff; border: 1.5px solid var(--border);
-  border-radius: 18px; overflow: hidden; box-shadow: var(--shadow-lg);
-}
-.ai-chat-hd {
-  background: linear-gradient(135deg, #6C63FF, #4f46e5);
-  padding: .95rem 1.25rem; display: flex; align-items: center; gap: .65rem;
-}
-.ai-ava {
-  width: 32px; height: 32px; background: rgba(255,255,255,.2);
-  border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 1rem;
-}
-.ai-chat-hd h4 { color: #fff; font-size: .9rem; font-weight: 700; }
-.ai-chat-hd p  { color: rgba(255,255,255,.75); font-size: .7rem; }
-.ai-msgs { padding: .9rem; display: flex; flex-direction: column; gap: .65rem; }
-.ai-msg { display: flex; gap: .4rem; }
-.ai-msg.user { flex-direction: row-reverse; }
-.ai-bubble {
-  max-width: 80%; padding: .55rem .85rem; border-radius: 12px;
-  font-size: .82rem; line-height: 1.5;
-}
-.ai-msg:not(.user) .ai-bubble { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-.ai-msg.user .ai-bubble { background: linear-gradient(135deg,#6C63FF,#4f46e5); color: #fff; }
-.ai-input-row {
-  padding: .65rem; border-top: 1px solid var(--border); display: flex; gap: .45rem;
-}
-.ai-input-row input {
-  flex:1; padding:.5rem .9rem; border:1.5px solid var(--border);
-  border-radius:50px; font-size:.82rem; outline:none; font-family:inherit;
-}
-.ai-input-row button {
-  background:linear-gradient(135deg,#6C63FF,#4f46e5); color:#fff; border:none;
-  padding:.5rem 1rem; border-radius:50px; cursor:pointer; font-size:.82rem; font-weight:600; font-family:inherit;
-}
-
-/* ══ LOYALTY ════════════════════════════════════════════════ */
-.levels-row { display:flex; gap:.75rem; overflow-x:auto; padding-bottom:.4rem; }
+/* ══ LOYALTY ══════════════════════════════════════════════════ */
+.levels-row { display:flex; gap:.7rem; overflow-x:auto; padding-bottom:.4rem; }
 .levels-row::-webkit-scrollbar { display:none; }
-.level-card {
-  flex-shrink:0; background:#fff; border:1.5px solid var(--border);
-  border-radius:14px; padding:1.1rem; text-align:center;
-  min-width:150px; box-shadow:var(--shadow-sm); transition:all .2s;
-}
+.level-card { flex-shrink:0; background:#fff; border:1.5px solid var(--border); border-radius:13px; padding:1.1rem; text-align:center; min-width:148px; box-shadow:var(--shadow-sm); transition:all .2s; }
 .level-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); }
-.lv-icon { font-size:1.75rem; margin-bottom:.45rem; }
-.lv-name { font-weight:800; font-size:.88rem; color:var(--text); margin-bottom:.12rem; }
-.lv-xp   { font-size:.7rem; color:var(--muted); margin-bottom:.6rem; }
-.lv-bonus { font-size:1.3rem; font-weight:800; color:var(--green); }
-.lv-bonus-lbl { font-size:.67rem; color:var(--muted); }
+.lv-icon { font-size:1.65rem; margin-bottom:.4rem; }
+.lv-name { font-weight:800; font-size:.87rem; color:var(--text); margin-bottom:.1rem; }
+.lv-xp { font-size:.68rem; color:var(--muted); margin-bottom:.6rem; }
+.lv-bonus { font-size:1.25rem; font-weight:800; color:var(--green); }
+.lv-bonus-lbl { font-size:.65rem; color:var(--muted); }
 
-/* ══ CTA BANNER ═════════════════════════════════════════════ */
-.cta-banner {
-  background: linear-gradient(135deg, #FF5C00, #ff7c30);
-  border-radius: 20px;
-  padding: 3.5rem;
-  text-align: center;
-  color: #fff;
-  position: relative;
-  overflow: hidden;
-}
-.cta-banner::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(circle at top right, rgba(255,255,255,.12), transparent 60%);
-}
-.cta-banner h2 { font-size:clamp(1.5rem,3vw,2.2rem); font-weight:800; letter-spacing:-.5px; margin-bottom:.75rem; position:relative; }
-.cta-banner p  { color:rgba(255,255,255,.85); font-size:.93rem; line-height:1.7; max-width:440px; margin:0 auto 2rem; position:relative; }
-.cta-btns { display:flex; gap:.85rem; justify-content:center; flex-wrap:wrap; position:relative; }
-.cta-btn-primary {
-  background:#fff; color:var(--brand); border:none;
-  padding:.9rem 2rem; border-radius:50px;
-  font-weight:800; font-size:.92rem; cursor:pointer;
-  transition:all .2s; font-family:inherit;
-}
-.cta-btn-primary:hover { background:#fff0eb; transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,0,0,.15); }
-.cta-btn-ghost {
-  background:rgba(255,255,255,.15); color:#fff;
-  border:2px solid rgba(255,255,255,.35);
-  padding:.9rem 1.75rem; border-radius:50px;
-  font-weight:700; font-size:.92rem; cursor:pointer;
-  font-family:inherit; transition:all .2s;
-}
-.cta-btn-ghost:hover { background:rgba(255,255,255,.25); }
+/* ══ CTA ═══════════════════════════════════════════════════════ */
+.cta-banner { background:linear-gradient(135deg,var(--brand),var(--brand-dark)); border-radius:18px; padding:3.25rem; text-align:center; color:#fff; position:relative; overflow:hidden; }
+.cta-banner::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at top right,rgba(255,255,255,.1),transparent 60%); }
+.cta-banner h2 { font-size:clamp(1.4rem,3vw,2rem); font-weight:800; letter-spacing:-.5px; margin-bottom:.65rem; position:relative; }
+.cta-banner p { color:rgba(255,255,255,.8); font-size:.9rem; line-height:1.7; max-width:420px; margin:0 auto 1.75rem; position:relative; }
+.cta-btns { display:flex; gap:.75rem; justify-content:center; flex-wrap:wrap; position:relative; }
+.cta-btn-p { background:#fff; color:var(--brand); border:none; padding:.85rem 1.85rem; border-radius:50px; font-weight:800; font-size:.9rem; cursor:pointer; transition:all .2s; font-family:inherit; }
+.cta-btn-p:hover { background:#fff0eb; transform:translateY(-1px); }
+.cta-btn-g { background:rgba(255,255,255,.14); color:#fff; border:2px solid rgba(255,255,255,.32); padding:.85rem 1.65rem; border-radius:50px; font-weight:700; font-size:.9rem; cursor:pointer; font-family:inherit; transition:all .2s; }
+.cta-btn-g:hover { background:rgba(255,255,255,.24); }
 
-/* ══ AUTH MODAL ══════════════════════════════════════════════ */
-.auth-form { display:flex; flex-direction:column; gap:.85rem; }
-.auth-switch { text-align:center; font-size:.85rem; color:var(--muted); margin-top:.75rem; }
+/* ══ AUTH ══════════════════════════════════════════════════════ */
+.auth-form { display:flex; flex-direction:column; gap:.82rem; }
+.auth-switch { text-align:center; font-size:.84rem; color:var(--muted); margin-top:.7rem; }
 .auth-switch a { color:var(--brand); font-weight:600; cursor:pointer; }
-.auth-divider { display:flex; align-items:center; gap:.75rem; color:var(--muted-light); font-size:.8rem; margin:.25rem 0; }
-.auth-divider::before, .auth-divider::after { content:''; flex:1; height:1px; background:var(--border); }
 
-/* ══ RESPONSIVE ══════════════════════════════════════════════ */
+/* ══ RESPONSIVE ════════════════════════════════════════════════ */
 @media(max-width:960px){
-  .carousel-slide { height: 220px; }
-  .slide-rate-block { display: none; }
-  .ai-section { grid-template-columns: 1fr; }
-  .why-grid { grid-template-columns: 1fr 1fr; }
-  .amazon-banner { flex-direction: column; text-align: center; }
-  .ab-rate { margin-left: 0; }
+  .hero-inner { grid-template-columns:1fr; } .app-preview { display:none; }
+  .how-inner { grid-template-columns:1fr 1fr; } .how-step:nth-child(2)::after { display:none; }
+  .why-grid { grid-template-columns:1fr 1fr; } .ai-section { grid-template-columns:1fr; }
+  .amazon-banner { flex-direction:column; text-align:center; } .ab-rate { margin-left:0; }
 }
 @media(max-width:640px){
-  .carousel-slide { height: 180px; }
-  .slide-content { padding: 0 1.5rem; }
-  .slide-title { font-size: 1.4rem; }
-  .sec-wrap { padding: 1.75rem 1.25rem; }
-  .why-grid { grid-template-columns: 1fr; }
-  .stores-grid { grid-template-columns: 1fr 1fr; }
-  .cta-banner { padding: 2.5rem 1.5rem; }
-  .stats-bar-inner { gap: 1.25rem; }
-  .stat-divider { display: none; }
+  .hero { padding:2rem 1.25rem; } .how-inner { grid-template-columns:1fr; }
+  .how-step::after { display:none !important; } .sec-wrap { padding:1.75rem 1.25rem; }
+  .why-grid { grid-template-columns:1fr; } .stores-grid { grid-template-columns:1fr 1fr; }
+  .cta-banner { padding:2.5rem 1.5rem; }
 }
 </style>
 </head>
 <body>
 
+<!-- CATEGORIES SIDEBAR OVERLAY -->
+<div class="cat-overlay" id="catOverlay" onclick="closeCats()"></div>
+
+<!-- CATEGORIES SIDEBAR -->
+<div class="cat-sidebar" id="catSidebar">
+  <div class="cat-sidebar-head">
+    <h3>Category</h3>
+    <button class="cat-close" onclick="closeCats()">✕</button>
+  </div>
+  <div class="cat-menu" id="catMenu">
+
+    <!-- Top-level sections -->
+    <div class="cat-section-label">Browse</div>
+
+    <div class="cat-row has-sub" onclick="openSub('sub-popular')">
+      <div class="cat-row-icon">🏪</div>
+      <span class="cat-row-label">Most Popular Retailers</span>
+      <span class="cat-row-arrow">›</span>
+    </div>
+
+    <div class="cat-row has-sub" onclick="openSub('sub-category')">
+      <div class="cat-row-icon">📂</div>
+      <span class="cat-row-label">Retailers by Category</span>
+      <span class="cat-row-arrow">›</span>
+    </div>
+
+    <div class="cat-row has-sub" onclick="openSub('sub-deals')">
+      <div class="cat-row-icon">🔖</div>
+      <span class="cat-row-label">Top Product Deals</span>
+      <span class="cat-row-arrow">›</span>
+    </div>
+
+    <div class="cat-section-label">Shop by Type</div>
+
+    <div class="cat-row" onclick="filterAndGo('electronics')">
+      <div class="cat-row-icon">📱</div>
+      <span class="cat-row-label">Mobiles & Electronics</span>
+    </div>
+    <div class="cat-row" onclick="filterAndGo('electronics')">
+      <div class="cat-row-icon">🎧</div>
+      <span class="cat-row-label">Headphones & Audio</span>
+    </div>
+    <div class="cat-row" onclick="filterAndGo('electronics')">
+      <div class="cat-row-icon">💻</div>
+      <span class="cat-row-label">Laptops & Computers</span>
+    </div>
+    <div class="cat-row" onclick="filterAndGo('fashion')">
+      <div class="cat-row-icon">👔</div>
+      <span class="cat-row-label">Men Fashion</span>
+    </div>
+    <div class="cat-row" onclick="filterAndGo('fashion')">
+      <div class="cat-row-icon">👗</div>
+      <span class="cat-row-label">Women Fashion</span>
+    </div>
+    <div class="cat-row" onclick="filterAndGo('beauty')">
+      <div class="cat-row-icon">💄</div>
+      <span class="cat-row-label">Beauty & Grooming</span>
+    </div>
+    <div class="cat-row" onclick="filterAndGo('travel')">
+      <div class="cat-row-icon">✈️</div>
+      <span class="cat-row-label">Flights & Hotels</span>
+    </div>
+    <div class="cat-row" onclick="filterAndGo('home')">
+      <div class="cat-row-icon">🏡</div>
+      <span class="cat-row-label">Home & Kitchen</span>
+    </div>
+    <div class="cat-row" onclick="filterAndGo('sports')">
+      <div class="cat-row-icon">⚽</div>
+      <span class="cat-row-label">Sports & Outdoors</span>
+    </div>
+    <div class="cat-row" onclick="filterAndGo('health')">
+      <div class="cat-row-icon">💊</div>
+      <span class="cat-row-label">Health & Pharmacy</span>
+    </div>
+    <div class="cat-row" onclick="filterAndGo('grocery')">
+      <div class="cat-row-icon">🛒</div>
+      <span class="cat-row-label">Grocery & Food</span>
+    </div>
+  </div>
+
+  <!-- Sub-panel: Most Popular -->
+  <div class="cat-sub" id="sub-popular">
+    <div class="cat-sub-head" onclick="closeSub('sub-popular')">
+      <span style="color:var(--muted);font-size:1rem">‹</span>
+      <span>Most Popular Retailers</span>
+    </div>
+    <div class="cat-sub-item" onclick="trackAndClose('amazon')"><span class="cat-sub-item-icon">📦</span><span class="cat-sub-item-label">Amazon UK</span><span class="cat-sub-item-count">4.5% cashback</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('asos')"><span class="cat-sub-item-icon">👗</span><span class="cat-sub-item-label">ASOS</span><span class="cat-sub-item-count">6% cashback</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('boots')"><span class="cat-sub-item-icon">💄</span><span class="cat-sub-item-label">Boots</span><span class="cat-sub-item-count">4% cashback</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('booking')"><span class="cat-sub-item-icon">🏨</span><span class="cat-sub-item-label">Booking.com</span><span class="cat-sub-item-count">5% cashback</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('nike')"><span class="cat-sub-item-icon">👟</span><span class="cat-sub-item-label">Nike</span><span class="cat-sub-item-count">3.5% cashback</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('next')"><span class="cat-sub-item-icon">👔</span><span class="cat-sub-item-label">NEXT</span><span class="cat-sub-item-count">4% cashback</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('adidas')"><span class="cat-sub-item-icon">👟</span><span class="cat-sub-item-label">Adidas</span><span class="cat-sub-item-count">5% cashback</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('johnlewis')"><span class="cat-sub-item-icon">🏡</span><span class="cat-sub-item-label">John Lewis</span><span class="cat-sub-item-count">3% cashback</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('expedia')"><span class="cat-sub-item-icon">✈️</span><span class="cat-sub-item-label">Expedia</span><span class="cat-sub-item-count">4.5% cashback</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('currys')"><span class="cat-sub-item-icon">📺</span><span class="cat-sub-item-label">Currys</span><span class="cat-sub-item-count">2.5% cashback</span></div>
+    <div class="cat-sub-item" onclick="location.href='stores.html';closeCats()"><span class="cat-sub-item-icon">→</span><span class="cat-sub-item-label" style="color:var(--brand);font-weight:700">View All Stores</span></div>
+  </div>
+
+  <!-- Sub-panel: By Category -->
+  <div class="cat-sub" id="sub-category">
+    <div class="cat-sub-head" onclick="closeSub('sub-category')">
+      <span style="color:var(--muted);font-size:1rem">‹</span>
+      <span>Retailers by Category</span>
+    </div>
+    <div class="cat-sub-item" onclick="filterAndGo('fashion')"><span class="cat-sub-item-icon">👗</span><span class="cat-sub-item-label">Fashion</span></div>
+    <div class="cat-sub-item" onclick="filterAndGo('electronics')"><span class="cat-sub-item-icon">💻</span><span class="cat-sub-item-label">Electronics</span></div>
+    <div class="cat-sub-item" onclick="filterAndGo('travel')"><span class="cat-sub-item-icon">✈️</span><span class="cat-sub-item-label">Travel</span></div>
+    <div class="cat-sub-item" onclick="filterAndGo('beauty')"><span class="cat-sub-item-icon">💄</span><span class="cat-sub-item-label">Beauty</span></div>
+    <div class="cat-sub-item" onclick="filterAndGo('home')"><span class="cat-sub-item-icon">🏡</span><span class="cat-sub-item-label">Home & Garden</span></div>
+    <div class="cat-sub-item" onclick="filterAndGo('sports')"><span class="cat-sub-item-icon">⚽</span><span class="cat-sub-item-label">Sports</span></div>
+    <div class="cat-sub-item" onclick="filterAndGo('grocery')"><span class="cat-sub-item-icon">🛒</span><span class="cat-sub-item-label">Grocery</span></div>
+    <div class="cat-sub-item" onclick="filterAndGo('health')"><span class="cat-sub-item-icon">💊</span><span class="cat-sub-item-label">Health & Pharmacy</span></div>
+  </div>
+
+  <!-- Sub-panel: Top Deals -->
+  <div class="cat-sub" id="sub-deals">
+    <div class="cat-sub-head" onclick="closeSub('sub-deals')">
+      <span style="color:var(--muted);font-size:1rem">‹</span>
+      <span>Top Product Deals</span>
+    </div>
+    <div class="cat-sub-item" onclick="trackAndClose('amazon')"><span class="cat-sub-item-icon">🎧</span><span class="cat-sub-item-label">Headphones & Earbuds</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('currys')"><span class="cat-sub-item-icon">💻</span><span class="cat-sub-item-label">Laptops</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('amazon')"><span class="cat-sub-item-icon">📱</span><span class="cat-sub-item-label">Smartphones</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('asos')"><span class="cat-sub-item-icon">👠</span><span class="cat-sub-item-label">Women's Shoes</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('nike')"><span class="cat-sub-item-icon">👟</span><span class="cat-sub-item-label">Men's Trainers</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('boots')"><span class="cat-sub-item-icon">🧴</span><span class="cat-sub-item-label">Skincare</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('booking')"><span class="cat-sub-item-icon">🏖️</span><span class="cat-sub-item-label">Summer Holidays</span></div>
+    <div class="cat-sub-item" onclick="trackAndClose('johnlewis')"><span class="cat-sub-item-icon">🛋️</span><span class="cat-sub-item-label">Home Furniture</span></div>
+  </div>
+</div>
+
 <!-- HEADER -->
 <header class="hdr">
   <nav class="nav">
-    <span class="logo" onclick="location.href='app.html'">Smart<span class="g">Cash</span></span>
-
+    <div style="display:flex;align-items:center;gap:.75rem">
+      <button onclick="openCats()" style="background:none;border:none;cursor:pointer;padding:.3rem;display:flex;flex-direction:column;gap:4px;flex-shrink:0" aria-label="Categories">
+        <span style="display:block;width:20px;height:2px;background:var(--text);border-radius:2px"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);border-radius:2px"></span>
+        <span style="display:block;width:20px;height:2px;background:var(--text);border-radius:2px"></span>
+      </button>
+      <a href="app.html" class="logo">Smart<span class="g">Cash</span></a>
+    </div>
     <div class="nav-search">
       <span class="nav-search-icon">🔍</span>
-      <input type="text" placeholder="Search for any store or brand…"
-        onfocus="this.placeholder=''" onblur="this.placeholder='Search for any store or brand…'"
-        oninput="handleSearch(this.value)">
+      <input type="text" placeholder="Search for any store or brand…" oninput="handleSearch(this.value)">
     </div>
-
     <div class="nav-links">
       <a href="app.html" class="active">Home</a>
       <a href="stores.html">Stores</a>
@@ -493,7 +432,6 @@
       <a href="virtual-assistant.html">Try-On</a>
       <a href="dashboard.html">Dashboard</a>
     </div>
-
     <div class="nav-r" id="nav-r">
       <button class="btn-g" onclick="openModal('login')">Login</button>
       <button class="btn-p" onclick="openModal('signup')">Join Free →</button>
@@ -501,219 +439,90 @@
   </nav>
 </header>
 
-<!-- ANNOUNCEMENT BAR -->
+<!-- ANNOUNCEMENT BAR — no fake promises -->
 <div class="announce-bar">
-  🎉 New members earn a <strong>£5 welcome bonus</strong> on their first cashback!
-  <a href="#" onclick="openModal('signup');return false">Sign up free →</a>
+  <strong>SmartCash</strong> — Earn real cashback every time you shop. No minimum spend. Withdraw from £10. Free to join.
 </div>
 
-<!-- HERO CAROUSEL -->
-<div class="hero-carousel">
-  <div class="carousel-track" id="carouselTrack">
-
-    <!-- Slide 1: Amazon -->
-    <div class="carousel-slide slide-amazon" onclick="trackClick('amazon')">
-      <div class="slide-content">
-        <div class="slide-text">
-          <div class="slide-cb-pill"><span class="dot"></span> Live Cashback Active</div>
-          <div class="slide-title">Shop Amazon UK<br>Earn Real Money Back</div>
-          <div class="slide-sub">Millions of products · 90-day cookie · Orders sync to dashboard</div>
-          <button class="slide-btn orange">Shop Amazon & Earn →</button>
-        </div>
-        <div class="slide-rate-block">
-          <div class="slide-rate-num">4.5<span class="slide-rate-pct">%</span></div>
-          <div class="slide-rate-lbl">cashback rate</div>
-        </div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow"><span class="hero-dot"></span> UK's AI-Powered Cashback Platform</div>
+      <h1>Shop & Earn<br><span class="r">Real Money</span> Back<br>on <span class="g">Everything.</span></h1>
+      <p class="hero-sub">Click through SmartCash to any of our partner stores, shop as normal, and earn a percentage back as real cashback — paid to your bank, PayPal or gift card.</p>
+      <div class="hero-btns">
+        <button class="btn-hero-p" onclick="openModal('signup')">Start Earning Free →</button>
+        <button class="btn-hero-s" onclick="document.getElementById('stores').scrollIntoView({behavior:'smooth'})">Browse Stores</button>
+      </div>
+      <div class="hero-note">
+        <span class="dot"></span> Free to join &nbsp;·&nbsp;
+        <span class="dot"></span> No minimum spend &nbsp;·&nbsp;
+        <span class="dot"></span> Withdraw from £10
       </div>
     </div>
-
-    <!-- Slide 2: ASOS -->
-    <div class="carousel-slide slide-asos" onclick="trackClick('asos')">
-      <div class="slide-content">
-        <div class="slide-text">
-          <div class="slide-cb-pill"><span class="dot"></span> Highest Fashion Rate</div>
-          <div class="slide-title">ASOS — UK's #1<br>Fashion Cashback</div>
-          <div class="slide-sub">Free delivery & returns · Thousands of brands · AI Try-On included</div>
-          <button class="slide-btn white">Shop ASOS & Earn →</button>
-        </div>
-        <div class="slide-rate-block">
-          <div class="slide-rate-num">6<span class="slide-rate-pct">%</span></div>
-          <div class="slide-rate-lbl">cashback — our best fashion rate</div>
-        </div>
+    <!-- Mockup — clearly labelled as an example -->
+    <div class="app-preview">
+      <div class="ap-bar">
+        <div class="ap-dot" style="background:#ff5f57"></div>
+        <div class="ap-dot" style="background:#ffbd2e"></div>
+        <div class="ap-dot" style="background:#28c840"></div>
+        <span class="ap-url">smartcash.co.uk — example dashboard</span>
       </div>
-    </div>
-
-    <!-- Slide 3: Boots -->
-    <div class="carousel-slide slide-boots" onclick="trackClick('boots')">
-      <div class="slide-content">
-        <div class="slide-text">
-          <div class="slide-cb-pill"><span class="dot"></span> Beauty & Pharmacy</div>
-          <div class="slide-title">Boots — Earn Cashback<br>Plus Advantage Points</div>
-          <div class="slide-sub">Stack your Boots Advantage Card with SmartCash. Double rewards.</div>
-          <button class="slide-btn white">Shop Boots & Earn →</button>
+      <div class="ap-body">
+        <div class="ap-bal">
+          <div class="ap-bal-lbl">Cashback example (your balance may vary)</div>
+          <div class="ap-bal-amt">£24.56</div>
+          <div class="ap-bal-sub">Withdraw from just £10 · bank, PayPal or gift card</div>
         </div>
-        <div class="slide-rate-block">
-          <div class="slide-rate-num">4<span class="slide-rate-pct">%</span></div>
-          <div class="slide-rate-lbl">cashback on Boots</div>
+        <div class="ap-rows">
+          <div class="ap-row">
+            <div class="ap-icon">📦</div>
+            <div><div class="ap-store">Amazon UK</div><div class="ap-detail">Example purchase</div></div>
+            <div class="ap-cb">+£8.50</div><span class="ap-tag ap-conf">Confirmed</span>
+          </div>
+          <div class="ap-row">
+            <div class="ap-icon">👗</div>
+            <div><div class="ap-store">ASOS</div><div class="ap-detail">Fashion order</div></div>
+            <div class="ap-cb">+£5.40</div><span class="ap-tag ap-pend">Pending</span>
+          </div>
+          <div class="ap-row">
+            <div class="ap-icon">🏨</div>
+            <div><div class="ap-store">Booking.com</div><div class="ap-detail">Hotel booking</div></div>
+            <div class="ap-cb">+£10.66</div><span class="ap-tag ap-conf">Confirmed</span>
+          </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Slide 4: Travel -->
-    <div class="carousel-slide slide-travel" onclick="trackClick('booking')">
-      <div class="slide-content">
-        <div class="slide-text">
-          <div class="slide-cb-pill"><span class="dot"></span> Summer Travel</div>
-          <div class="slide-title">Book Holidays &<br>Earn While You Travel</div>
-          <div class="slide-sub">Booking.com, Expedia & more. Up to 5% back on hotels & packages.</div>
-          <button class="slide-btn teal">Shop Travel Deals →</button>
-        </div>
-        <div class="slide-rate-block">
-          <div class="slide-rate-num">5<span class="slide-rate-pct">%</span></div>
-          <div class="slide-rate-lbl">cashback on Booking.com</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <button class="carousel-prev" id="cPrev" onclick="carouselMove(-1)">‹</button>
-  <button class="carousel-next" id="cNext" onclick="carouselMove(1)">›</button>
-
-  <div class="carousel-dots" id="carouselDots">
-    <div class="cdot active" onclick="carouselGoTo(0)"></div>
-    <div class="cdot" onclick="carouselGoTo(1)"></div>
-    <div class="cdot" onclick="carouselGoTo(2)"></div>
-    <div class="cdot" onclick="carouselGoTo(3)"></div>
-  </div>
-</div>
-
-<!-- STATS BAR -->
-<div class="stats-bar">
-  <div class="stats-bar-inner">
-    <div class="stat-item">
-      <span class="stat-icon">👥</span>
-      <span class="stat-val"><span>50K</span>+</span>
-      <span class="stat-lbl">Members</span>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat-item">
-      <span class="stat-icon">💷</span>
-      <span class="stat-val"><span>£2.4M</span></span>
-      <span class="stat-lbl">Paid Out</span>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat-item">
-      <span class="stat-icon">🏪</span>
-      <span class="stat-val"><span>500</span>+</span>
-      <span class="stat-lbl">Partner Stores</span>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat-item">
-      <span class="stat-icon">⚡</span>
-      <span class="stat-val"><span>24h</span></span>
-      <span class="stat-lbl">Payout Speed</span>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat-item">
-      <span class="stat-icon">💰</span>
-      <span class="stat-val"><span>£10</span></span>
-      <span class="stat-lbl">Min Withdrawal</span>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat-item">
-      <span class="stat-icon">⭐</span>
-      <span class="stat-val"><span>4.8</span>/5</span>
-      <span class="stat-lbl">Trustpilot Rating</span>
-    </div>
-  </div>
-</div>
-
-<!-- TOP CATEGORIES -->
-<div class="cat-sec">
-  <div class="cat-sec-inner">
-    <h2>Top Categories</h2>
-    <div class="cat-scroll">
-      <div class="cat-item" onclick="goFilter('all')">
-        <div class="cat-circle" style="background:linear-gradient(135deg,#FF5C00,#ff7c30)">
-          <span style="font-size:2rem">🏪</span>
-        </div>
-        <div class="cat-lbl">Most Popular</div>
-      </div>
-      <div class="cat-item" onclick="goFilter('fashion')">
-        <div class="cat-circle" style="background:#fef0ff">
-          <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=140&h=140&fit=crop&q=80" alt="Fashion" onerror="this.parentElement.innerHTML='👗'">
-        </div>
-        <div class="cat-lbl">Fashion</div>
-      </div>
-      <div class="cat-item" onclick="goFilter('electronics')">
-        <div class="cat-circle" style="background:#eff6ff">
-          <img src="https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=140&h=140&fit=crop&q=80" alt="Electronics" onerror="this.parentElement.innerHTML='💻'">
-        </div>
-        <div class="cat-lbl">Electronics</div>
-      </div>
-      <div class="cat-item" onclick="goFilter('beauty')">
-        <div class="cat-circle" style="background:#fff0f6">
-          <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=140&h=140&fit=crop&q=80" alt="Beauty" onerror="this.parentElement.innerHTML='💄'">
-        </div>
-        <div class="cat-lbl">Beauty</div>
-      </div>
-      <div class="cat-item" onclick="goFilter('travel')">
-        <div class="cat-circle" style="background:#f0fdf4">
-          <img src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=140&h=140&fit=crop&q=80" alt="Travel" onerror="this.parentElement.innerHTML='✈️'">
-        </div>
-        <div class="cat-lbl">Travel</div>
-      </div>
-      <div class="cat-item" onclick="goFilter('home')">
-        <div class="cat-circle" style="background:#fefce8">
-          <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=140&h=140&fit=crop&q=80" alt="Home" onerror="this.parentElement.innerHTML='🏡'">
-        </div>
-        <div class="cat-lbl">Home & Garden</div>
-      </div>
-      <div class="cat-item" onclick="goFilter('sports')">
-        <div class="cat-circle" style="background:#f0fdf4">
-          <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=140&h=140&fit=crop&q=80" alt="Sports" onerror="this.parentElement.innerHTML='⚽'">
-        </div>
-        <div class="cat-lbl">Sports</div>
-      </div>
-      <div class="cat-item" onclick="goFilter('grocery')">
-        <div class="cat-circle" style="background:#f0fdf4">
-          <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=140&h=140&fit=crop&q=80" alt="Grocery" onerror="this.parentElement.innerHTML='🛒'">
-        </div>
-        <div class="cat-lbl">Grocery</div>
-      </div>
-      <div class="cat-item" onclick="goFilter('health')">
-        <div class="cat-circle" style="background:#eff6ff">
-          <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=140&h=140&fit=crop&q=80" alt="Health" onerror="this.parentElement.innerHTML='💊'">
-        </div>
-        <div class="cat-lbl">Health</div>
       </div>
     </div>
   </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<div class="how-strip">
+  <div class="how-inner">
+    <div class="how-step"><div class="how-num">1</div><h3>Join Free</h3><p>Sign up in 30 seconds. No credit card required.</p></div>
+    <div class="how-step"><div class="how-num">2</div><h3>Click to a Store</h3><p>Choose from our partner retailers. One click activates tracking.</p></div>
+    <div class="how-step"><div class="how-num">3</div><h3>Shop Normally</h3><p>Buy anything. Cashback is tracked automatically.</p></div>
+    <div class="how-step"><div class="how-num">4</div><h3>Get Paid</h3><p>Bank, PayPal or gift card. From just £10 minimum.</p></div>
+  </div>
 </div>
 
-<!-- STORES SECTION -->
-<div id="stores">
+<!-- STORES -->
+<div id="stores" style="background:#f5f6f8">
   <div class="sec-wrap">
-
-    <!-- Amazon banner -->
     <div class="amazon-banner" onclick="trackClick('amazon')">
       <div class="ab-text">
-        <h3>📦 Amazon UK — Orders Sync to Your Dashboard</h3>
-        <p>Link your Amazon account once. Every purchase through SmartCash appears in both your Amazon account and SmartCash dashboard with live cashback status.</p>
+        <h3>📦 Amazon UK — Earn While You Shop</h3>
+        <p>Click through SmartCash before any Amazon purchase to earn cashback. Orders appear in your SmartCash dashboard automatically.</p>
       </div>
-      <div class="ab-rate">
-        <div class="ab-rate-num">4.5%</div>
-        <div class="ab-rate-lbl">cashback rate</div>
-      </div>
+      <div class="ab-rate"><div class="ab-rate-num">4.5%</div><div class="ab-rate-lbl">cashback</div></div>
       <button class="ab-btn" onclick="event.stopPropagation();trackClick('amazon')">Shop & Earn →</button>
     </div>
 
     <div class="sec-hd">
-      <h2 id="stores-heading">Most Popular Stores</h2>
-      <a href="stores.html">View all 500+ →</a>
+      <h2 id="stores-heading">Partner Stores</h2>
+      <a href="stores.html">View all stores →</a>
     </div>
-
     <div class="filter-tabs">
       <button class="ftab active" onclick="filterStores('all',this)">🏪 All</button>
       <button class="ftab" onclick="filterStores('electronics',this)">💻 Electronics</button>
@@ -723,7 +532,6 @@
       <button class="ftab" onclick="filterStores('beauty',this)">💄 Beauty</button>
       <button class="ftab" onclick="filterStores('sports',this)">⚽ Sports</button>
     </div>
-
     <div class="stores-grid" id="stores-grid"></div>
   </div>
 </div>
@@ -731,79 +539,82 @@
 <!-- WHY SMARTCASH -->
 <div style="background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
   <div class="sec-wrap">
-    <div style="margin-bottom:1.5rem">
-      <div class="sec-tag">Why SmartCash</div>
-      <h2 class="sec-title">Features No Other UK Cashback Site Offers</h2>
-    </div>
+    <div style="margin-bottom:1.4rem"><div class="sec-tag">Why SmartCash</div><h2 class="sec-title">Features You Won't Find Elsewhere</h2></div>
     <div class="why-grid">
-      <div class="why-card"><span class="why-icon">🔗</span><h3>Amazon Order Auto-Sync</h3><p>Connect once. Purchases through SmartCash appear in both your Amazon account and dashboard with live cashback status.</p><span class="why-excl">✦ Exclusive</span></div>
-      <div class="why-card"><span class="why-icon">🤖</span><h3>Personal AI Advisor</h3><p>Ask anything in plain English — powered by Claude AI. Not keyword search. Real conversational answers about products and deals.</p><span class="why-excl">✦ Exclusive</span></div>
-      <div class="why-card"><span class="why-icon">📊</span><h3>AI Price Predictions</h3><p>Full 18-month price charts plus Buy Now vs Wait AI predictions with confidence scores on any product.</p><span class="why-excl">✦ Exclusive</span></div>
-      <div class="why-card"><span class="why-icon">👥</span><h3>Squad Shopping Mode</h3><p>Shop in real-time with partner, friends or family. Vote on items, coordinate outfits, share wishlists together.</p><span class="why-excl">✦ Exclusive</span></div>
-      <div class="why-card"><span class="why-icon">🏆</span><h3>Loyalty Tiers & XP</h3><p>Earn XP on every purchase. Level from Bronze to Diamond for up to +2% bonus cashback and exclusive deals.</p><span class="why-excl">✦ Exclusive</span></div>
-      <div class="why-card"><span class="why-icon">⚡</span><h3>£10 Minimum, 24h Payout</h3><p>UK's lowest minimum withdrawal and fastest payout. £10 min vs £25 elsewhere. Bank, PayPal or gift card.</p><span class="why-excl">✦ Exclusive</span></div>
+      <div class="why-card"><span class="why-icon">🔗</span><h3>Amazon Order Sync</h3><p>Connect once. Purchases through SmartCash appear in both your Amazon account and SmartCash dashboard with live cashback status.</p><span class="why-excl">✦ Exclusive</span></div>
+      <div class="why-card"><span class="why-icon">🤖</span><h3>Personal AI Advisor</h3><p>Ask anything in plain English — powered by Claude AI. Get real answers about products, prices and the best cashback rates.</p><span class="why-excl">✦ Exclusive</span></div>
+      <div class="why-card"><span class="why-icon">📊</span><h3>AI Price Predictions</h3><p>Full price history charts and AI-powered Buy Now vs Wait predictions on any product.</p><span class="why-excl">✦ Exclusive</span></div>
+      <div class="why-card"><span class="why-icon">👗</span><h3>AI Virtual Try-On</h3><p>Upload your photo and see how garments fit before you buy. Powered by Claude Vision — reduces costly returns.</p><span class="why-excl">✦ Exclusive</span></div>
+      <div class="why-card"><span class="why-icon">🏆</span><h3>Loyalty Tiers</h3><p>Earn XP on every purchase and level up from Bronze to Diamond for increasing bonus cashback rates.</p></div>
+      <div class="why-card"><span class="why-icon">⚡</span><h3>£10 Minimum Withdrawal</h3><p>Withdraw from just £10 — lower than most UK cashback platforms. Paid to your bank, PayPal or Amazon gift card.</p></div>
     </div>
   </div>
 </div>
 
 <!-- AI SECTION -->
-<div class="sec-wrap" style="padding-top:2.25rem">
-  <div class="ai-section">
-    <div>
-      <div class="sec-tag">AI Shopping Advisor</div>
-      <h2 class="sec-title">Ask Anything.<br>Get Real Answers.</h2>
-      <p class="sec-sub">Your personal AI is one click away on every page — real conversational intelligence powered by Claude, not keyword search.</p>
-      <ul style="margin-top:1rem;display:flex;flex-direction:column;gap:.5rem;list-style:none">
-        <li style="display:flex;gap:.6rem;font-size:.87rem;color:var(--muted)"><span style="color:var(--green)">✓</span>"Find men's trainers under £80 with cashback"</li>
-        <li style="display:flex;gap:.6rem;font-size:.87rem;color:var(--muted)"><span style="color:var(--green)">✓</span>"Is now a good time to buy a MacBook Pro?"</li>
-        <li style="display:flex;gap:.6rem;font-size:.87rem;color:var(--muted)"><span style="color:var(--green)">✓</span>"Where's the best cashback for a Barcelona hotel?"</li>
-        <li style="display:flex;gap:.6rem;font-size:.87rem;color:var(--muted)"><span style="color:var(--green)">✓</span>"Compare ASOS vs Next for this jacket"</li>
-      </ul>
-      <button class="btn-p" style="margin-top:1.25rem;padding:.75rem 1.5rem;border-radius:50px;font-size:.9rem" onclick="typeof SCAI!=='undefined'&&SCAI.open_()">Chat with AI →</button>
-    </div>
-    <div class="ai-chat-demo">
-      <div class="ai-chat-hd">
-        <div class="ai-ava">🤖</div>
-        <div><h4>SmartCash AI</h4><p>Powered by Claude · Always available</p></div>
-        <div style="margin-left:auto;width:8px;height:8px;background:#4ade80;border-radius:50%"></div>
+<div style="background:#f5f6f8">
+  <div class="sec-wrap">
+    <div class="ai-section">
+      <div>
+        <div class="sec-tag">AI Shopping Advisor</div>
+        <h2 class="sec-title">Ask Anything.<br>Get Real Answers.</h2>
+        <p class="sec-sub">Your personal AI is available on every page. Powered by Claude — real conversational intelligence, not keyword search.</p>
+        <ul style="margin-top:1rem;display:flex;flex-direction:column;gap:.5rem;list-style:none">
+          <li style="display:flex;gap:.55rem;font-size:.86rem;color:var(--muted)"><span style="color:var(--green)">✓</span>"Find me men's trainers under £80"</li>
+          <li style="display:flex;gap:.55rem;font-size:.86rem;color:var(--muted)"><span style="color:var(--green)">✓</span>"Is now a good time to buy a MacBook Pro?"</li>
+          <li style="display:flex;gap:.55rem;font-size:.86rem;color:var(--muted)"><span style="color:var(--green)">✓</span>"Which store gives the best cashback for hotels?"</li>
+          <li style="display:flex;gap:.55rem;font-size:.86rem;color:var(--muted)"><span style="color:var(--green)">✓</span>"Compare ASOS vs Next for this order"</li>
+        </ul>
+        <button class="btn-p" style="margin-top:1.2rem;padding:.72rem 1.5rem;border-radius:50px;font-size:.88rem" onclick="typeof SCAI!=='undefined'&&SCAI.open_()">Chat with AI →</button>
       </div>
-      <div class="ai-msgs">
-        <div class="ai-msg"><div class="ai-bubble">Hi! 👋 I'm your SmartCash AI. What are you shopping for today?</div></div>
-        <div class="ai-msg user"><div class="ai-bubble">Is now a good time to buy Sony XM5?</div></div>
-        <div class="ai-msg"><div class="ai-bubble">📊 Yes! Sony XM5 is at £279 — <strong>19% below its 6-month average</strong>. AI confidence: Buy Now 82%. With 4.5% cashback you'd pay an effective <strong>£266.44</strong>.</div></div>
-        <div class="ai-msg user"><div class="ai-bubble">Find me the best fashion cashback today</div></div>
-        <div class="ai-msg"><div class="ai-bubble">👗 Top rates right now: ASOS <strong>6%</strong> · M&S <strong>3.5%</strong> · Next <strong>4%</strong> · Adidas <strong>5%</strong>. ASOS is best value — free returns too!</div></div>
-      </div>
-      <div class="ai-input-row">
-        <input type="text" placeholder="Ask anything about deals…" readonly onclick="typeof SCAI!=='undefined'&&SCAI.open_()">
-        <button onclick="typeof SCAI!=='undefined'&&SCAI.open_()">Ask →</button>
+      <div class="ai-chat-demo">
+        <div class="ai-chat-hd">
+          <div class="ai-ava">🤖</div>
+          <div><h4>SmartCash AI</h4><p>Powered by Claude · Available on every page</p></div>
+          <div style="margin-left:auto;width:7px;height:7px;background:#4ade80;border-radius:50%"></div>
+        </div>
+        <div class="ai-msgs">
+          <div class="ai-msg"><div class="ai-bubble">Hi! 👋 I'm your SmartCash AI. What are you shopping for today?</div></div>
+          <div class="ai-msg user"><div class="ai-bubble">Where can I get the best cashback on headphones?</div></div>
+          <div class="ai-msg"><div class="ai-bubble">📦 For headphones, Amazon UK gives <strong>4.5% cashback</strong> and Currys gives <strong>2.5%</strong>. Amazon is your best bet — plus you get free delivery on most orders.</div></div>
+          <div class="ai-msg user"><div class="ai-bubble">Is it a good time to buy Sony XM5?</div></div>
+          <div class="ai-msg"><div class="ai-bubble">📊 Based on the price tracker, Sony XM5 has been fluctuating. Check the Price Tracker page for the full 6-month chart and set an alert for your target price.</div></div>
+        </div>
+        <div class="ai-input-row">
+          <input type="text" placeholder="Ask about any deal or store…" readonly onclick="typeof SCAI!=='undefined'&&SCAI.open_()">
+          <button onclick="typeof SCAI!=='undefined'&&SCAI.open_()">Ask →</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <!-- LOYALTY -->
-<div class="sec-wrap" style="padding-top:1.75rem">
-  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1.1rem;flex-wrap:wrap;gap:.75rem">
-    <div><div class="sec-tag">Loyalty System</div><h2 class="sec-title" style="margin:0">Level Up. Earn More.</h2></div>
-  </div>
-  <div class="levels-row">
-    <div class="level-card"><div class="lv-icon">🥉</div><div class="lv-name">Bronze</div><div class="lv-xp">0–500 XP</div><div class="lv-bonus" style="color:var(--muted-light)">Base</div><div class="lv-bonus-lbl">rates apply</div></div>
-    <div class="level-card" style="border-color:#d1d5db"><div class="lv-icon">🥈</div><div class="lv-name">Silver</div><div class="lv-xp">500–2,000 XP</div><div class="lv-bonus">+0.5%</div><div class="lv-bonus-lbl">bonus cashback</div></div>
-    <div class="level-card" style="border-color:rgba(245,158,11,.4);background:linear-gradient(135deg,#fffbeb,white)"><div class="lv-icon">🥇</div><div class="lv-name">Gold</div><div class="lv-xp">2,000–5,000 XP</div><div class="lv-bonus">+1%</div><div class="lv-bonus-lbl">bonus cashback</div></div>
-    <div class="level-card" style="border-color:rgba(108,99,255,.35);background:linear-gradient(135deg,#f5f3ff,white)"><div class="lv-icon">💎</div><div class="lv-name">Platinum</div><div class="lv-xp">5,000–10,000 XP</div><div class="lv-bonus">+1.5%</div><div class="lv-bonus-lbl">bonus cashback</div></div>
-    <div class="level-card" style="border-color:rgba(255,92,0,.3);background:linear-gradient(135deg,#fff7f5,white)"><div class="lv-icon">👑</div><div class="lv-name">Diamond</div><div class="lv-xp">10,000+ XP</div><div class="lv-bonus">+2%</div><div class="lv-bonus-lbl">bonus cashback</div></div>
+<div style="background:#fff;border-top:1px solid var(--border)">
+  <div class="sec-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1.1rem;flex-wrap:wrap;gap:.65rem">
+      <div><div class="sec-tag">Loyalty System</div><h2 class="sec-title" style="margin:0">Level Up. Earn More.</h2></div>
+    </div>
+    <div class="levels-row">
+      <div class="level-card"><div class="lv-icon">🥉</div><div class="lv-name">Bronze</div><div class="lv-xp">0–500 XP</div><div class="lv-bonus" style="color:var(--muted)">Base</div><div class="lv-bonus-lbl">rates apply</div></div>
+      <div class="level-card" style="border-color:#d1d5db"><div class="lv-icon">🥈</div><div class="lv-name">Silver</div><div class="lv-xp">500–2,000 XP</div><div class="lv-bonus">+0.5%</div><div class="lv-bonus-lbl">bonus cashback</div></div>
+      <div class="level-card" style="border-color:rgba(245,158,11,.4);background:linear-gradient(135deg,#fffbeb,white)"><div class="lv-icon">🥇</div><div class="lv-name">Gold</div><div class="lv-xp">2,000–5,000 XP</div><div class="lv-bonus">+1%</div><div class="lv-bonus-lbl">bonus cashback</div></div>
+      <div class="level-card" style="border-color:rgba(108,99,255,.35);background:linear-gradient(135deg,#f5f3ff,white)"><div class="lv-icon">💎</div><div class="lv-name">Platinum</div><div class="lv-xp">5,000–10,000 XP</div><div class="lv-bonus">+1.5%</div><div class="lv-bonus-lbl">bonus cashback</div></div>
+      <div class="level-card" style="border-color:rgba(255,92,0,.3);background:linear-gradient(135deg,#fff7f5,white)"><div class="lv-icon">👑</div><div class="lv-name">Diamond</div><div class="lv-xp">10,000+ XP</div><div class="lv-bonus">+2%</div><div class="lv-bonus-lbl">bonus cashback</div></div>
+    </div>
   </div>
 </div>
 
 <!-- CTA -->
-<div class="sec-wrap" style="padding-top:1.5rem;padding-bottom:3rem">
-  <div class="cta-banner">
-    <h2>Free to Join. Instant Cashback.</h2>
-    <p>No subscription. No minimum spend. Sign up in 30 seconds and start earning real money back on everything you already buy.</p>
-    <div class="cta-btns">
-      <button class="cta-btn-primary" onclick="openModal('signup')">Create Free Account →</button>
-      <button class="cta-btn-ghost" onclick="location.href='stores.html'">Browse 500+ Stores</button>
+<div style="background:#f5f6f8">
+  <div class="sec-wrap" style="padding-top:1.5rem;padding-bottom:3rem">
+    <div class="cta-banner">
+      <h2>Free to Join. No Catch.</h2>
+      <p>Sign up, click through to any partner store, shop as normal — and earn a percentage back as real cashback. No subscriptions, no minimum spend.</p>
+      <div class="cta-btns">
+        <button class="cta-btn-p" onclick="openModal('signup')">Create Free Account →</button>
+        <button class="cta-btn-g" onclick="location.href='stores.html'">Browse Partner Stores</button>
+      </div>
     </div>
   </div>
 </div>
@@ -811,53 +622,26 @@
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
-    <div class="footer-brand">
-      <span class="logo" style="color:#fff">Smart<span class="g">Cash</span></span>
-      <p>UK's smartest cashback platform. Earn real money back on every purchase with AI-powered price tracking and 24-hour payouts.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Platform</h4>
-      <a href="stores.html">All Stores</a>
-      <a href="price-tracker.html">Price Tracker</a>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="virtual-assistant.html">Virtual Try-On</a>
-    </div>
-    <div class="footer-col">
-      <h4>Company</h4>
-      <a href="about.html">About Us</a>
-      <a href="contact.html">Contact Us</a>
-      <a href="how-it-works.html">How It Works</a>
-      <a href="help.html">Help Centre</a>
-    </div>
-    <div class="footer-col">
-      <h4>Legal</h4>
-      <a href="terms.html">Terms & Conditions</a>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="#">Cookie Policy</a>
-      <a href="contact.html">Report a Problem</a>
-    </div>
+    <div class="footer-brand"><span class="logo" style="color:#fff">Smart<span class="g">Cash</span></span><p>UK cashback platform. Earn real money back on everyday purchases through our partner stores.</p></div>
+    <div class="footer-col"><h4>Platform</h4><a href="stores.html">All Stores</a><a href="price-tracker.html">Price Tracker</a><a href="dashboard.html">Dashboard</a><a href="virtual-assistant.html">Virtual Try-On</a></div>
+    <div class="footer-col"><h4>Company</h4><a href="about.html">About Us</a><a href="contact.html">Contact</a><a href="how-it-works.html">How It Works</a><a href="help.html">Help Centre</a></div>
+    <div class="footer-col"><h4>Legal</h4><a href="terms.html">Terms & Conditions</a><a href="privacy.html">Privacy Policy</a><a href="#">Cookie Policy</a></div>
   </div>
-  <div class="footer-bottom">
-    <span>© 2026 SmartCash. All rights reserved. Registered in England.</span>
-    <span>Made with ♥ in the UK</span>
-  </div>
+  <div class="footer-bottom"><span>© 2026 SmartCash. All rights reserved. Registered in England.</span><span>Made with ♥ in the UK</span></div>
 </footer>
 
 <!-- AUTH MODAL -->
 <div class="modal-ov" id="authModal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
-    <div class="modal-head">
-      <h3 id="modalTitle">Create Free Account</h3>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
+    <div class="modal-head"><h3 id="modalTitle">Create Free Account</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
     <div class="modal-body">
-      <div id="modalError" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:.75rem 1rem;font-size:.85rem;color:#b91c1c;margin-bottom:1rem"></div>
-      <div id="modalSuccess" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:.75rem 1rem;font-size:.85rem;color:#15803d;margin-bottom:1rem"></div>
+      <div id="modalError" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:.75rem 1rem;font-size:.84rem;color:#b91c1c;margin-bottom:1rem"></div>
+      <div id="modalSuccess" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:.75rem 1rem;font-size:.84rem;color:#15803d;margin-bottom:1rem"></div>
       <div class="auth-form">
         <div id="nameField"><label class="form-label">Full Name</label><input class="form-input" type="text" id="authName" placeholder="Your full name"></div>
         <div><label class="form-label">Email Address</label><input class="form-input" type="email" id="authEmail" placeholder="you@example.com"></div>
         <div><label class="form-label">Password</label><input class="form-input" type="password" id="authPassword" placeholder="Min. 6 characters"></div>
-        <button class="btn-p" id="authSubmit" onclick="submitAuth()" style="padding:.8rem;font-size:.95rem;border-radius:10px;width:100%">Create Account</button>
+        <button class="btn-p" id="authSubmit" onclick="submitAuth()" style="padding:.78rem;font-size:.93rem;border-radius:10px;width:100%">Create Account</button>
       </div>
       <div class="auth-switch" id="authSwitch">Already have an account? <a onclick="toggleAuthMode()">Login</a></div>
     </div>
@@ -865,190 +649,132 @@
 </div>
 
 <script>
-/* ═══ STORE DATA ═════════════════════════════════════════════════════════════
-   Replace YOUR_AWIN_ID and YOUR_AMAZON_ASSOCIATE_TAG after affiliate signup   */
+/* ── STORE DATA ───────────────────────────────────────────────
+   Replace YOUR_AWIN_ID after registering at awin.com
+   Replace veeraseo-21 with your actual Amazon Associates tag  */
+const AMAZON_TAG = (typeof AMAZON_CONFIG!=='undefined'&&AMAZON_CONFIG.associateId) ? AMAZON_CONFIG.associateId : 'veeraseo-21';
+
 const STORES = [
-  { id:'amazon',    name:'Amazon UK',     sub:'Millions of products · Prime eligible',        offer:'Upto 80% Off',
-    cashback:4.5, cat:'electronics', emoji:'📦', logo:'https://logo.clearbit.com/amazon.co.uk',       hot:true,
-    url:'https://www.amazon.co.uk/?tag=YOUR_AMAZON_ASSOCIATE_TAG' },
-  { id:'asos',      name:'ASOS',          sub:'Free delivery & returns',                       offer:'Sale On Now',
-    cashback:6.0, cat:'fashion',     emoji:'👗', logo:'https://logo.clearbit.com/asos.com',            hot:true,
-    url:'https://www.awin1.com/cread.php?awinmid=4081&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.asos.com%2F' },
-  { id:'boots',     name:'Boots',         sub:'Beauty, pharmacy & wellness',                   offer:'Boots No7 Offers',
-    cashback:4.0, cat:'beauty',      emoji:'💄', logo:'https://logo.clearbit.com/boots.com',           hot:true,
-    url:'https://www.awin1.com/cread.php?awinmid=3602&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.boots.com%2F' },
-  { id:'booking',   name:'Booking.com',   sub:'Hotels worldwide · Best price guarantee',       offer:'Summer Deals',
-    cashback:5.0, cat:'travel',      emoji:'🏨', logo:'https://logo.clearbit.com/booking.com',
-    url:'https://www.awin1.com/cread.php?awinmid=6776&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.booking.com%2F' },
-  { id:'nike',      name:'Nike',          sub:'Official Nike UK · Free delivery £50+',         offer:'New Arrivals',
-    cashback:3.5, cat:'sports',      emoji:'👟', logo:'https://logo.clearbit.com/nike.com',           isNew:true,
-    url:'https://www.awin1.com/cread.php?awinmid=2080&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.nike.com%2Fgb%2F' },
-  { id:'currys',    name:'Currys',        sub:'UK\'s largest electronics retailer',             offer:'Price Match',
-    cashback:2.5, cat:'electronics', emoji:'📺', logo:'https://logo.clearbit.com/currys.co.uk',
-    url:'https://www.awin1.com/cread.php?awinmid=1599&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.currys.co.uk%2F' },
-  { id:'johnlewis', name:'John Lewis',    sub:'Premium department store',                       offer:'Never Undersold',
-    cashback:3.0, cat:'home',        emoji:'🏡', logo:'https://logo.clearbit.com/johnlewis.com',
-    url:'https://www.awin1.com/cread.php?awinmid=1203&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.johnlewis.com%2F' },
-  { id:'expedia',   name:'Expedia',       sub:'Flights, hotels & package holidays',             offer:'Bundle & Save',
-    cashback:4.5, cat:'travel',      emoji:'✈️', logo:'https://logo.clearbit.com/expedia.co.uk',
-    url:'https://www.awin1.com/cread.php?awinmid=2114&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.expedia.co.uk%2F' },
-  { id:'next',      name:'NEXT',          sub:'Fast delivery & easy returns',                   offer:'New Season',
-    cashback:4.0, cat:'fashion',     emoji:'👔', logo:'https://logo.clearbit.com/next.co.uk',
-    url:'https://www.awin1.com/cread.php?awinmid=3441&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.next.co.uk%2F' },
-  { id:'argos',     name:'Argos',         sub:'Same-day delivery & Fast Track',                 offer:'Clearance On',
-    cashback:2.0, cat:'home',        emoji:'🛒', logo:'https://logo.clearbit.com/argos.co.uk',
-    url:'https://www.awin1.com/cread.php?awinmid=1623&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.argos.co.uk%2F' },
-  { id:'ms',        name:'M&S',           sub:'Quality clothing, food & home',                  offer:'Summer Edit',
-    cashback:3.5, cat:'fashion',     emoji:'🛍️', logo:'https://logo.clearbit.com/marksandspencer.com',
-    url:'https://www.awin1.com/cread.php?awinmid=4931&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.marksandspencer.com%2F' },
-  { id:'adidas',    name:'Adidas',        sub:'Official Adidas UK store',                       offer:'Members Sale',
-    cashback:5.0, cat:'sports',      emoji:'👟', logo:'https://logo.clearbit.com/adidas.co.uk',       hot:true,
-    url:'https://www.awin1.com/cread.php?awinmid=14654&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.adidas.co.uk%2F' },
+  { id:'amazon',    name:'Amazon UK',   sub:'Millions of products', offer:'Free delivery on Prime', cashback:4.5, cat:'electronics', emoji:'📦', logo:'https://logo.clearbit.com/amazon.co.uk', hot:true,   url:`https://www.amazon.co.uk/?tag=${AMAZON_TAG}` },
+  { id:'asos',      name:'ASOS',        sub:'Fashion & accessories', offer:'Free delivery & returns', cashback:6.0, cat:'fashion',     emoji:'👗', logo:'https://logo.clearbit.com/asos.com',       hot:true,   url:'https://www.awin1.com/cread.php?awinmid=4081&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.asos.com%2F' },
+  { id:'boots',     name:'Boots',       sub:'Beauty & pharmacy',     offer:'Advantage Card compatible', cashback:4.0, cat:'beauty',  emoji:'💄', logo:'https://logo.clearbit.com/boots.com',      hot:true,   url:'https://www.awin1.com/cread.php?awinmid=3602&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.boots.com%2F' },
+  { id:'booking',   name:'Booking.com', sub:'Hotels worldwide',      offer:'Best price guarantee',    cashback:5.0, cat:'travel',     emoji:'🏨', logo:'https://logo.clearbit.com/booking.com',             url:'https://www.awin1.com/cread.php?awinmid=6776&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.booking.com%2F' },
+  { id:'nike',      name:'Nike',        sub:'Sportswear & trainers', offer:'Free delivery £50+',      cashback:3.5, cat:'sports',     emoji:'👟', logo:'https://logo.clearbit.com/nike.com',       isNew:true, url:'https://www.awin1.com/cread.php?awinmid=2080&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.nike.com%2Fgb%2F' },
+  { id:'currys',    name:'Currys',      sub:'Electronics & appliances', offer:'Price match guarantee', cashback:2.5, cat:'electronics', emoji:'📺', logo:'https://logo.clearbit.com/currys.co.uk',           url:'https://www.awin1.com/cread.php?awinmid=1599&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.currys.co.uk%2F' },
+  { id:'johnlewis', name:'John Lewis',  sub:'Department store',      offer:'Never knowingly undersold', cashback:3.0, cat:'home',    emoji:'🏡', logo:'https://logo.clearbit.com/johnlewis.com',           url:'https://www.awin1.com/cread.php?awinmid=1203&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.johnlewis.com%2F' },
+  { id:'expedia',   name:'Expedia',     sub:'Flights & holidays',    offer:'Bundle & save',           cashback:4.5, cat:'travel',     emoji:'✈️', logo:'https://logo.clearbit.com/expedia.co.uk',           url:'https://www.awin1.com/cread.php?awinmid=2114&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.expedia.co.uk%2F' },
+  { id:'next',      name:'NEXT',        sub:'Clothing & home',       offer:'Next day delivery',       cashback:4.0, cat:'fashion',    emoji:'👔', logo:'https://logo.clearbit.com/next.co.uk',             url:'https://www.awin1.com/cread.php?awinmid=3441&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.next.co.uk%2F' },
+  { id:'ms',        name:'M&S',         sub:'Clothing, food & home', offer:'Sparks Card compatible',  cashback:3.5, cat:'fashion',    emoji:'🛍️', logo:'https://logo.clearbit.com/marksandspencer.com',     url:'https://www.awin1.com/cread.php?awinmid=4931&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.marksandspencer.com%2F' },
+  { id:'adidas',    name:'Adidas',      sub:'Official Adidas UK',    offer:'Members event on',        cashback:5.0, cat:'sports',     emoji:'👟', logo:'https://logo.clearbit.com/adidas.co.uk',   hot:true,   url:'https://www.awin1.com/cread.php?awinmid=14654&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.adidas.co.uk%2F' },
+  { id:'argos',     name:'Argos',       sub:'Home & garden',         offer:'Same-day delivery',       cashback:2.0, cat:'home',       emoji:'🛒', logo:'https://logo.clearbit.com/argos.co.uk',             url:'https://www.awin1.com/cread.php?awinmid=1623&awinaffid=YOUR_AWIN_ID&clickref=sc&p=https%3A%2F%2Fwww.argos.co.uk%2F' },
 ];
 
-/* ═══ STORES RENDER ═══════════════════════════════════════════════════════== */
 function renderStores(stores) {
   const g = document.getElementById('stores-grid');
-  if (!stores.length) { g.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted)">No stores in this category yet.</div>'; return; }
+  if (!stores.length) { g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted)">No stores in this category yet.</div>'; return; }
   g.innerHTML = stores.map(s => `
     <div class="store-card">
       ${s.hot   ? '<div class="sc-hot">🔥 Hot</div>' : ''}
       ${s.isNew ? '<div class="sc-new">New</div>'    : ''}
       <div class="sc-logo-wrap">
-        <img src="${s.logo}" alt="${s.name}" loading="lazy"
-          onload="this.style.opacity=1"
-          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-          style="opacity:0;transition:opacity .3s">
-        <div style="display:none;width:42px;height:42px;align-items:center;justify-content:center;font-size:1.5rem">${s.emoji}</div>
+        <img src="${s.logo}" alt="${s.name}" loading="lazy" onload="this.style.opacity=1" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="opacity:0;transition:opacity .3s">
+        <div style="display:none;width:40px;height:40px;align-items:center;justify-content:center;font-size:1.4rem">${s.emoji}</div>
       </div>
       <div class="sc-name">${s.name}</div>
       <div class="sc-sub">${s.sub}</div>
-      <div class="sc-cb-row">
-        <div class="sc-cb-num">${s.cashback}%</div>
-        <div class="sc-cb-lbl">cashback</div>
-      </div>
-      <div class="sc-offer">${s.offer || ''}</div>
+      <div class="sc-cb-num">${s.cashback}%</div>
+      <div class="sc-cb-lbl">cashback</div>
+      <div class="sc-offer">${s.offer}</div>
       <button class="btn-shop-now" onclick="trackClick('${s.id}')">Shop & Earn →</button>
     </div>`).join('');
-  g.querySelectorAll('img').forEach(img => { if (img.complete && img.naturalWidth) img.style.opacity = 1; });
+  g.querySelectorAll('img').forEach(img => { if(img.complete && img.naturalWidth) img.style.opacity=1; });
 }
 
 function filterStores(cat, el) {
   document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
   if (el) el.classList.add('active');
-  const f = cat === 'all' ? STORES : STORES.filter(s => s.cat === cat);
-  document.getElementById('stores-heading').textContent =
-    cat === 'all' ? 'Most Popular Stores' : cat.charAt(0).toUpperCase() + cat.slice(1) + ' Stores';
+  const f = cat==='all' ? STORES : STORES.filter(s => s.cat===cat);
+  document.getElementById('stores-heading').textContent = cat==='all' ? 'Partner Stores' : cat.charAt(0).toUpperCase()+cat.slice(1)+' Stores';
   renderStores(f.length ? f : STORES);
 }
 
-function goFilter(cat) {
-  document.getElementById('stores').scrollIntoView({ behavior:'smooth', block:'start' });
-  const tab = [...document.querySelectorAll('.ftab')].find(b =>
-    b.textContent.toLowerCase().includes(cat === 'all' ? 'all' : cat));
-  filterStores(cat, tab);
-}
-
 function handleSearch(q) {
-  if (!q.trim()) { renderStores(STORES); return; }
-  const lq = q.toLowerCase();
-  renderStores(STORES.filter(s =>
-    s.name.toLowerCase().includes(lq) || s.sub.toLowerCase().includes(lq) || s.cat.includes(lq)
-  ));
+  const lq = q.toLowerCase().trim();
+  renderStores(lq ? STORES.filter(s => s.name.toLowerCase().includes(lq)||s.sub.toLowerCase().includes(lq)||s.cat.includes(lq)) : STORES);
 }
 
 function trackClick(id) {
-  const s = STORES.find(x => x.id === id);
-  if (!s) return;
-  showToast('Opening ' + s.name + ' — cashback is being tracked! 💰');
-  setTimeout(() => window.open(s.url, '_blank'), 700);
+  const s = STORES.find(x=>x.id===id); if(!s) return;
+  showToast('Opening '+s.name+' — your cashback will be tracked automatically.');
+  setTimeout(() => window.open(s.url,'_blank'), 700);
 }
 
-/* ═══ CAROUSEL ══════════════════════════════════════════════════════════════ */
-let cIdx = 0;
-const cTotal = 4;
-let cTimer;
+/* ── CATEGORIES SIDEBAR ── */
+function openCats()  { document.getElementById('catSidebar').classList.add('open'); document.getElementById('catOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeCats() { document.getElementById('catSidebar').classList.remove('open'); document.getElementById('catOverlay').classList.remove('open'); document.body.style.overflow=''; document.querySelectorAll('.cat-sub').forEach(s=>s.classList.remove('open')); }
+function openSub(id) { document.getElementById(id).classList.add('open'); }
+function closeSub(id) { document.getElementById(id).classList.remove('open'); }
+function trackAndClose(id) { closeCats(); trackClick(id); }
+function filterAndGo(cat) {
+  closeCats();
+  document.getElementById('stores').scrollIntoView({behavior:'smooth',block:'start'});
+  const tab = [...document.querySelectorAll('.ftab')].find(b => b.textContent.toLowerCase().includes(cat==='all'?'all':cat));
+  filterStores(cat, tab);
+}
 
-function carouselGoTo(i) {
-  cIdx = i;
-  document.getElementById('carouselTrack').style.transform = `translateX(-${i * 100}%)`;
-  document.querySelectorAll('.cdot').forEach((d,j) => d.classList.toggle('active', j === i));
-}
-function carouselMove(dir) {
-  carouselGoTo((cIdx + dir + cTotal) % cTotal);
-  resetTimer();
-}
-function resetTimer() {
-  clearInterval(cTimer);
-  cTimer = setInterval(() => carouselMove(1), 5000);
-}
-resetTimer();
-
-/* ═══ AUTH ══════════════════════════════════════════════════════════════════ */
-let authMode = 'signup';
+/* ── AUTH ── */
+let authMode='signup';
 function openModal(mode) {
-  authMode = mode;
+  authMode=mode;
   document.getElementById('authModal').classList.add('open');
-  document.getElementById('modalTitle').textContent = mode === 'login' ? 'Login to SmartCash' : 'Create Free Account';
-  document.getElementById('authSubmit').textContent = mode === 'login' ? 'Login' : 'Create Account';
-  document.getElementById('nameField').style.display = mode === 'signup' ? 'block' : 'none';
-  document.getElementById('authSwitch').innerHTML = mode === 'login'
-    ? "Don't have an account? <a onclick='toggleAuthMode()'>Sign Up Free</a>"
-    : "Already have an account? <a onclick='toggleAuthMode()'>Login</a>";
-  document.getElementById('modalError').style.display = 'none';
-  document.getElementById('modalSuccess').style.display = 'none';
+  document.getElementById('modalTitle').textContent=mode==='login'?'Login to SmartCash':'Create Free Account';
+  document.getElementById('authSubmit').textContent=mode==='login'?'Login':'Create Account';
+  document.getElementById('nameField').style.display=mode==='signup'?'block':'none';
+  document.getElementById('authSwitch').innerHTML=mode==='login'?"Don't have an account? <a onclick='toggleAuthMode()'>Sign Up Free</a>":"Already have an account? <a onclick='toggleAuthMode()'>Login</a>";
+  document.getElementById('modalError').style.display='none';
+  document.getElementById('modalSuccess').style.display='none';
 }
 function closeModal() { document.getElementById('authModal').classList.remove('open'); }
-function toggleAuthMode() { openModal(authMode === 'login' ? 'signup' : 'login'); }
+function toggleAuthMode() { openModal(authMode==='login'?'signup':'login'); }
 
 async function submitAuth() {
-  const email    = document.getElementById('authEmail').value.trim();
-  const password = document.getElementById('authPassword').value;
-  const name     = document.getElementById('authName').value.trim();
-  const errEl    = document.getElementById('modalError');
-  const sucEl    = document.getElementById('modalSuccess');
-  errEl.style.display = 'none'; sucEl.style.display = 'none';
-  if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.style.display = 'block'; return; }
-
-  document.getElementById('authSubmit').textContent = 'Please wait…';
-  document.getElementById('authSubmit').disabled = true;
-
-  if (typeof SUPABASE_CONFIG !== 'undefined' && SUPABASE_CONFIG.url && !SUPABASE_CONFIG.url.includes('YOUR_')) {
-    const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
-    try {
-      if (authMode === 'signup') {
-        const { error } = await sb.auth.signUp({ email, password, options:{ data:{ full_name:name }, emailRedirectTo: location.origin + '/auth-callback.html' } });
-        if (error) throw error;
-        sucEl.innerHTML = '✅ Account created! <strong>Check your email</strong> to confirm.';
-        sucEl.style.display = 'block';
-      } else {
-        const { error } = await sb.auth.signInWithPassword({ email, password });
-        if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
-        else { sucEl.textContent = 'Logged in! Redirecting…'; sucEl.style.display = 'block'; setTimeout(() => location.href = 'dashboard.html', 900); }
+  const email=document.getElementById('authEmail').value.trim(), password=document.getElementById('authPassword').value, name=document.getElementById('authName').value.trim();
+  const errEl=document.getElementById('modalError'), sucEl=document.getElementById('modalSuccess');
+  errEl.style.display='none'; sucEl.style.display='none';
+  if(!email||!password){errEl.textContent='Please fill in all fields.';errEl.style.display='block';return;}
+  document.getElementById('authSubmit').textContent='Please wait…';
+  document.getElementById('authSubmit').disabled=true;
+  if(typeof SUPABASE_CONFIG!=='undefined'&&SUPABASE_CONFIG.url&&!SUPABASE_CONFIG.url.includes('YOUR_')){
+    const sb=window.supabase.createClient(SUPABASE_CONFIG.url,SUPABASE_CONFIG.anonKey);
+    try{
+      if(authMode==='signup'){
+        const{error}=await sb.auth.signUp({email,password,options:{data:{full_name:name},emailRedirectTo:location.origin+'/auth-callback.html'}});
+        if(error)throw error;
+        sucEl.innerHTML='✅ Account created! <strong>Check your email</strong> to confirm your address.'; sucEl.style.display='block';
+      }else{
+        const{error}=await sb.auth.signInWithPassword({email,password});
+        if(error){errEl.textContent=error.message;errEl.style.display='block';}
+        else{sucEl.textContent='Logged in! Redirecting…';sucEl.style.display='block';setTimeout(()=>location.href='dashboard.html',900);}
       }
-    } catch(e) { errEl.textContent = e.message; errEl.style.display = 'block'; }
-  } else {
-    sucEl.textContent = 'Demo mode — configure Supabase in config.js to enable real auth.';
-    sucEl.style.display = 'block';
-    setTimeout(() => location.href = 'dashboard.html', 1200);
+    }catch(e){errEl.textContent=e.message;errEl.style.display='block';}
+  }else{
+    sucEl.textContent='Configure Supabase in config.js to enable real accounts.'; sucEl.style.display='block';
+    setTimeout(()=>location.href='dashboard.html',1400);
   }
-  document.getElementById('authSubmit').textContent = authMode === 'login' ? 'Login' : 'Create Account';
-  document.getElementById('authSubmit').disabled = false;
+  document.getElementById('authSubmit').textContent=authMode==='login'?'Login':'Create Account';
+  document.getElementById('authSubmit').disabled=false;
 }
 
 function showToast(msg) {
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.innerHTML = '<span class="toast-tick">✓</span><span>' + msg + '</span>';
-  document.body.appendChild(t);
-  requestAnimationFrame(() => t.classList.add('show'));
-  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
+  const t=document.createElement('div');
+  t.className='toast'; t.innerHTML='<span class="toast-tick">✓</span><span>'+msg+'</span>';
+  document.body.appendChild(t); requestAnimationFrame(()=>t.classList.add('show'));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),400);},3500);
 }
 
-document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape'){closeModal();closeCats();} });
 renderStores(STORES);
 </script>
-
 <script src="aria.js"></script>
 </body>
 </html>

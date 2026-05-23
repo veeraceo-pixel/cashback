@@ -173,9 +173,9 @@ tr:hover td{background:var(--surface2);}
   <aside class="sidebar">
     <div class="sb-profile">
       <div class="sb-ava" id="sbAva">J</div>
-      <div><div class="sb-name" id="sbName">Jamie Smith</div><div class="sb-level">🥇 Gold Member · 2,840 XP</div></div>
+      <div><div class="sb-name" id="sbName">Your Account</div><div class="sb-level">🥇 Bronze Member · 0 XP</div></div>
     </div>
-    <div class="sb-bal"><span>💰</span><div><div class="sb-bal-amt" id="sbBal">£84.32</div><div class="sb-bal-lbl">Available balance</div></div></div>
+    <div class="sb-bal"><span>💰</span><div><div class="sb-bal-amt" id="sbBal">£0.00</div><div class="sb-bal-lbl">Available balance</div></div></div>
     <button class="btn-withdraw" onclick="showSection('withdraw')">Withdraw Now →</button>
     <nav class="sb-nav">
       <button class="sb-item active" onclick="showSection('overview',this)"><span class="sb-icon">📊</span>Overview</button>
@@ -195,10 +195,10 @@ tr:hover td{background:var(--surface2);}
 
     <!-- OVERVIEW -->
     <div class="section active" id="sec-overview">
-      <h1 class="pg-title">Good morning, <span id="firstName" style="color:var(--brand)">Jamie</span> 👋</h1>
+      <h1 class="pg-title">Good morning, <span id="firstName" style="color:var(--brand)">there</span> 👋</h1>
       <p class="pg-sub">Here's your cashback summary at a glance.</p>
       <div class="stat-row">
-        <div class="stat-card highlight"><div class="stat-label">Available Balance</div><div class="stat-value">£84.32</div><div class="stat-delta pos">↑ £12.50 this week</div></div>
+        <div class="stat-card highlight"><div class="stat-label">Available Balance</div><div class="stat-value">£0.00</div><div class="stat-delta pos">↑ £12.50 this week</div></div>
         <div class="stat-card"><div class="stat-label">Lifetime Earned</div><div class="stat-value">£312.40</div><div class="stat-delta pos">↑ £24.80 this month</div></div>
         <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value">£18.75</div><div class="stat-delta" style="color:var(--muted)">Confirms in ~28 days</div></div>
         <div class="stat-card"><div class="stat-label">Total Withdrawn</div><div class="stat-value">£228.08</div><div class="stat-delta pos">Last: £50 on 12 Apr</div></div>
@@ -276,7 +276,7 @@ tr:hover td{background:var(--surface2);}
           <div style="margin-left:auto;background:rgba(255,255,255,.2);padding:.25rem .65rem;border-radius:50px;font-size:.7rem;color:rgba(255,255,255,.85)">● Online</div>
         </div>
         <div class="ai-msgs" id="aiMsgs">
-          <div class="ai-msg"><div class="ai-bubble">Hi Jamie! 👋 I'm your personal SmartCash AI advisor. I can help you find the best deals, tell you when to buy, compare products, or answer anything about your cashback. What can I help with today?</div></div>
+          <div class="ai-msg"><div class="ai-bubble">Hi! 👋 I'm your SmartCash AI advisor. I can help you find the best deals, tell you when to buy, compare products, or answer anything about your cashback. What can I help with today?</div></div>
         </div>
         <div class="ai-suggestions">
           <span class="ai-sug" onclick="suggestMsg(this)">Best tech deals right now</span>
@@ -313,9 +313,9 @@ tr:hover td{background:var(--surface2);}
     <!-- WITHDRAW -->
     <div class="section" id="sec-withdraw">
       <h1 class="pg-title">Withdraw Earnings</h1>
-      <p class="pg-sub">£84.32 available · Minimum £10 · Processed within 24 hours</p>
+      <p class="pg-sub">£0.00 available · Minimum £10 · Processed within 24 hours</p>
       <div style="background:linear-gradient(135deg,#f0fdf9,white);border:1.5px solid rgba(0,200,150,.25);border-radius:16px;padding:1.5rem;margin-bottom:1.75rem;display:flex;justify-content:space-between;align-items:center">
-        <div><div style="font-size:.78rem;color:var(--muted);margin-bottom:.25rem">Ready to withdraw</div><div style="font-weight:800;font-size:2rem;font-weight:800;color:var(--brand)">£84.32</div></div>
+        <div><div style="font-size:.78rem;color:var(--muted);margin-bottom:.25rem">Ready to withdraw</div><div style="font-weight:800;font-size:2rem;font-weight:800;color:var(--brand)">£0.00</div></div>
         <div style="text-align:right;font-size:.82rem;color:var(--muted)">⚡ Paid within 24 hours<br>📊 Minimum £10</div>
       </div>
       <h3 style="font-weight:700;margin-bottom:1rem">Select Payment Method</h3>
@@ -334,7 +334,7 @@ tr:hover td{background:var(--surface2);}
           <div><label class="form-label">Account Holder Name</label><input class="form-input" type="text" placeholder="Jamie Smith"></div>
         </div>
         <div class="charity-check"><input type="checkbox" id="charityTop"><label for="charityTop">Round up to nearest £ and donate the difference to charity (SmartCash matches it)</label></div>
-        <button class="btn-save" onclick="showToast('Withdrawal request submitted! £84.32 will arrive within 24 hours.')">Request Withdrawal →</button>
+        <button class="btn-save" onclick="showToast('Withdrawal request submitted! funds will arrive within 24 hours.')">Request Withdrawal →</button>
       </div>
     </div>
 
@@ -346,8 +346,8 @@ tr:hover td{background:var(--surface2);}
         <div class="profile-card">
           <h3>Personal Details</h3>
           <div style="display:flex;flex-direction:column;gap:.85rem">
-            <div><label class="form-label">Full Name</label><input class="form-input" type="text" value="Jamie Smith"></div>
-            <div><label class="form-label">Email Address</label><input class="form-input" type="email" value="jamie@example.com"></div>
+            <div><label class="form-label">Full Name</label><input class="form-input" type="text" value="" placeholder="Your full name"></div>
+            <div><label class="form-label">Email Address</label><input class="form-input" type="email" value="your@email.com"></div>
             <div><label class="form-label">Phone Number</label><input class="form-input" type="tel" placeholder="+44 7700 000000"></div>
           </div>
           <button class="btn-save" onclick="showToast('Profile updated successfully!')">Save Changes</button>
@@ -448,7 +448,7 @@ function setUserUI(firstName, fullName, email) {
 }
 
 function setDemoUser() {
-  setUserUI('Jamie', 'Jamie Smith', 'jamie@example.com');
+  setUserUI('Jamie', 'Jamie Smith', 'your@email.com');
 }
 
 async function logout() {
@@ -480,7 +480,7 @@ async function sendAI(){
   const typing=document.createElement('div');typing.className='ai-msg';typing.id='typing';typing.innerHTML='<div class="ai-typing"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
   document.getElementById('aiMsgs').appendChild(typing);scrollAI();
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:'You are SmartCash AI, a friendly UK cashback and shopping advisor. User: Jamie Smith, Gold tier (2840 XP), balance: £84.32. Top stores: Amazon 4.5%, ASOS 6%, Boots 4%, Booking.com 5%. Be concise, helpful and British. Use £ for prices.',messages:aiHistory.filter(m=>m.role!=='assistant'||aiHistory.indexOf(m)>0)})});
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:'You are SmartCash AI, a friendly UK cashback and shopping advisor. User: SmartCash member, balance: £0.00. Top stores: Amazon 4.5%, ASOS 6%, Boots 4%, Booking.com 5%. Be concise, helpful and British. Use £ for prices.',messages:aiHistory.filter(m=>m.role!=='assistant'||aiHistory.indexOf(m)>0)})});
     const d=await r.json();const txt=d.content?.[0]?.text||'Sorry, I couldn\'t get a response right now.';
     typing.remove();aiHistory.push({role:'assistant',content:txt});renderAI();
   }catch{typing.remove();const fb=getFallback(q);aiHistory.push({role:'assistant',content:fb});renderAI();}
