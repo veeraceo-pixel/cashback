@@ -440,7 +440,7 @@
           <li style="display:flex;gap:.55rem;font-size:.86rem;color:var(--muted)"><span style="color:var(--green)">✓</span>"Which store gives the best cashback for hotels?"</li>
           <li style="display:flex;gap:.55rem;font-size:.86rem;color:var(--muted)"><span style="color:var(--green)">✓</span>"Compare ASOS vs Next for this order"</li>
         </ul>
-        <button class="btn-p" style="margin-top:1.2rem;padding:.72rem 1.5rem;border-radius:50px;font-size:.88rem" onclick="typeof SCAI!=='undefined'&&SCAI.open_()">Chat with AI →</button>
+        <button class="btn-p" style="margin-top:1.2rem;padding:.72rem 1.5rem;border-radius:50px;font-size:.88rem" onclick="window.LUCKY&&LUCKY.open_()">Chat with AI →</button>
       </div>
       <div class="ai-chat-demo">
         <div class="ai-chat-hd">
@@ -456,8 +456,8 @@
           <div class="ai-msg"><div class="ai-bubble">📊 Based on the price tracker, Sony XM5 has been fluctuating. Check the Price Tracker page for the full 6-month chart and set an alert for your target price.</div></div>
         </div>
         <div class="ai-input-row">
-          <input type="text" placeholder="Ask about any deal or store…" readonly onclick="typeof SCAI!=='undefined'&&SCAI.open_()">
-          <button onclick="typeof SCAI!=='undefined'&&SCAI.open_()">Ask →</button>
+          <input type="text" placeholder="Ask about any deal or store…" readonly onclick="window.LUCKY&&LUCKY.open_()" style="cursor:pointer">
+          <button onclick="window.LUCKY&&LUCKY.open_()">Ask →</button>
         </div>
       </div>
     </div>

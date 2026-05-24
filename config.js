@@ -1,19 +1,19 @@
 // SmartCash Configuration
-// Replace these with your actual Supabase credentials
 const SUPABASE_CONFIG = {
-    url: 'https://nnmkgtravghlowohlffw.supabase.co',        // e.g., https://xxxxx.supabase.co
-    anonKey: 'sb_publishable_RepdEqTk8_jPgsSYOhYcgQ_bfmwPUnD' // Your public anon key
+    url: 'https://nnmkgtravghlowohlffw.supabase.co',
+    anonKey: 'sb_publishable_RepdEqTk8_jPgsSYOhYcgQ_bfmwPUnD'
 };
 
-// Claude AI (Anthropic) - for AI Shopping Assistant
-// Get from https://console.anthropic.com
+// FREE Gemini AI — get your free key at: aistudio.google.com → Get API Key
+// Free tier: 15 requests/min, 1M tokens/day, NO credit card required
 const AI_CONFIG = {
-    enabled: true,   // Set to false to disable AI features
-    model: 'claude-sonnet-4-20250514'
+    enabled: true,
+    geminiKey: '',   // ← Paste your free Gemini key here
+    model: 'gemini-1.5-flash'
 };
 
-// Amazon Associates - for order sync
+// Amazon Associates affiliate tag
 const AMAZON_CONFIG = {
-    associateId: 'veeraseo-21',  // e.g., yoursite-21
+    associateId: 'veeraseo-21',
     region: 'uk'
 };

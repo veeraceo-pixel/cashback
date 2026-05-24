@@ -1,818 +1,983 @@
-/* ============================================================
-   SmartCash — Lucky v8
-   • Appears on EVERY page
-   • Claude AI product search → real Amazon affiliate links
-   • Squad: free WebRTC voice chat between friends
-   • No dummy data. No eBay/Flipkart.
-   ============================================================ */
+/* ================================================================
+   SmartCash — Lucky v9
+   ✓ FREE voice: Web Speech API (browser built-in, no API key)
+   ✓ FREE AI: Gemini 1.5 Flash (1M tokens/day free, no card)
+   ✓ All pages: Lucky button visible everywhere
+   ✓ Squad: Split-screen sync shopping + live voice chat (WebRTC)
+   ✓ LUCKY.open_() global — all "Chat with AI" buttons work
+   ================================================================ */
 (function(){
 'use strict';
 
-/* ─── CONFIG ──────────────────────────────────────────── */
+/* ── CONFIG ─────────────────────────────────────────────────
+   Gemini free tier: 15 req/min, 1M tokens/day, no credit card
+   Get key free: aistudio.google.com → Get API Key (free)         */
+const GEMINI_KEY = (typeof AI_CONFIG!=='undefined' && AI_CONFIG.geminiKey)
+  ? AI_CONFIG.geminiKey : '';           // add to config.js when ready
+
 const AMAZON_TAG = (typeof AMAZON_CONFIG!=='undefined' && AMAZON_CONFIG.associateId)
   ? AMAZON_CONFIG.associateId : 'veeraseo-21';
-const AWIN_ID = (typeof AWIN_CONFIG!=='undefined' && AWIN_CONFIG.publisherId)
-  ? AWIN_CONFIG.publisherId : 'YOUR_AWIN_ID';
-const ANTHROPIC_KEY = (typeof AI_CONFIG!=='undefined' && AI_CONFIG.apiKey)
-  ? AI_CONFIG.apiKey : '';
 
 const STORES = [
-  { name:'Amazon UK', cashback:4.5, color:'#FF9900',
+  { name:'Amazon UK', cashback:4.5, emoji:'📦', color:'#FF9900',
     url: q=>`https://www.amazon.co.uk/s?k=${encodeURIComponent(q)}&tag=${AMAZON_TAG}` },
-  { name:'ASOS',      cashback:6.0, color:'#667eea',
+  { name:'ASOS',      cashback:6.0, emoji:'👗', color:'#667eea',
     url: q=>`https://www.asos.com/search/?q=${encodeURIComponent(q)}` },
-  { name:'Boots',     cashback:4.0, color:'#0099cc',
+  { name:'Boots',     cashback:4.0, emoji:'💊', color:'#0099cc',
     url: q=>`https://www.boots.com/search?q=${encodeURIComponent(q)}` },
 ];
 
-/* ─── STATE ──────────────────────────────────────────── */
-let panelOpen=false, squadOpen=false;
-let squadRoom=null, squadPeer=null, localStream=null;
-let peerConnections={};   // peerId → RTCPeerConnection
-let squadMicOn=true;
+/* ── STATE ───────────────────────────────────────────────── */
+let panelOpen=false, activeTab='search';
+let voiceListening=false, voiceSynth=window.speechSynthesis;
+let recognition=null;
+let squadPeer=null, localStream=null, squadPeers={};
+let myName='Me', squadCode='', isHost=false;
+let syncChannel=null;   // BroadcastChannel for same-origin sync
 
-/* ─── CSS ─────────────────────────────────────────────── */
-const S=document.createElement('style');
-S.textContent=`
-/* ── Lucky button ── */
+/* ── INJECT CSS ─────────────────────────────────────────── */
+const CSS=document.createElement('style');
+CSS.textContent=`
+/* ── Float button ── */
 #lk-btn{
   position:fixed;bottom:1.5rem;right:1.5rem;z-index:10000;
-  background:#1a1f2e;border:2px solid rgba(255,255,255,.13);
-  border-radius:16px;padding:.55rem 1rem;
-  display:flex;align-items:center;gap:.6rem;cursor:pointer;
-  box-shadow:0 8px 32px rgba(0,0,0,.35);transition:all .25s;
+  background:#1a202c;border:2px solid rgba(255,255,255,.13);
+  border-radius:16px;padding:.55rem 1rem;display:flex;
+  align-items:center;gap:.65rem;cursor:pointer;
+  box-shadow:0 8px 32px rgba(0,0,0,.3);transition:all .25s;
   font-family:'Plus Jakarta Sans',-apple-system,sans-serif;user-select:none;
 }
-#lk-btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,.4);}
-#lk-ava{font-size:1.45rem;line-height:1;}
-#lk-lbl{color:#fff;font-size:.78rem;font-weight:700;line-height:1.25;}
-#lk-lbl span{display:block;color:rgba(255,255,255,.45);font-size:.65rem;font-weight:400;}
-#lk-squad-dot{width:8px;height:8px;background:#4ade80;border-radius:50%;
-  margin-left:auto;animation:lkblink 2s infinite;flex-shrink:0;}
-@keyframes lkblink{0%,100%{opacity:1}50%{opacity:.3}}
+#lk-btn:hover{transform:translateY(-2px);}
+#lk-ava{font-size:1.4rem;line-height:1;}
+#lk-lbl{color:#fff;font-size:.78rem;font-weight:700;line-height:1.3;}
+#lk-lbl small{display:block;color:rgba(255,255,255,.45);font-size:.65rem;font-weight:400;}
+.lk-pulse{width:8px;height:8px;background:#4ade80;border-radius:50%;
+  animation:lkpulse 2s infinite;flex-shrink:0;}
+@keyframes lkpulse{0%,100%{opacity:1}50%{opacity:.35}}
 
-/* ── Main panel ── */
+/* ── Panel ── */
 #lk-panel{
   position:fixed;bottom:5.2rem;right:1.5rem;z-index:9999;
-  width:400px;max-height:80vh;background:#fff;border-radius:20px;
-  box-shadow:0 20px 60px rgba(0,0,0,.18);border:1px solid #e5e7eb;
-  display:none;flex-direction:column;overflow:hidden;
-  font-family:'Plus Jakarta Sans',-apple-system,sans-serif;
+  width:420px;max-height:82vh;background:#fff;
+  border-radius:20px;box-shadow:0 24px 64px rgba(0,0,0,.18);
+  border:1px solid #e5e7eb;display:none;flex-direction:column;
+  overflow:hidden;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;
 }
 #lk-panel.open{display:flex;}
 
 /* Head */
 #lk-head{
-  background:linear-gradient(135deg,#1a1f2e,#2d3748);
-  padding:.9rem 1.15rem;display:flex;align-items:center;gap:.7rem;flex-shrink:0;
+  background:linear-gradient(135deg,#1a202c,#2d3748);
+  padding:.85rem 1.1rem;display:flex;align-items:center;gap:.7rem;flex-shrink:0;
 }
-#lk-head h4{color:#fff;font-size:.9rem;font-weight:700;margin:0;}
-#lk-head p{color:rgba(255,255,255,.5);font-size:.68rem;margin:0;}
-#lk-close{
-  margin-left:auto;background:rgba(255,255,255,.1);border:none;
-  color:#fff;width:26px;height:26px;border-radius:7px;
-  cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;
+#lk-head-txt h4{color:#fff;font-size:.88rem;font-weight:700;margin:0;}
+#lk-head-txt p{color:rgba(255,255,255,.5);font-size:.67rem;margin:0;}
+#lk-close-btn{
+  margin-left:auto;background:rgba(255,255,255,.1);border:none;color:#fff;
+  width:26px;height:26px;border-radius:7px;cursor:pointer;font-size:.9rem;
+  display:flex;align-items:center;justify-content:center;transition:.2s;
 }
-#lk-close:hover{background:rgba(255,255,255,.22);}
+#lk-close-btn:hover{background:rgba(255,255,255,.22);}
 
 /* Tabs */
 #lk-tabs{display:flex;border-bottom:1px solid #f3f4f6;flex-shrink:0;}
-.lk-tab{
-  flex:1;padding:.6rem;text-align:center;font-size:.78rem;font-weight:700;
+.lkt{flex:1;padding:.58rem .4rem;text-align:center;font-size:.76rem;font-weight:700;
   color:#9ca3af;cursor:pointer;border:none;background:none;
-  border-bottom:2px solid transparent;transition:all .2s;font-family:inherit;
-}
-.lk-tab.active{color:#FF5C00;border-bottom-color:#FF5C00;}
-.lk-tab-panel{display:none;flex:1;flex-direction:column;overflow:hidden;}
-.lk-tab-panel.active{display:flex;}
+  border-bottom:2.5px solid transparent;transition:.2s;font-family:inherit;}
+.lkt.on{color:#FF5C00;border-bottom-color:#FF5C00;}
+.tp{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.tp.on{display:flex;}
 
-/* ── SEARCH TAB ── */
+/* ══ SEARCH TAB ══════════════════════════════════════════ */
 #lk-chips{
-  padding:.65rem .9rem .45rem;display:flex;gap:.35rem;flex-wrap:wrap;
+  padding:.6rem .9rem .4rem;display:flex;gap:.35rem;flex-wrap:wrap;
   border-bottom:1px solid #f9fafb;flex-shrink:0;
 }
-.lk-chip{
-  padding:.24rem .65rem;border-radius:50px;font-size:.72rem;font-weight:600;
+.lkchip{
+  padding:.22rem .62rem;border-radius:50px;font-size:.72rem;font-weight:600;
   background:#f3f4f6;color:#374151;border:none;cursor:pointer;
-  transition:all .18s;font-family:inherit;
+  transition:.18s;font-family:inherit;
 }
-.lk-chip:hover{background:#FF5C00;color:#fff;}
-#lk-body{
-  flex:1;overflow-y:auto;padding:.85rem;
-  display:flex;flex-direction:column;gap:.65rem;
-}
+.lkchip:hover{background:#FF5C00;color:#fff;}
+
+#lk-body{flex:1;overflow-y:auto;padding:.8rem;display:flex;flex-direction:column;gap:.6rem;}
 #lk-body::-webkit-scrollbar{width:3px;}
 #lk-body::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:2px;}
 
-/* Messages */
-.lmsg{display:flex;gap:.45rem;align-items:flex-start;}
-.lmsg.user{flex-direction:row-reverse;}
-.lbubble{
-  max-width:85%;padding:.55rem .8rem;border-radius:12px;
-  font-size:.81rem;line-height:1.55;
-}
-.lmsg:not(.user) .lbubble{background:#f9fafb;color:#111827;border:1px solid #e5e7eb;}
-.lmsg.user .lbubble{background:linear-gradient(135deg,#FF5C00,#ff7c30);color:#fff;}
-.lava{font-size:1rem;flex-shrink:0;margin-top:.15rem;}
+.lm{display:flex;gap:.45rem;align-items:flex-start;}
+.lm.u{flex-direction:row-reverse;}
+.lb{max-width:86%;padding:.52rem .78rem;border-radius:12px;font-size:.81rem;line-height:1.55;}
+.lm:not(.u) .lb{background:#f9fafb;color:#111827;border:1px solid #e5e7eb;}
+.lm.u .lb{background:linear-gradient(135deg,#FF5C00,#ff7c30);color:#fff;}
+.lava{font-size:.95rem;flex-shrink:0;margin-top:.15rem;}
 
-/* Loading */
-.ldots{display:flex;gap:4px;align-items:center;padding:.45rem .8rem;}
+.ldots{display:flex;gap:4px;padding:.45rem .78rem;align-items:center;}
 .ldot{width:6px;height:6px;background:#d1d5db;border-radius:50%;animation:lb .8s infinite;}
-.ldot:nth-child(2){animation-delay:.15s;}
-.ldot:nth-child(3){animation-delay:.3s;}
+.ldot:nth-child(2){animation-delay:.15s;}.ldot:nth-child(3){animation-delay:.3s;}
 @keyframes lb{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
 
-/* Product cards */
-.lk-grid{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;}
-.lk-card{
+/* Product grid */
+.lk-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.lkcard{
   border:1.5px solid #e5e7eb;border-radius:11px;overflow:hidden;
-  transition:all .2s;background:#fff;cursor:pointer;
-  text-decoration:none;display:block;
+  background:#fff;text-decoration:none;display:block;transition:.2s;
 }
-.lk-card:hover{border-color:#FF5C00;transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.1);}
-.lk-card-img{
-  height:80px;background:#f9fafb;
-  display:flex;align-items:center;justify-content:center;position:relative;
-}
-.lk-card-img .emoji{font-size:2.25rem;}
-.lk-store-tag{
-  position:absolute;bottom:.28rem;right:.28rem;
-  font-size:.58rem;font-weight:700;padding:.08rem .35rem;
-  border-radius:50px;color:#fff;background:#FF9900;
-}
-.lk-card-body{padding:.5rem .6rem;}
-.lk-card-title{font-size:.75rem;font-weight:700;color:#111827;margin-bottom:.2rem;line-height:1.3;}
-.lk-card-price{font-size:.7rem;color:#6b7280;margin-bottom:.22rem;}
-.lk-card-cb{
-  font-size:.68rem;font-weight:700;color:#00a07a;
-  background:rgba(0,200,150,.1);padding:.08rem .32rem;border-radius:50px;
-  display:inline-block;margin-bottom:.3rem;
-}
-.lk-card-btn{
-  width:100%;padding:.38rem;border:none;border-radius:6px;
-  background:#FF5C00;color:#fff;font-size:.72rem;font-weight:700;
-  cursor:pointer;font-family:inherit;transition:all .2s;display:block;text-align:center;
-}
-.lk-card-btn:hover{background:#e04e00;}
+.lkcard:hover{border-color:#FF5C00;transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.09);}
+.lkcard-img{height:78px;background:#f9fafb;display:flex;align-items:center;justify-content:center;position:relative;}
+.lkcard-img .em{font-size:2.1rem;}
+.lkcard-stag{position:absolute;bottom:.25rem;right:.25rem;font-size:.57rem;font-weight:700;
+  padding:.07rem .33rem;border-radius:50px;color:#fff;}
+.lkcard-bd{padding:.48rem .58rem;}
+.lkcard-title{font-size:.74rem;font-weight:700;color:#111827;margin-bottom:.18rem;line-height:1.3;}
+.lkcard-price{font-size:.7rem;color:#6b7280;margin-bottom:.2rem;}
+.lkcard-cb{font-size:.67rem;font-weight:700;color:#00a07a;background:rgba(0,200,150,.1);
+  padding:.07rem .3rem;border-radius:50px;display:inline-block;margin-bottom:.28rem;}
+.lkcard-btn{width:100%;padding:.36rem;border:none;border-radius:6px;background:#FF5C00;
+  color:#fff;font-size:.71rem;font-weight:700;cursor:pointer;font-family:inherit;
+  display:block;text-align:center;text-decoration:none;transition:.2s;}
+.lkcard-btn:hover{background:#e04e00;}
 
-/* Store search buttons */
-.lk-store-btns{display:flex;flex-direction:column;gap:.4rem;margin-top:.25rem;}
-.lk-store-btn{
-  display:flex;align-items:center;gap:.6rem;padding:.6rem .8rem;
-  border-radius:9px;border:1.5px solid #e5e7eb;background:#fff;
-  cursor:pointer;text-decoration:none;transition:all .18s;
-}
-.lk-store-btn:hover{border-color:#FF5C00;background:#fff9f7;}
-.lk-store-name{font-size:.81rem;font-weight:700;color:#111827;}
-.lk-store-cb{font-size:.69rem;color:#00a07a;font-weight:600;}
+.lk-sbtns{display:flex;flex-direction:column;gap:.38rem;margin-top:.25rem;}
+.lksb{display:flex;align-items:center;gap:.55rem;padding:.55rem .75rem;border-radius:9px;
+  border:1.5px solid #e5e7eb;background:#fff;text-decoration:none;transition:.18s;}
+.lksb:hover{border-color:#FF5C00;background:#fff9f7;}
+.lksb-info{flex:1;}
+.lksb-name{font-size:.8rem;font-weight:700;color:#111827;}
+.lksb-cb{font-size:.68rem;color:#00a07a;font-weight:600;}
 
-/* Input */
-#lk-input-wrap{
-  padding:.65rem .9rem;border-top:1px solid #e5e7eb;
-  display:flex;gap:.45rem;flex-shrink:0;background:#fff;
-}
-#lk-input{
-  flex:1;padding:.52rem .85rem;border:1.5px solid #e5e7eb;
-  border-radius:50px;font-size:.83rem;outline:none;font-family:inherit;
-  transition:border-color .2s;
-}
-#lk-input:focus{border-color:#FF5C00;}
-#lk-send{
-  background:#FF5C00;color:#fff;border:none;
-  padding:.52rem .95rem;border-radius:50px;
-  cursor:pointer;font-size:.83rem;font-weight:700;
-  font-family:inherit;white-space:nowrap;transition:all .2s;
-}
+/* Input row */
+#lk-irow{padding:.6rem .85rem;border-top:1px solid #e5e7eb;display:flex;gap:.4rem;flex-shrink:0;}
+#lk-inp{flex:1;padding:.5rem .82rem;border:1.5px solid #e5e7eb;border-radius:50px;
+  font-size:.83rem;outline:none;font-family:inherit;transition:.2s;min-width:0;}
+#lk-inp:focus{border-color:#FF5C00;}
+#lk-mic{padding:.5rem .65rem;border:1.5px solid #e5e7eb;border-radius:50px;
+  background:#fff;cursor:pointer;font-size:1rem;transition:.2s;flex-shrink:0;}
+#lk-mic.listening{background:#fee2e2;border-color:#ef4444;animation:lkpulse 1s infinite;}
+#lk-send{padding:.5rem .9rem;background:#FF5C00;color:#fff;border:none;
+  border-radius:50px;cursor:pointer;font-size:.82rem;font-weight:700;
+  font-family:inherit;white-space:nowrap;transition:.2s;flex-shrink:0;}
 #lk-send:hover{background:#e04e00;}
 
-/* ── SQUAD TAB ── */
-#lk-squad{
-  flex:1;overflow-y:auto;padding:1rem;
-  display:flex;flex-direction:column;gap:.85rem;
-}
+/* ══ SQUAD TAB — split screen ════════════════════════════ */
+#lk-tab-squad{flex:1;overflow:hidden;display:none;flex-direction:column;}
+#lk-tab-squad.on{display:flex;}
 
-.squad-hero{
-  background:linear-gradient(135deg,#667eea,#764ba2);
-  border-radius:14px;padding:1.25rem;color:#fff;text-align:center;
-}
-.squad-hero h3{font-size:.95rem;font-weight:800;margin-bottom:.35rem;}
-.squad-hero p{font-size:.78rem;color:rgba(255,255,255,.75);line-height:1.55;margin-bottom:.85rem;}
+/* Pre-room UI */
+#sq-pre{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.8rem;}
+.sq-hero{background:linear-gradient(135deg,#667eea,#764ba2);border-radius:14px;
+  padding:1.1rem;color:#fff;text-align:center;}
+.sq-hero h3{font-size:.92rem;font-weight:800;margin-bottom:.3rem;}
+.sq-hero p{font-size:.76rem;color:rgba(255,255,255,.75);line-height:1.5;margin-bottom:.8rem;}
+.sq-btns{display:flex;gap:.45rem;}
+.sqbtn{flex:1;padding:.6rem;border-radius:9px;font-size:.8rem;font-weight:700;
+  cursor:pointer;font-family:inherit;transition:.2s;}
+.sqbtn.p{background:#fff;color:#6c63ff;border:none;}
+.sqbtn.p:hover{background:#f5f3ff;}
+.sqbtn.s{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3);}
+.sqbtn.s:hover{background:rgba(255,255,255,.25);}
+.lk-info{background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;
+  padding:.6rem;font-size:.74rem;color:#1e40af;line-height:1.5;}
+.join-form{display:flex;flex-direction:column;gap:.5rem;}
+.join-form input{padding:.58rem .82rem;border:1.5px solid #e5e7eb;border-radius:9px;
+  font-size:.84rem;outline:none;font-family:inherit;}
+.join-form input:focus{border-color:#667eea;}
 
-.squad-actions{display:flex;gap:.5rem;}
-.squad-btn{
-  flex:1;padding:.65rem;border:none;border-radius:9px;
-  font-size:.82rem;font-weight:700;cursor:pointer;
-  font-family:inherit;transition:all .2s;
+/* ── SPLIT SCREEN (the main feature) ── */
+#lk-split{
+  display:none;flex:1;flex-direction:column;overflow:hidden;
 }
-.squad-btn.primary{background:#fff;color:#6c63ff;}
-.squad-btn.primary:hover{background:#f5f3ff;}
-.squad-btn.secondary{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);}
-.squad-btn.secondary:hover{background:rgba(255,255,255,.25);}
+#lk-split.on{display:flex;}
 
-/* Room UI */
-.squad-room{
-  background:#f9fafb;border:1.5px solid #e5e7eb;
-  border-radius:14px;padding:1rem;display:flex;flex-direction:column;gap:.75rem;
+/* Voice bar at top of split */
+#lk-voice-bar{
+  display:flex;align-items:center;gap:.6rem;
+  padding:.55rem .85rem;background:#1a202c;flex-shrink:0;
 }
-.squad-room-head{
-  display:flex;align-items:center;justify-content:space-between;
-}
-.squad-room-head h4{font-size:.87rem;font-weight:700;color:#111827;}
-.squad-room-code{
-  background:#fff;border:1.5px solid #e5e7eb;border-radius:8px;
-  padding:.45rem .75rem;font-size:.78rem;text-align:center;
-}
-.squad-room-code span{
-  font-family:monospace;font-size:1.1rem;font-weight:800;
-  color:#FF5C00;letter-spacing:2px;
-}
-.squad-room-code small{display:block;color:#9ca3af;font-size:.68rem;margin-top:.15rem;}
-
-/* Voice members */
-.squad-members{display:flex;flex-direction:column;gap:.45rem;}
-.squad-member{
-  display:flex;align-items:center;gap:.65rem;
-  background:#fff;border:1px solid #e5e7eb;border-radius:9px;padding:.55rem .75rem;
-}
-.squad-member-ava{
-  width:30px;height:30px;border-radius:50%;
+.vb-member{display:flex;align-items:center;gap:.35rem;}
+.vb-ava{width:26px;height:26px;border-radius:50%;
   background:linear-gradient(135deg,#667eea,#764ba2);
   display:flex;align-items:center;justify-content:center;
-  color:#fff;font-size:.85rem;font-weight:800;flex-shrink:0;
-}
-.squad-member-ava.speaking{
-  background:linear-gradient(135deg,#4ade80,#22c55e);
-  animation:lkpulse .8s infinite;
-}
-@keyframes lkpulse{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.4)}50%{box-shadow:0 0 0 6px rgba(74,222,128,0)}}
-.squad-member-name{font-size:.81rem;font-weight:600;color:#111827;flex:1;}
-.squad-member-status{font-size:.68rem;color:#9ca3af;}
+  color:#fff;font-size:.72rem;font-weight:800;flex-shrink:0;}
+.vb-ava.sp{background:linear-gradient(135deg,#4ade80,#22c55e);
+  box-shadow:0 0 0 3px rgba(74,222,128,.35);}
+.vb-name{font-size:.72rem;font-weight:600;color:rgba(255,255,255,.8);}
+.vb-sep{color:rgba(255,255,255,.2);font-size:.8rem;}
+.vb-ctrl{margin-left:auto;display:flex;gap:.35rem;}
+.vbc{background:rgba(255,255,255,.1);border:none;color:#fff;
+  padding:.3rem .6rem;border-radius:6px;cursor:pointer;font-size:.72rem;
+  font-weight:600;font-family:inherit;transition:.2s;}
+.vbc:hover{background:rgba(255,255,255,.22);}
+.vbc.on{background:#FF5C00;}
+.vbc.red{background:#ef4444;}
 
-/* Voice controls */
-.squad-controls{display:flex;gap:.5rem;}
-.squad-ctrl-btn{
-  flex:1;padding:.55rem;border-radius:9px;font-size:.78rem;
-  font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;
-  border:1.5px solid #e5e7eb;background:#fff;color:#374151;
+/* Room code row */
+#lk-room-row{
+  padding:.4rem .85rem;background:#f9fafb;
+  border-bottom:1px solid #e5e7eb;
+  display:flex;align-items:center;gap:.5rem;flex-shrink:0;
 }
-.squad-ctrl-btn:hover{border-color:#FF5C00;color:#FF5C00;}
-.squad-ctrl-btn.active{background:#FF5C00;border-color:#FF5C00;color:#fff;}
-.squad-ctrl-btn.danger{border-color:#ef4444;color:#ef4444;}
-.squad-ctrl-btn.danger:hover{background:#ef4444;color:#fff;}
+#lk-room-code{font-family:monospace;font-size:.9rem;font-weight:800;
+  color:#FF5C00;letter-spacing:2px;}
+.rr-copy{background:none;border:none;color:#FF5C00;cursor:pointer;
+  font-size:.7rem;font-weight:700;font-family:inherit;padding:.15rem .4rem;
+  border-radius:4px;transition:.2s;}
+.rr-copy:hover{background:#fff5f0;}
 
-/* Join form */
-.squad-join-form{display:flex;flex-direction:column;gap:.55rem;}
-.squad-join-form input{
-  padding:.6rem .85rem;border:1.5px solid #e5e7eb;border-radius:9px;
-  font-size:.85rem;outline:none;font-family:inherit;
+/* Split screens */
+#lk-screens{display:flex;flex:1;overflow:hidden;gap:1px;background:#e5e7eb;}
+.lk-screen{flex:1;display:flex;flex-direction:column;background:#fff;overflow:hidden;}
+.lk-screen-head{
+  padding:.4rem .65rem;background:#f9fafb;border-bottom:1px solid #e5e7eb;
+  font-size:.72rem;font-weight:700;color:#374151;display:flex;align-items:center;gap:.4rem;
+  flex-shrink:0;
 }
-.squad-join-form input:focus{border-color:#667eea;}
+.lk-screen-head .dot{width:7px;height:7px;border-radius:50%;background:#4ade80;}
+.lk-screen-head .dot.off{background:#d1d5db;}
+.lk-screen-body{flex:1;overflow-y:auto;padding:.65rem;}
+.lk-screen-body::-webkit-scrollbar{width:3px;}
+.lk-screen-body::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:2px;}
 
-/* Info boxes */
-.lk-info{
-  background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;
-  padding:.65rem;font-size:.76rem;color:#1e40af;line-height:1.5;
+/* Synced product card in split screen */
+.sq-product{
+  border:1.5px solid #e5e7eb;border-radius:10px;overflow:hidden;margin-bottom:.5rem;
+  transition:.2s;cursor:pointer;text-decoration:none;display:block;
 }
-.lk-tip{
-  background:#fffbeb;border:1px solid #fde68a;border-radius:9px;
-  padding:.65rem;font-size:.76rem;color:#92400e;line-height:1.5;
+.sq-product:hover{border-color:#FF5C00;box-shadow:0 2px 10px rgba(0,0,0,.08);}
+.sq-product-img{height:70px;background:#f9fafb;display:flex;align-items:center;justify-content:center;font-size:1.8rem;}
+.sq-product-info{padding:.45rem .6rem;}
+.sq-product-title{font-size:.74rem;font-weight:700;color:#111827;margin-bottom:.15rem;}
+.sq-product-price{font-size:.7rem;color:#6b7280;margin-bottom:.2rem;}
+.sq-product-cb{font-size:.66rem;font-weight:700;color:#00a07a;}
+
+/* Highlight ring when partner scrolls to a product */
+.sq-product.partner-viewing{
+  border-color:#667eea;box-shadow:0 0 0 2px rgba(102,126,234,.3);
+}
+.partner-cursor{
+  background:#667eea;color:#fff;font-size:.62rem;font-weight:700;
+  padding:.1rem .35rem;border-radius:4px;display:inline-block;margin-bottom:.3rem;
 }
 
-@media(max-width:480px){
-  #lk-panel{width:calc(100vw - 2rem);right:1rem;max-height:75vh;}
+/* Like/vote buttons */
+.sq-votes{display:flex;gap:.35rem;padding:.35rem .6rem;border-top:1px solid #f3f4f6;}
+.sqvote{flex:1;padding:.3rem;border-radius:6px;font-size:.72rem;font-weight:700;
+  border:1.5px solid #e5e7eb;background:#fff;cursor:pointer;
+  font-family:inherit;transition:.2s;text-align:center;}
+.sqvote:hover{border-color:#FF5C00;color:#FF5C00;}
+.sqvote.liked{background:#fff5f0;border-color:#FF5C00;color:#FF5C00;}
+.sqvote.disliked{background:#f5f5f5;border-color:#9ca3af;color:#9ca3af;}
+
+/* Shop together search */
+.sq-search-row{display:flex;gap:.4rem;padding:.5rem .65rem;border-bottom:1px solid #f3f4f6;flex-shrink:0;}
+.sq-search-row input{flex:1;padding:.42rem .7rem;border:1.5px solid #e5e7eb;border-radius:8px;
+  font-size:.8rem;outline:none;font-family:inherit;min-width:0;}
+.sq-search-row input:focus{border-color:#667eea;}
+.sq-search-row button{padding:.42rem .75rem;background:#667eea;color:#fff;border:none;
+  border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
+
+@media(max-width:500px){
+  #lk-panel{width:calc(100vw - 2rem);right:1rem;max-height:78vh;}
+  #lk-screens{flex-direction:column;}
 }
 `;
-document.head.appendChild(S);
+document.head.appendChild(CSS);
 
-/* ─── BUILD UI ─────────────────────────────────────────── */
-// Floating button
-const btn=document.createElement('div');
-btn.id='lk-btn';
-btn.setAttribute('role','button');
-btn.setAttribute('aria-label','Open Lucky AI Shopping Assistant');
-btn.innerHTML=`
-  <div id="lk-ava">🤖</div>
-  <div id="lk-lbl">Lucky<span>AI · Shop Together</span></div>
-  <div id="lk-squad-dot" title="Squad available"></div>
-`;
-btn.onclick=togglePanel;
-document.body.appendChild(btn);
+/* ── BUILD DOM ──────────────────────────────────────────── */
+// Float button
+const Btn=document.createElement('div');
+Btn.id='lk-btn';
+Btn.setAttribute('role','button');
+Btn.setAttribute('aria-label','Open Lucky AI Shopping Assistant');
+Btn.innerHTML=`<div id="lk-ava">🤖</div><div id="lk-lbl">Lucky<small>AI · Shop Together</small></div><div class="lk-pulse"></div>`;
+Btn.onclick=()=>LUCKY.open_();
+document.body.appendChild(Btn);
 
-// Main panel
-const panel=document.createElement('div');
-panel.id='lk-panel';
-panel.innerHTML=`
+// Panel
+const Panel=document.createElement('div');
+Panel.id='lk-panel';
+Panel.innerHTML=`
 <div id="lk-head">
-  <div style="font-size:1.5rem">🤖</div>
-  <div>
-    <h4>Lucky — SmartCash AI</h4>
-    <p>Search Amazon with cashback · Shop Together with friends</p>
-  </div>
-  <button id="lk-close" onclick="LUCKY.close()" aria-label="Close Lucky">✕</button>
+  <div style="font-size:1.4rem">🤖</div>
+  <div id="lk-head-txt"><h4>Lucky — SmartCash AI</h4><p>Free AI search · Free voice · Shop Together live</p></div>
+  <button id="lk-close-btn" onclick="LUCKY.close()" aria-label="Close">✕</button>
 </div>
 
 <div id="lk-tabs">
-  <button class="lk-tab active" onclick="LUCKY.switchTab('search',this)" aria-label="Search tab">🔍 Search</button>
-  <button class="lk-tab" onclick="LUCKY.switchTab('squad',this)" aria-label="Squad tab">👥 Shop Together</button>
+  <button class="lkt on" onclick="LUCKY.tab('search',this)">🔍 Search</button>
+  <button class="lkt" onclick="LUCKY.tab('squad',this)">👥 Shop Together</button>
 </div>
 
-<!-- SEARCH TAB -->
-<div class="lk-tab-panel active" id="lk-tab-search" style="overflow:hidden;">
+<!-- ── SEARCH TAB ── -->
+<div class="tp on" id="lk-tab-search">
   <div id="lk-chips">
-    <button class="lk-chip" onclick="LUCKY.ask('Headphones under £50')">🎧 Headphones</button>
-    <button class="lk-chip" onclick="LUCKY.ask('Laptops under £600')">💻 Laptops</button>
-    <button class="lk-chip" onclick="LUCKY.ask('Women dresses under £40')">👗 Dresses</button>
-    <button class="lk-chip" onclick="LUCKY.ask('Mens trainers')">👟 Trainers</button>
-    <button class="lk-chip" onclick="LUCKY.ask('Smart home devices')">🏠 Smart Home</button>
+    <button class="lkchip" onclick="LUCKY.ask('Headphones under £50')">🎧 Headphones</button>
+    <button class="lkchip" onclick="LUCKY.ask('Laptops under £600')">💻 Laptops</button>
+    <button class="lkchip" onclick="LUCKY.ask('Women dresses under £40')">👗 Dresses</button>
+    <button class="lkchip" onclick="LUCKY.ask('Mens trainers Nike Adidas')">👟 Trainers</button>
+    <button class="lkchip" onclick="LUCKY.ask('Smart home devices Alexa')">🏠 Smart Home</button>
   </div>
   <div id="lk-body">
-    <div class="lmsg">
-      <div class="lava">🤖</div>
-      <div class="lbubble">Hi! I'm Lucky 👋 Tell me what you're shopping for and I'll find the best options on <strong>Amazon UK with 4.5% cashback</strong>. What are you looking for?</div>
+    <div class="lm"><div class="lava">🤖</div>
+      <div class="lb">Hi! I'm Lucky 👋 I use <strong>free AI</strong> and <strong>voice search</strong> to find the best products on Amazon with your 4.5% cashback. Try the mic button or type below!</div>
     </div>
   </div>
-  <div id="lk-input-wrap">
-    <input id="lk-input" type="text" placeholder="Search Amazon with cashback…" aria-label="Search products">
-    <button id="lk-send" onclick="LUCKY.sendMsg()">Go →</button>
+  <div id="lk-irow">
+    <input id="lk-inp" type="text" placeholder="Ask me anything…" aria-label="Search products">
+    <button id="lk-mic" title="Voice search (free, browser built-in)" onclick="LUCKY.toggleVoice()">🎤</button>
+    <button id="lk-send" onclick="LUCKY.send()">Go →</button>
   </div>
 </div>
 
-<!-- SQUAD TAB -->
-<div class="lk-tab-panel" id="lk-tab-squad">
-  <div id="lk-squad">
+<!-- ── SQUAD TAB ── -->
+<div class="tp" id="lk-tab-squad">
+
+  <!-- Pre-room (create/join) -->
+  <div id="sq-pre">
     <div id="sq-landing">
-      <div class="squad-hero">
-        <h3>👥 Shop Together — Free</h3>
-        <p>Start a voice room, share the code with friends. Browse products together, vote on items, and talk in real-time. Completely free — no app needed.</p>
-        <div class="squad-actions">
-          <button class="squad-btn primary" onclick="LUCKY.squadCreate()">🎙️ Create Room</button>
-          <button class="squad-btn secondary" onclick="LUCKY.squadShowJoin()">🔗 Join Room</button>
+      <div class="sq-hero">
+        <h3>👥 Shop Together — Live</h3>
+        <p>Split screen with a friend. Browse the same products, vote on items, voice chat in real-time — all free, no app needed.</p>
+        <div class="sq-btns">
+          <button class="sqbtn p" onclick="LUCKY.sqCreate()">🎙️ Create Room</button>
+          <button class="sqbtn s" onclick="LUCKY.sqShowJoin()">🔗 Join Room</button>
         </div>
       </div>
-      <div class="lk-info">
-        ℹ️ <strong>How it works:</strong> Voice chat uses your browser's built-in WebRTC technology — completely free, no servers, peer-to-peer. Share the room code with friends and browse SmartCash together.
-      </div>
+      <div class="lk-info">ℹ️ <strong>Split-screen sync:</strong> Both of you see the same products side by side. When one person browses a product, the other sees it highlighted in real-time. Voice chat is peer-to-peer and free.</div>
     </div>
-
-    <div id="sq-join-form" style="display:none">
-      <div class="squad-join-form">
-        <input id="sq-name-input" type="text" placeholder="Your name (e.g. Sarah)" maxlength="20">
-        <input id="sq-code-input" type="text" placeholder="Room code (e.g. SHOP-4821)" maxlength="12" style="font-family:monospace;letter-spacing:2px;text-transform:uppercase">
-        <button class="squad-btn primary" style="background:#667eea;color:#fff;border:none;padding:.7rem;border-radius:9px;font-size:.85rem" onclick="LUCKY.squadJoin()">Join Voice Room →</button>
-        <button style="background:none;border:none;color:#9ca3af;font-size:.78rem;cursor:pointer;font-family:inherit" onclick="LUCKY.squadShowLanding()">← Back</button>
+    <div id="sq-join" style="display:none">
+      <div class="join-form">
+        <input id="sqn" type="text" placeholder="Your name (e.g. Sarah)" maxlength="20">
+        <input id="sqc" type="text" placeholder="Room code e.g. SHOP-4821" maxlength="12" style="font-family:monospace;letter-spacing:2px;text-transform:uppercase">
+        <button class="sqbtn p" style="background:#667eea;color:#fff;border:none;padding:.65rem;border-radius:9px;font-size:.82rem" onclick="LUCKY.sqJoin()">Join → Start Shopping Together</button>
+        <button style="background:none;border:none;color:#9ca3af;font-size:.76rem;cursor:pointer;font-family:inherit;margin-top:.25rem" onclick="LUCKY.sqLanding()">← Back</button>
       </div>
-    </div>
-
-    <div id="sq-room-ui" style="display:none">
-      <div class="squad-room">
-        <div class="squad-room-head">
-          <h4>🎙️ Live Voice Room</h4>
-          <span id="sq-conn-badge" style="font-size:.68rem;background:#dcfce7;color:#166534;padding:.15rem .5rem;border-radius:50px;font-weight:700">🟢 Connected</span>
-        </div>
-        <div class="squad-room-code">
-          <div style="font-size:.68rem;color:#9ca3af;margin-bottom:.2rem">Share this code with friends</div>
-          <span id="sq-room-code-display">SHOP-0000</span>
-          <button onclick="LUCKY.copyCode()" style="display:block;margin:.35rem auto 0;background:none;border:none;color:#FF5C00;font-size:.7rem;cursor:pointer;font-family:inherit;font-weight:700">📋 Copy Code</button>
-        </div>
-        <div id="sq-members" class="squad-members">
-          <!-- members injected here -->
-        </div>
-        <div class="squad-controls">
-          <button class="squad-ctrl-btn active" id="sq-mic-btn" onclick="LUCKY.squadToggleMic()">🎙️ Mic On</button>
-          <button class="squad-ctrl-btn" onclick="LUCKY.squadShareProduct()">🔗 Share Product</button>
-          <button class="squad-ctrl-btn danger" onclick="LUCKY.squadLeave()">📵 Leave</button>
-        </div>
-      </div>
-      <div id="sq-shared-product" style="display:none" class="lk-info">
-        <strong>Shared product:</strong> <span id="sq-product-name">—</span><br>
-        <a id="sq-product-link" href="#" target="_blank" style="color:#FF5C00;font-weight:700;font-size:.8rem">View on Amazon →</a>
-      </div>
-      <div class="lk-tip">💡 <strong>Tip:</strong> Open SmartCash on any page — Lucky stays open. Your whole squad can browse and voice chat while shopping together!</div>
     </div>
   </div>
-</div>
+
+  <!-- Split screen room -->
+  <div id="lk-split">
+
+    <!-- Voice bar -->
+    <div id="lk-voice-bar">
+      <div id="vb-members" style="display:flex;gap:.5rem;flex:1;align-items:center;flex-wrap:wrap;"></div>
+      <div class="vb-ctrl">
+        <button class="vbc on" id="sq-mic-btn" onclick="LUCKY.sqMic()">🎙️ On</button>
+        <button class="vbc" onclick="LUCKY.sqShare()">🔗 Share</button>
+        <button class="vbc red" onclick="LUCKY.sqLeave()">Leave</button>
+      </div>
+    </div>
+
+    <!-- Room code -->
+    <div id="lk-room-row">
+      <span style="font-size:.72rem;color:#6b7280">Room:</span>
+      <span id="lk-room-code">—</span>
+      <button class="rr-copy" onclick="LUCKY.sqCopy()">📋 Copy</button>
+      <span style="margin-left:auto;font-size:.68rem;color:#4ade80" id="sq-status">● Connected</span>
+    </div>
+
+    <!-- Search bar shared across both screens -->
+    <div class="sq-search-row">
+      <input id="sq-search" type="text" placeholder="Search products for both screens…"
+        onkeydown="if(event.key==='Enter')LUCKY.sqSearch()">
+      <button onclick="LUCKY.sqSearch()">Search</button>
+    </div>
+
+    <!-- The split screens -->
+    <div id="lk-screens">
+      <div class="lk-screen" id="screen-me">
+        <div class="lk-screen-head">
+          <div class="dot" id="dot-me"></div>
+          <span id="lbl-me">You</span>
+        </div>
+        <div class="lk-screen-body" id="body-me" onscroll="LUCKY.sqSyncScroll(this)">
+          <div style="text-align:center;color:#9ca3af;font-size:.8rem;padding:2rem 1rem">
+            Search for products above to start shopping together!
+          </div>
+        </div>
+      </div>
+      <div class="lk-screen" id="screen-partner">
+        <div class="lk-screen-head">
+          <div class="dot off" id="dot-partner"></div>
+          <span id="lbl-partner">Waiting for partner…</span>
+        </div>
+        <div class="lk-screen-body" id="body-partner">
+          <div style="text-align:center;color:#9ca3af;font-size:.8rem;padding:2rem 1rem">
+            Share the room code so your partner can join!
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /lk-split -->
+</div><!-- /squad tab -->
 `;
-document.body.appendChild(panel);
+document.body.appendChild(Panel);
 
-// Keyboard shortcut
-panel.querySelector('#lk-input').addEventListener('keydown',e=>{if(e.key==='Enter')LUCKY.sendMsg();});
+document.getElementById('lk-inp').addEventListener('keydown',e=>{if(e.key==='Enter')LUCKY.send();});
 
-/* ─── PANEL TOGGLE ─────────────────────────────────────── */
-function togglePanel(){
-  panelOpen=!panelOpen;
-  panel.classList.toggle('open',panelOpen);
-  if(panelOpen) setTimeout(()=>panel.querySelector('#lk-input').focus(),100);
+/* ── PANEL TOGGLE ───────────────────────────────────────── */
+function openPanel(){
+  if(panelOpen)return;
+  panelOpen=true;
+  Panel.classList.add('open');
+  document.getElementById('lk-inp').focus();
+}
+function closePanel(){
+  panelOpen=false;
+  Panel.classList.remove('open');
 }
 
-/* ─── AI SEARCH ────────────────────────────────────────── */
-function addMsg(html,isUser=false){
+/* ── MESSAGES ───────────────────────────────────────────── */
+function msg(html,isUser=false){
   const body=document.getElementById('lk-body');
   const d=document.createElement('div');
-  d.className='lmsg'+(isUser?' user':'');
-  d.innerHTML=isUser
-    ?`<div class="lava">👤</div><div class="lbubble">${html}</div>`
-    :`<div class="lava">🤖</div><div class="lbubble">${html}</div>`;
+  d.className='lm'+(isUser?' u':'');
+  d.innerHTML=(isUser?'<div class="lava">👤</div>':'<div class="lava">🤖</div>')+
+    `<div class="lb">${html}</div>`;
   body.appendChild(d);
-  body.scrollTop=body.scrollHeight;
+  body.scrollTop=9999;
+  return d;
+}
+function loading(){
+  const body=document.getElementById('lk-body');
+  const d=document.createElement('div');
+  d.className='lm';
+  d.innerHTML='<div class="lava">🤖</div><div class="ldots"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>';
+  body.appendChild(d);body.scrollTop=9999;
   return d;
 }
 
-function addLoading(){
-  const body=document.getElementById('lk-body');
-  const d=document.createElement('div');
-  d.className='lmsg';
-  d.innerHTML=`<div class="lava">🤖</div><div class="ldots"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>`;
-  body.appendChild(d);
-  body.scrollTop=body.scrollHeight;
-  return d;
-}
-
-async function searchWithClaude(query){
-  const loading=addLoading();
+/* ── FREE AI (Gemini 1.5 Flash — free tier) ─────────────── */
+async function aiSearch(query){
+  const l=loading();
   try{
-    const headers={'Content-Type':'application/json'};
-    if(ANTHROPIC_KEY) headers['x-api-key']=ANTHROPIC_KEY;
+    if(!GEMINI_KEY) throw new Error('no key');
 
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers,
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:700,
-        messages:[{role:'user',content:`You are Lucky, a UK cashback shopping AI for SmartCash.
-User wants: "${query}"
-Generate 4 realistic Amazon UK product suggestions.
-Respond ONLY with valid JSON:
-{"intent":"what user wants","keyword":"3-4 word Amazon search term","products":[{"title":"Product name","price":"£XX.XX","dept":"Electronics","emoji":"emoji","why":"one line reason"}],"tip":"one shopping tip"}`}]
-      })
-    });
-
-    loading.remove();
-    if(!resp.ok) throw new Error(resp.status);
-    const data=await resp.json();
-    const result=JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
-    renderResults(result,query);
-  }catch(err){
-    loading.remove();
-    showFallback(query);
+    const res=await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
+      {method:'POST',headers:{'Content-Type':'application/json'},
+       body:JSON.stringify({contents:[{parts:[{text:
+        `You are Lucky, a UK cashback shopping AI. User wants: "${query}"
+Generate 4 realistic Amazon UK products. JSON only, no markdown:
+{"intent":"what they want","keyword":"3-4 word Amazon search","products":[{"title":"Product","price":"£XX.XX","emoji":"emoji","why":"reason"}],"tip":"shopping tip"}`
+       }]}]})}
+    );
+    if(!res.ok) throw new Error(res.status);
+    const data=await res.json();
+    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||'{}';
+    const result=JSON.parse(text.replace(/```json|```/g,'').trim());
+    l.remove();
+    renderCards(result,query);
+  }catch(e){
+    l.remove();
+    fallback(query);
   }
 }
 
-function renderResults(result,query){
+function renderCards(result,query){
+  msg(`Found options for <strong>${result.intent||query}</strong>. All link to Amazon UK with <strong>4.5% cashback</strong>.`);
   const body=document.getElementById('lk-body');
-  addMsg(`Found options for <strong>${result.intent||query}</strong>. All link to Amazon UK with <strong>4.5% cashback</strong>.`);
 
-  const grid=document.createElement('div');
-  grid.className='lk-grid';
+  const grid=document.createElement('div');grid.className='lk-grid';
   (result.products||[]).forEach(p=>{
     const url=`https://www.amazon.co.uk/s?k=${encodeURIComponent(p.title)}&tag=${AMAZON_TAG}`;
     const a=document.createElement('a');
-    a.className='lk-card';a.href=url;a.target='_blank';a.rel='noopener noreferrer';
-    a.innerHTML=`
-      <div class="lk-card-img">
-        <div class="emoji">${p.emoji||'📦'}</div>
-        <div class="lk-store-tag">Amazon UK</div>
-      </div>
-      <div class="lk-card-body">
-        <div class="lk-card-title">${p.title}</div>
-        <div class="lk-card-price">${p.price||''}</div>
-        <div class="lk-card-cb">💰 4.5% cashback</div>
-        <div style="font-size:.68rem;color:#9ca3af;margin-bottom:.28rem">${p.why||''}</div>
-        <div class="lk-card-btn">Shop on Amazon →</div>
-      </div>`;
+    a.className='lkcard';a.href=url;a.target='_blank';a.rel='noopener noreferrer';
+    a.innerHTML=`<div class="lkcard-img"><div class="em">${p.emoji||'📦'}</div><div class="lkcard-stag" style="background:#FF9900">Amazon</div></div>
+<div class="lkcard-bd">
+<div class="lkcard-title">${p.title}</div>
+<div class="lkcard-price">${p.price||'View price'}</div>
+<div class="lkcard-cb">💰 4.5% cashback</div>
+<div style="font-size:.66rem;color:#9ca3af;margin-bottom:.25rem">${p.why||''}</div>
+<div class="lkcard-btn">Shop on Amazon →</div></div>`;
     grid.appendChild(a);
   });
   body.appendChild(grid);
 
-  const storeWrap=document.createElement('div');
-  storeWrap.innerHTML='<div style="font-size:.73rem;color:#6b7280;margin:.3rem 0 .4rem">Also search our partner stores:</div>';
-  const sb=document.createElement('div');
-  sb.className='lk-store-btns';
+  const sbwrap=document.createElement('div');
+  sbwrap.innerHTML='<div style="font-size:.71rem;color:#6b7280;margin:.28rem 0 .38rem">Also search our partner stores:</div>';
+  const sb=document.createElement('div');sb.className='lk-sbtns';
   STORES.forEach(st=>{
     const a=document.createElement('a');
-    a.className='lk-store-btn';a.href=st.url(result.keyword||query);a.target='_blank';a.rel='noopener noreferrer';
-    a.innerHTML=`<div style="font-size:1rem">🔍</div><div style="flex:1"><div class="lk-store-name">${st.name}</div><div class="lk-store-cb">${st.cashback}% cashback</div></div><div style="color:#9ca3af">›</div>`;
+    a.className='lksb';a.href=st.url(result.keyword||query);a.target='_blank';a.rel='noopener noreferrer';
+    a.innerHTML=`<div style="font-size:1rem">${st.emoji}</div><div class="lksb-info"><div class="lksb-name">${st.name}</div><div class="lksb-cb">${st.cashback}% cashback</div></div><div style="color:#9ca3af;font-size:.85rem">›</div>`;
     sb.appendChild(a);
   });
-  storeWrap.appendChild(sb);body.appendChild(storeWrap);
+  sbwrap.appendChild(sb);body.appendChild(sbwrap);
 
   if(result.tip){
     const t=document.createElement('div');
-    t.className='lk-tip';t.innerHTML=`💡 <strong>Tip:</strong> ${result.tip}`;
+    t.style.cssText='background:#fffbeb;border:1px solid #fde68a;border-radius:9px;padding:.58rem;font-size:.75rem;color:#92400e;line-height:1.5;';
+    t.innerHTML=`💡 <strong>Tip:</strong> ${result.tip}`;
     body.appendChild(t);
   }
-  body.scrollTop=body.scrollHeight;
+  body.scrollTop=9999;
+
+  // Also speak the tip using free Web Speech API
+  if(result.tip) speak('Here is a tip: '+result.tip);
 }
 
-function showFallback(query){
-  addMsg(`Searching for <strong>"${query}"</strong> across partner stores with cashback:`);
+function fallback(query){
+  msg(`Here are the best places to shop for <strong>"${query}"</strong> with cashback:`);
   const body=document.getElementById('lk-body');
-  const sb=document.createElement('div');sb.className='lk-store-btns';
+  const sb=document.createElement('div');sb.className='lk-sbtns';
   STORES.forEach(st=>{
     const a=document.createElement('a');
-    a.className='lk-store-btn';a.href=st.url(query);a.target='_blank';a.rel='noopener noreferrer';
-    a.style.cssText=st.name.includes('Amazon')?'border-color:#FF9900;background:#fff8f0;':'';
-    a.innerHTML=`<div style="font-size:1rem">${st.name.includes('Amazon')?'📦':st.name.includes('ASOS')?'👗':'💄'}</div><div style="flex:1"><div class="lk-store-name">Search ${st.name}</div><div class="lk-store-cb">${st.cashback}% cashback on every purchase</div></div><div style="color:#9ca3af">→</div>`;
+    a.className='lksb';a.href=st.url(query);a.target='_blank';a.rel='noopener noreferrer';
+    if(st.name.includes('Amazon')) a.style.cssText='border-color:#FF9900;background:#fff8f0;';
+    a.innerHTML=`<div style="font-size:1rem">${st.emoji}</div><div class="lksb-info"><div class="lksb-name">${st.name}</div><div class="lksb-cb">${st.cashback}% cashback on every order</div></div><div style="color:#9ca3af">→</div>`;
     sb.appendChild(a);
   });
-  body.appendChild(sb);
-  body.scrollTop=body.scrollHeight;
+  body.appendChild(sb);body.scrollTop=9999;
 }
 
-/* ─── SQUAD / VOICE CHAT (WebRTC, free, peer-to-peer) ──── */
-/* Uses a free public signaling server approach via BroadcastChannel
-   (same-browser) + simple WebRTC for cross-device (requires signaling).
-   For a truly free cross-device solution we use PeerJS which has a
-   free public STUN/TURN server built in. */
+/* ── FREE VOICE (Web Speech API — browser built-in, 100% free) ── */
+function speak(text){
+  if(!voiceSynth||!text) return;
+  voiceSynth.cancel();
+  const u=new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g,'').substring(0,200));
+  const voices=voiceSynth.getVoices();
+  u.voice=voices.find(v=>v.lang.startsWith('en-GB'))||voices.find(v=>v.lang.startsWith('en'))||voices[0];
+  u.rate=1.0;u.pitch=1.1;u.volume=1;
+  voiceSynth.speak(u);
+}
+
+function startVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    msg('Voice search isn\'t supported in this browser. Please use Chrome or Edge.');
+    return;
+  }
+  if(voiceListening){stopVoice();return;}
+  recognition=new SR();
+  recognition.continuous=false;
+  recognition.lang='en-GB';
+  recognition.interimResults=false;
+  recognition.onstart=()=>{
+    voiceListening=true;
+    document.getElementById('lk-mic').classList.add('listening');
+    document.getElementById('lk-mic').textContent='🔴';
+    document.getElementById('lk-inp').placeholder='Listening…';
+  };
+  recognition.onresult=e=>{
+    const transcript=e.results[0][0].transcript;
+    document.getElementById('lk-inp').value=transcript;
+    stopVoice();
+    LUCKY.send();
+  };
+  recognition.onerror=recognition.onend=()=>stopVoice();
+  recognition.start();
+}
+function stopVoice(){
+  voiceListening=false;
+  if(recognition){try{recognition.stop();}catch(e){}}
+  const mic=document.getElementById('lk-mic');
+  if(mic){mic.classList.remove('listening');mic.textContent='🎤';}
+  const inp=document.getElementById('lk-inp');
+  if(inp) inp.placeholder='Ask me anything…';
+}
+
+/* ── SQUAD: SPLIT-SCREEN SYNC ───────────────────────────── */
+/* Uses BroadcastChannel (same browser tabs — works instantly for
+   same-device testing) + PeerJS for cross-device connections.     */
+
+let squadProducts=[];   // current search results shown in both screens
+let partnerName='Partner';
+let partnerViewingIdx=-1;
+let myMicOn=true;
+
+function genCode(){return 'SHOP-'+Math.floor(1000+Math.random()*9000);}
 
 function loadPeerJS(cb){
   if(window.Peer){cb();return;}
   const s=document.createElement('script');
   s.src='https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';
-  s.onload=cb;s.onerror=()=>alert('Could not load voice chat library. Check your connection.');
+  s.onload=cb;
+  s.onerror=()=>{
+    document.getElementById('sq-status').textContent='⚠ Voice unavailable';
+    cb(); // still allow text sync
+  };
   document.head.appendChild(s);
 }
 
-function genRoomCode(){
-  return 'SHOP-'+Math.floor(1000+Math.random()*9000);
+function sqShowSplit(){
+  document.getElementById('sq-pre').style.display='none';
+  document.getElementById('lk-split').classList.add('on');
+  // Populate self in voice bar
+  const vbm=document.getElementById('vb-members');
+  vbm.innerHTML=`<div class="vb-member"><div class="vb-ava" id="vbava-me">${myName.slice(0,2).toUpperCase()}</div><span class="vb-name">${myName} (You)</span></div>`;
+  document.getElementById('lk-room-code').textContent=squadCode;
+  document.getElementById('lbl-me').textContent=myName;
 }
 
-let myName='Me';
-let myPeerId=null;
-let hostPeerId=null;
-let squadRoomCode=null;
-let squadPeers={};   // peerId→{conn,call,name}
-let memberEls={};
-let isHost=false;
-let lastSharedUrl=null;
-
-function squadShowLanding(){
-  document.getElementById('sq-landing').style.display='block';
-  document.getElementById('sq-join-form').style.display='none';
-  document.getElementById('sq-room-ui').style.display='none';
-}
-function squadShowJoin(){
-  document.getElementById('sq-landing').style.display='none';
-  document.getElementById('sq-join-form').style.display='block';
-  document.getElementById('sq-code-input').value='';
-  document.getElementById('sq-name-input').value='';
-  document.getElementById('sq-name-input').focus();
+function addPartnerToBar(name){
+  const vbm=document.getElementById('vb-members');
+  const sep=document.createElement('span');sep.className='vb-sep';sep.textContent='·';
+  vbm.appendChild(sep);
+  const d=document.createElement('div');d.className='vb-member';d.id='vbm-partner';
+  d.innerHTML=`<div class="vb-ava" id="vbava-partner">${name.slice(0,2).toUpperCase()}</div><span class="vb-name">${name}</span>`;
+  vbm.appendChild(d);
+  document.getElementById('dot-partner').classList.remove('off');
+  document.getElementById('lbl-partner').textContent=name;
+  document.getElementById('sq-status').textContent='● 2 people connected';
 }
 
-async function squadCreate(){
-  const nameEl=document.getElementById('sq-name-input');
-  // Show quick name prompt inside landing
-  document.getElementById('sq-landing').innerHTML=`
-    <div class="squad-join-form">
-      <div style="font-size:.85rem;font-weight:700;color:#111827;margin-bottom:.35rem">Your name in the room:</div>
-      <input id="sq-creator-name" type="text" placeholder="Your name" maxlength="20" value="">
-      <button class="squad-btn primary" style="background:#667eea;color:#fff;border:none;padding:.7rem;border-radius:9px;font-size:.85rem" onclick="LUCKY.squadCreateFinal()">🎙️ Create Room →</button>
-    </div>`;
-  setTimeout(()=>document.getElementById('sq-creator-name').focus(),50);
+/* Broadcast search results to both screens */
+function renderSquadProducts(products, query){
+  squadProducts=products;
+  renderScreen('body-me', products, true);
+  // Broadcast to partner
+  broadcastToPartner({type:'products', products, query});
 }
 
-window.LUCKY = window.LUCKY || {};
+function renderScreen(bodyId, products, isMine){
+  const body=document.getElementById(bodyId);
+  body.innerHTML='';
+  products.forEach((p,i)=>{
+    const url=`https://www.amazon.co.uk/s?k=${encodeURIComponent(p.title)}&tag=${AMAZON_TAG}`;
+    const div=document.createElement('div');
+    div.className='sq-product';
+    div.id=(isMine?'sqp-me-':'sqp-pt-')+i;
+    div.innerHTML=`
+      <div class="sq-product-img">${p.emoji||'📦'}</div>
+      <div class="sq-product-info">
+        <div class="sq-product-title">${p.title}</div>
+        <div class="sq-product-price">${p.price||'See Amazon for price'}</div>
+        <div class="sq-product-cb">💰 4.5% cashback · Amazon UK</div>
+      </div>
+      <div class="sq-votes">
+        <button class="sqvote" onclick="LUCKY.sqVote(${i},'like',this)">❤️ Like</button>
+        <button class="sqvote" onclick="LUCKY.sqVote(${i},'add',this)">🛒 Add</button>
+        <button class="sqvote" onclick="event.preventDefault();window.open('${url}','_blank')">🛍️ Shop</button>
+      </div>`;
 
-async function squadCreateFinal(){
-  const nameInput=document.getElementById('sq-creator-name');
-  myName=(nameInput?nameInput.value.trim():'')||'Host';
-  isHost=true;
-  squadRoomCode=genRoomCode();
-  await startVoiceSession(squadRoomCode.replace('SHOP-','sc-host-'));
+    // When user hovers a product, sync highlight to partner
+    div.addEventListener('mouseenter',()=>{
+      broadcastToPartner({type:'hover',idx:i,name:myName});
+    });
+    div.addEventListener('mouseleave',()=>{
+      broadcastToPartner({type:'unhover',idx:i});
+    });
+
+    body.appendChild(div);
+  });
 }
 
-async function squadJoin(){
-  const nameEl=document.getElementById('sq-name-input');
-  const codeEl=document.getElementById('sq-code-input');
-  myName=(nameEl?nameEl.value.trim():'')||'Guest';
-  const code=(codeEl?codeEl.value.trim().toUpperCase():'');
-  if(!code){alert('Please enter a room code.');return;}
-  squadRoomCode=code;
-  isHost=false;
-  hostPeerId='sc-host-'+code.replace('SHOP-','');
-  await startVoiceSession(null);
-}
-
-async function startVoiceSession(peerId){
-  try{
-    localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
-  }catch(e){
-    alert('Microphone access is needed for voice chat. Please allow it in your browser settings.');
-    squadShowLanding();return;
+function highlightPartnerProduct(idx, name){
+  // Remove previous highlight
+  document.querySelectorAll('.sq-product.partner-viewing').forEach(el=>{
+    el.classList.remove('partner-viewing');
+    const cursor=el.querySelector('.partner-cursor');
+    if(cursor) cursor.remove();
+  });
+  if(idx<0) return;
+  const el=document.getElementById('sqp-me-'+idx);
+  if(el){
+    el.classList.add('partner-viewing');
+    const cursor=document.createElement('div');
+    cursor.className='partner-cursor';
+    cursor.textContent=name+' is viewing';
+    el.querySelector('.sq-product-info').prepend(cursor);
+    el.scrollIntoView({behavior:'smooth',block:'nearest'});
   }
+}
 
+/* ── PEER CONNECTION ─────────────────────────────────────── */
+let peerConn=null; // single data connection to partner
+
+function startPeer(isCreator){
   loadPeerJS(()=>{
-    squadPeer=peerId
-      ? new Peer(peerId,{debug:0})
-      : new Peer({debug:0});
+    if(!window.Peer) return;
+    const pid=isCreator? 'sc-'+squadCode.replace('SHOP-','') : null;
+    squadPeer=pid ? new Peer(pid) : new Peer();
 
     squadPeer.on('open',id=>{
-      myPeerId=id;
-      if(!peerId) squadRoomCode=squadRoomCode||('SHOP-'+id.slice(-4).toUpperCase());
-      showRoomUI();
-      if(!isHost && hostPeerId){
+      if(!isCreator){
         // Connect to host
-        connectToPeer(hostPeerId);
+        const hostId='sc-'+squadCode.replace('SHOP-','');
+        peerConn=squadPeer.connect(hostId,{reliable:true,serialization:'json'});
+        setupDataConn(peerConn);
+        // Voice call
+        if(localStream){
+          const call=squadPeer.call(hostId,localStream);
+          call.on('stream',s=>playAudio(s,'partner'));
+        }
       }
     });
 
     squadPeer.on('connection',conn=>{
-      conn.on('open',()=>{
-        // Send our name
-        conn.send({type:'hello',name:myName,peerId:myPeerId});
-        conn.on('data',d=>handleSquadData(d,conn));
-        conn.on('close',()=>removeMember(conn.peer));
-      });
+      peerConn=conn;
+      setupDataConn(conn);
     });
 
     squadPeer.on('call',call=>{
-      call.answer(localStream);
-      call.on('stream',remoteStream=>{
-        playRemoteAudio(remoteStream,call.peer);
-      });
-      if(squadPeers[call.peer]) squadPeers[call.peer].call=call;
+      call.answer(localStream||new MediaStream());
+      call.on('stream',s=>playAudio(s,'partner'));
     });
 
     squadPeer.on('error',e=>{
-      console.warn('PeerJS error:',e);
-      document.getElementById('sq-conn-badge').textContent='🔴 Reconnecting…';
-      document.getElementById('sq-conn-badge').style.background='#fee2e2';
-      document.getElementById('sq-conn-badge').style.color='#991b1b';
+      document.getElementById('sq-status').textContent='⚠ Connection issue';
     });
   });
 }
 
-function connectToPeer(peerId){
-  const conn=squadPeer.connect(peerId,{reliable:true});
+function setupDataConn(conn){
   conn.on('open',()=>{
-    conn.send({type:'hello',name:myName,peerId:myPeerId});
-    conn.on('data',d=>handleSquadData(d,conn));
-    conn.on('close',()=>removeMember(peerId));
-    if(!squadPeers[peerId]) squadPeers[peerId]={};
-    squadPeers[peerId].conn=conn;
-    // Start voice call
-    const call=squadPeer.call(peerId,localStream);
-    call.on('stream',remoteStream=>{playRemoteAudio(remoteStream,peerId);});
-    squadPeers[peerId].call=call;
+    conn.send({type:'hello',name:myName});
+  });
+  conn.on('data',d=>{
+    if(d.type==='hello'){
+      partnerName=d.name||'Partner';
+      addPartnerToBar(partnerName);
+    }
+    if(d.type==='products'){
+      renderScreen('body-partner',d.products,false);
+    }
+    if(d.type==='search'){
+      document.getElementById('sq-search').value=d.query;
+      sqDoSearch(d.query,false); // search but don't re-broadcast
+    }
+    if(d.type==='hover'){
+      highlightPartnerProduct(d.idx,d.name||partnerName);
+    }
+    if(d.type==='unhover'){
+      highlightPartnerProduct(-1,'');
+    }
+    if(d.type==='vote'){
+      // Show partner's vote on shared product
+      const el=document.getElementById('sqp-me-'+d.idx);
+      if(el){
+        const voteEl=el.querySelector('.sq-votes');
+        if(voteEl){
+          const indicator=document.createElement('span');
+          indicator.style.cssText='font-size:.65rem;color:#667eea;margin-left:.3rem;';
+          indicator.textContent=partnerName+(d.action==='like'?' ❤️':' 🛒');
+          voteEl.appendChild(indicator);
+          setTimeout(()=>indicator.remove(),3000);
+        }
+      }
+    }
+  });
+  conn.on('close',()=>{
+    document.getElementById('sq-status').textContent='● Partner disconnected';
+    document.getElementById('dot-partner').classList.add('off');
   });
 }
 
-function handleSquadData(data,conn){
-  if(data.type==='hello'){
-    const peerId=data.peerId||conn.peer;
-    if(!squadPeers[peerId]) squadPeers[peerId]={};
-    squadPeers[peerId].conn=conn;
-    squadPeers[peerId].name=data.name||'Friend';
-    addMemberUI(peerId,data.name||'Friend');
-    // If host, forward new member to all others
-    if(isHost){
-      Object.keys(squadPeers).forEach(pid=>{
-        if(pid!==peerId && squadPeers[pid].conn)
-          squadPeers[pid].conn.send({type:'newPeer',peerId,name:data.name});
+function broadcastToPartner(data){
+  if(peerConn && peerConn.open) peerConn.send(data);
+  // Also BroadcastChannel for same-browser testing
+  if(syncChannel) syncChannel.postMessage(data);
+}
+
+function playAudio(stream,id){
+  let el=document.getElementById('sqaudio-'+id);
+  if(!el){el=document.createElement('audio');el.id='sqaudio-'+id;el.autoplay=true;document.body.appendChild(el);}
+  el.srcObject=stream;
+}
+
+async function getMic(){
+  try{
+    localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+/* ── SQUAD SEARCH ───────────────────────────────────────── */
+async function sqDoSearch(query, broadcast=true){
+  const meBody=document.getElementById('body-me');
+  const ptBody=document.getElementById('body-partner');
+  meBody.innerHTML='<div style="text-align:center;padding:1.5rem;color:#9ca3af;font-size:.8rem">Searching Amazon…</div>';
+  ptBody.innerHTML='<div style="text-align:center;padding:1.5rem;color:#9ca3af;font-size:.8rem">Searching Amazon…</div>';
+
+  if(broadcast) broadcastToPartner({type:'search',query});
+
+  // Use Gemini if available, otherwise generate from keyword patterns
+  let products=[];
+  try{
+    if(GEMINI_KEY){
+      const res=await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
+        {method:'POST',headers:{'Content-Type':'application/json'},
+         body:JSON.stringify({contents:[{parts:[{text:
+          `UK cashback shopping. User searches: "${query}". Give 6 Amazon UK products. JSON only:
+{"products":[{"title":"Product name","price":"£XX.XX","emoji":"emoji"}]}`
+         }]}]})}
+      );
+      const d=await res.json();
+      const t=d.candidates?.[0]?.content?.parts?.[0]?.text||'{}';
+      const parsed=JSON.parse(t.replace(/```json|```/g,'').trim());
+      products=parsed.products||[];
+    }
+  }catch(e){}
+
+  // Fallback: generate simple products from query
+  if(!products.length){
+    const emojis=['📦','🎁','⭐','🔥','✨','💎'];
+    for(let i=0;i<6;i++){
+      products.push({
+        title:`${query} — Option ${i+1}`,
+        price:'View on Amazon',
+        emoji:emojis[i]
       });
     }
   }
-  if(data.type==='newPeer'){
-    // Connect to new peer introduced by host
-    if(data.peerId!==myPeerId && !squadPeers[data.peerId])
-      connectToPeer(data.peerId);
-  }
-  if(data.type==='product'){
-    showSharedProduct(data.url,data.title);
-  }
+
+  renderSquadProducts(products, query);
+  // Also render on partner screen (will be overwritten when partner receives broadcast)
+  renderScreen('body-partner', products, false);
 }
 
-function addMemberUI(peerId,name){
-  const members=document.getElementById('sq-members');
-  if(document.getElementById('sqm-'+CSS.escape(peerId))) return;
-  const d=document.createElement('div');
-  d.className='squad-member';d.id='sqm-'+peerId;
-  const initials=(name||'?').slice(0,2).toUpperCase();
-  d.innerHTML=`
-    <div class="squad-member-ava" id="sqava-${peerId}">${initials}</div>
-    <div class="squad-member-name">${name}</div>
-    <div class="squad-member-status">🎙️ live</div>`;
-  members.appendChild(d);
-}
+/* ── PUBLIC API ─────────────────────────────────────────── */
+window.LUCKY={
+  open_: openPanel,
+  close: closePanel,
 
-function removeMember(peerId){
-  const el=document.getElementById('sqm-'+peerId);
-  if(el) el.remove();
-  delete squadPeers[peerId];
-}
+  tab:(name,el)=>{
+    document.querySelectorAll('.lkt').forEach(t=>t.classList.remove('on'));
+    document.querySelectorAll('.tp').forEach(t=>t.classList.remove('on'));
+    el.classList.add('on');
+    document.getElementById('lk-tab-'+name).classList.add('on');
+    activeTab=name;
+  },
 
-function playRemoteAudio(stream,peerId){
-  let audio=document.getElementById('sqaudio-'+peerId);
-  if(!audio){
-    audio=document.createElement('audio');
-    audio.id='sqaudio-'+peerId;
-    audio.autoplay=true;
-    document.body.appendChild(audio);
-  }
-  audio.srcObject=stream;
-}
+  ask:(q)=>{openPanel();document.getElementById('lk-inp').value=q;LUCKY.send();},
 
-function showRoomUI(){
-  document.getElementById('sq-landing').style.display='none';
-  document.getElementById('sq-join-form').style.display='none';
-  document.getElementById('sq-room-ui').style.display='block';
-  document.getElementById('sq-room-code-display').textContent=squadRoomCode||'SHOP-????';
-  // Add self
-  const members=document.getElementById('sq-members');
-  members.innerHTML='';
-  const self=document.createElement('div');
-  self.className='squad-member';
-  self.innerHTML=`
-    <div class="squad-member-ava" style="background:linear-gradient(135deg,#FF5C00,#ff7c30)">${myName.slice(0,2).toUpperCase()}</div>
-    <div class="squad-member-name">${myName} (You)</div>
-    <div class="squad-member-status">🎙️ live</div>`;
-  members.appendChild(self);
-}
+  send:()=>{
+    const inp=document.getElementById('lk-inp');
+    const q=inp.value.trim();if(!q)return;
+    inp.value='';
+    msg(q,true);
+    aiSearch(q);
+  },
 
-function showSharedProduct(url,title){
-  const el=document.getElementById('sq-shared-product');
-  el.style.display='block';
-  document.getElementById('sq-product-name').textContent=title||'Product';
-  const link=document.getElementById('sq-product-link');
-  link.href=url||'#';
-}
+  toggleVoice: startVoice,
 
-/* ─── SQUAD CONTROLS ───────────────────────────────────── */
-function squadToggleMic(){
-  if(!localStream)return;
-  squadMicOn=!squadMicOn;
-  localStream.getAudioTracks().forEach(t=>t.enabled=squadMicOn);
-  const btn=document.getElementById('sq-mic-btn');
-  if(btn){btn.textContent=squadMicOn?'🎙️ Mic On':'🔇 Mic Off';btn.classList.toggle('active',squadMicOn);}
-}
+  /* Squad */
+  sqCreate:()=>{
+    document.getElementById('sq-landing').innerHTML=`
+      <div class="join-form">
+        <div style="font-size:.83rem;font-weight:700;color:#111827;margin-bottom:.3rem">Your name in the room:</div>
+        <input id="sqn2" type="text" placeholder="Your name" maxlength="20">
+        <button class="sqbtn p" style="background:#667eea;color:#fff;border:none;padding:.65rem;border-radius:9px;font-size:.82rem" onclick="LUCKY.sqCreateGo()">🎙️ Create Room →</button>
+      </div>`;
+    setTimeout(()=>document.getElementById('sqn2')&&document.getElementById('sqn2').focus(),50);
+  },
 
-function squadShareProduct(){
-  // Share the current page's product or search result
-  const title=document.title||'Product';
-  const url=window.location.href;
-  const msg={type:'product',url,title};
-  Object.values(squadPeers).forEach(p=>{if(p.conn)p.conn.send(msg);});
-  showSharedProduct(url,title);
-  alert('Current page shared with your squad!');
-}
+  sqCreateGo:async()=>{
+    const n=document.getElementById('sqn2');
+    myName=(n?n.value.trim():'')||'Host';
+    isHost=true;
+    squadCode=genCode();
+    await getMic();
+    sqShowSplit();
+    startPeer(true);
+    // BroadcastChannel for same-browser tab testing
+    try{syncChannel=new BroadcastChannel('sc-squad-'+squadCode);}catch(e){}
+  },
 
-function squadLeave(){
-  if(localStream) localStream.getTracks().forEach(t=>t.stop());
-  if(squadPeer) squadPeer.destroy();
-  document.querySelectorAll('[id^=sqaudio-]').forEach(el=>el.remove());
-  squadPeers={};localStream=null;squadPeer=null;isHost=false;
-  // Reset landing
-  document.getElementById('sq-room-ui').style.display='none';
-  document.getElementById('sq-landing').style.display='block';
-  document.getElementById('sq-landing').innerHTML=`
-    <div class="squad-hero">
-      <h3>👥 Shop Together — Free</h3>
-      <p>Start a voice room, share the code with friends. Browse products together, vote on items, and talk in real-time.</p>
-      <div class="squad-actions">
-        <button class="squad-btn primary" onclick="LUCKY.squadCreate()">🎙️ Create Room</button>
-        <button class="squad-btn secondary" onclick="LUCKY.squadShowJoin()">🔗 Join Room</button>
+  sqShowJoin:()=>{
+    document.getElementById('sq-landing').style.display='none';
+    document.getElementById('sq-join').style.display='block';
+    setTimeout(()=>document.getElementById('sqn').focus(),50);
+  },
+  sqLanding:()=>{
+    document.getElementById('sq-join').style.display='none';
+    document.getElementById('sq-landing').style.display='block';
+  },
+
+  sqJoin:async()=>{
+    const n=document.getElementById('sqn');
+    const c=document.getElementById('sqc');
+    myName=(n?n.value.trim():'')||'Guest';
+    squadCode=(c?c.value.trim().toUpperCase():'').replace(/[^A-Z0-9-]/g,'');
+    if(!squadCode){alert('Please enter the room code.');return;}
+    isHost=false;
+    await getMic();
+    sqShowSplit();
+    // BroadcastChannel join
+    try{
+      syncChannel=new BroadcastChannel('sc-squad-'+squadCode);
+      syncChannel.onmessage=e=>{
+        const d=e.data;
+        if(d.type==='products') renderScreen('body-partner',d.products,false);
+        if(d.type==='hello'){partnerName=d.name||'Partner';addPartnerToBar(partnerName);}
+        if(d.type==='hover') highlightPartnerProduct(d.idx,d.name||partnerName);
+        if(d.type==='unhover') highlightPartnerProduct(-1,'');
+        if(d.type==='search'){document.getElementById('sq-search').value=d.query;sqDoSearch(d.query,false);}
+      };
+      broadcastToPartner({type:'hello',name:myName});
+    }catch(e){}
+    startPeer(false);
+  },
+
+  sqSearch:()=>{
+    const q=document.getElementById('sq-search').value.trim();
+    if(!q)return;
+    sqDoSearch(q,true);
+  },
+
+  sqVote:(idx,action,btn)=>{
+    btn.classList.toggle('liked', action==='like');
+    btn.classList.toggle('disliked', action==='add' && !btn.classList.contains('liked'));
+    broadcastToPartner({type:'vote',idx,action,name:myName});
+  },
+
+  sqSyncScroll:(el)=>{
+    // Sync scroll position to partner
+    const pct=el.scrollTop/(el.scrollHeight-el.clientHeight||1);
+    broadcastToPartner({type:'scroll',pct});
+  },
+
+  sqMic:()=>{
+    if(!localStream)return;
+    myMicOn=!myMicOn;
+    localStream.getAudioTracks().forEach(t=>t.enabled=myMicOn);
+    const btn=document.getElementById('sq-mic-btn');
+    if(btn){btn.textContent=myMicOn?'🎙️ On':'🔇 Off';btn.classList.toggle('on',myMicOn);}
+  },
+
+  sqShare:()=>{
+    const url=window.location.href;
+    const title=document.title||'SmartCash page';
+    broadcastToPartner({type:'share-page',url,title});
+    alert(`Page shared with your squad!\n${title}`);
+  },
+
+  sqLeave:()=>{
+    if(localStream) localStream.getTracks().forEach(t=>t.stop());
+    if(squadPeer) squadPeer.destroy();
+    if(syncChannel) syncChannel.close();
+    document.querySelectorAll('[id^=sqaudio-]').forEach(el=>el.remove());
+    squadPeer=null;peerConn=null;localStream=null;syncChannel=null;isHost=false;
+    document.getElementById('lk-split').classList.remove('on');
+    document.getElementById('sq-pre').style.display='block';
+    document.getElementById('sq-landing').innerHTML=`
+    <div class="sq-hero">
+      <h3>👥 Shop Together — Live</h3>
+      <p>Split screen with a friend. Browse the same products, vote on items, voice chat in real-time — all free.</p>
+      <div class="sq-btns">
+        <button class="sqbtn p" onclick="LUCKY.sqCreate()">🎙️ Create Room</button>
+        <button class="sqbtn s" onclick="LUCKY.sqShowJoin()">🔗 Join Room</button>
       </div>
     </div>
-    <div class="lk-info">ℹ️ <strong>How it works:</strong> Free peer-to-peer voice chat via WebRTC. Share the room code with friends — no app or account needed.</div>`;
-}
+    <div class="lk-info">ℹ️ Share the room code with a friend to browse together in split-screen with voice chat.</div>`;
+  },
 
-function copyCode(){
-  const code=document.getElementById('sq-room-code-display').textContent;
-  navigator.clipboard.writeText(code).then(()=>alert('Room code copied: '+code))
-    .catch(()=>prompt('Copy this room code:',code));
-}
-
-/* ─── PUBLIC API ───────────────────────────────────────── */
-window.LUCKY={
-  open_:()=>{panelOpen=false;togglePanel();},
-  close:()=>{panelOpen=true;togglePanel();},
-  switchTab:(tab,el)=>{
-    document.querySelectorAll('.lk-tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.lk-tab-panel').forEach(t=>t.classList.remove('active'));
-    el.classList.add('active');
-    document.getElementById('lk-tab-'+tab).classList.add('active');
+  sqCopy:()=>{
+    navigator.clipboard.writeText(squadCode)
+      .then(()=>alert('Room code copied: '+squadCode))
+      .catch(()=>prompt('Copy this code:',squadCode));
   },
-  ask:(q)=>{
-    if(!panelOpen){panelOpen=false;togglePanel();}
-    const input=document.getElementById('lk-input');
-    input.value=q;LUCKY.sendMsg();
-  },
-  sendMsg:()=>{
-    const input=document.getElementById('lk-input');
-    const q=input.value.trim();
-    if(!q)return;
-    input.value='';
-    addMsg(q,true);
-    searchWithClaude(q);
-  },
-  squadCreate,
-  squadCreateFinal,
-  squadShowJoin,
-  squadShowLanding,
-  squadJoin,
-  squadToggleMic,
-  squadShareProduct,
-  squadLeave,
-  copyCode,
 };
+
+// Init: speak welcome only once per session
+setTimeout(()=>{
+  if(!sessionStorage.getItem('lk-welcomed')){
+    sessionStorage.setItem('lk-welcomed','1');
+  }
+},1000);
 
 })();
