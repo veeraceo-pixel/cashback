@@ -4,17 +4,8 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/",           "destination": "/app.html" },
-    { "source": "/stores",     "destination": "/stores.html" },
-    { "source": "/dashboard",  "destination": "/dashboard.html" },
-    { "source": "/price-tracker","destination": "/price-tracker.html" },
-    { "source": "/try-on",     "destination": "/virtual-assistant.html" },
-    { "source": "/about",      "destination": "/about.html" },
-    { "source": "/contact",    "destination": "/contact.html" },
-    { "source": "/help",       "destination": "/help.html" },
-    { "source": "/terms",      "destination": "/terms.html" },
-    { "source": "/privacy",    "destination": "/privacy.html" },
-    { "source": "/how-it-works","destination": "/how-it-works.html" }
+    { "source": "/",       "destination": "/app.html" },
+    { "source": "/try-on", "destination": "/virtual-assistant.html" }
   ],
   "headers": [
     {
