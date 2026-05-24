@@ -629,85 +629,29 @@ function handleSearch(q) {
   renderStores(lq ? STORES.filter(s => s.name.toLowerCase().includes(lq)||s.sub.toLowerCase().includes(lq)||s.cat.includes(lq)) : STORES);
 }
 
-/* ─── CLICK TRACKING ─────────────────────────────────────────
-   Full flow:
-   1. Check if user is logged in (Supabase session)
-   2. If not → show login modal, save pending click, resume after login
-   3. Generate unique click_id and record to Supabase clicks table
-   4. Append clickRef to affiliate URL so AWIN/network can match it
+/* ─── CLICK TRACKING — delegates to tracking.js ──────────────────
+   SC_TRACKING handles: click_id generation, interstitial screen,
+   deep linking, WebView detection, system browser enforcement,
+   Supabase recording. See tracking.js for full implementation.
    ─────────────────────────────────────────────────────────── */
-let _pendingClickId = null;  // store click while user logs in
-
-function generateClickId() {
-  return 'sc_' + Date.now() + '_' + Math.random().toString(36).substr(2,9);
+function generateClickId(){
+  return SC_TRACKING ? SC_TRACKING.generateClickId() : 'SC'+Date.now().toString(36).toUpperCase();
 }
 
 async function trackClick(storeId) {
   const s = STORES.find(x => x.id === storeId);
   if (!s) return;
-
-  // Check login status
-  const sb = (typeof SUPABASE_CONFIG !== 'undefined' && !SUPABASE_CONFIG.url.includes('YOUR_'))
-    ? window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey)
-    : null;
-
-  let userId = null;
-  if (sb) {
-    const { data: { session } } = await sb.auth.getSession();
-    userId = session?.user?.id || null;
+  if (window.SC_TRACKING) {
+    SC_TRACKING.handleClick(s);
+  } else {
+    // Fallback if tracking.js not loaded
+    showToast('Opening ' + s.name + '...');
+    window.open(s.url, '_blank', 'noopener,noreferrer');
   }
-
-  if (!userId) {
-    // Not logged in — save pending store, prompt login
-    _pendingClickId = storeId;
-    showToast('Please log in to earn cashback on this purchase 💰');
-    setTimeout(() => openModal('login'), 800);
-    return;
-  }
-
-  // Generate unique click ID for this session
-  const clickId = generateClickId();
-
-  // Build affiliate URL with clickRef appended (AWIN uses clickref= parameter)
-  let affiliateUrl = s.url;
-  if (affiliateUrl.includes('awin1.com')) {
-    affiliateUrl = affiliateUrl.replace('clickref=sc', 'clickref=' + clickId);
-  } else if (affiliateUrl.includes('amazon.co.uk')) {
-    // Amazon doesn't support custom click refs in URL — we track via our DB
-    affiliateUrl = affiliateUrl + '&sc_ref=' + clickId;
-  }
-
-  // Record click to Supabase
-  if (sb) {
-    try {
-      await sb.from('clicks').insert({
-        user_id:        userId,
-        click_id:       clickId,
-        store_slug:     s.id,
-        store_name:     s.name,
-        cashback_rate:  s.cashback,
-        session_url:    window.location.href,
-        user_agent:     navigator.userAgent.substring(0, 200),
-        created_at:     new Date().toISOString(),
-        status:         'clicked'        // → 'converted' when AWIN confirms
-      });
-    } catch(e) {
-      console.warn('Click record failed (non-critical):', e.message);
-    }
-  }
-
-  // Show toast and open store
-  showToast('✓ Cashback tracking active for ' + s.name + ' — shop normally!');
-  window.open(affiliateUrl, '_blank', 'noopener,noreferrer');
 }
 
-// Called after successful login — resume pending click
-async function resumePendingClick() {
-  if (_pendingClickId) {
-    const id = _pendingClickId;
-    _pendingClickId = null;
-    setTimeout(() => trackClick(id), 500);
-  }
+function resumePendingClick() {
+  if (window.SC_TRACKING) SC_TRACKING.resumePending();
 }
 
 /* ── CATEGORIES SIDEBAR ── */
@@ -795,6 +739,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCats();
 </script>
 
 
+<script src="tracking.js"></script>
 <script src="aria.js"></script>
 </body>
 </html>
