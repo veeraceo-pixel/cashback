@@ -8,7 +8,7 @@ const SUPABASE_CONFIG = {
 // Free tier: 15 requests/min, 1M tokens/day, NO credit card required
 const AI_CONFIG = {
     enabled: true,
-    geminiKey: '',   // ← Paste your free Gemini key here
+    geminiKey: 'AIzaSyD7s8Ogj44ZdcuQQfnzXQOJBObWqw7vilw',   // ← Paste your free Gemini key here
     model: 'gemini-1.5-flash'
 };
 
